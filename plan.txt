@@ -1,0 +1,46 @@
+Flutter layout protocol
+pass constraints down, sizes back up
+deal with non flexible children first
+*watch fluter rendering pipeline google io
+
+Investigate Nuklear library
+
+Systems
+LayoutSystem,
+RenderSystem
+
+Components:
+Low level:
+Position,
+Size,
+Colour
+
+Medium Level:
+Highlighted
+
+Higher Level:
+Pressed,
+Focussed,
+Disabled ...
+
+Listener -> event_type
+
+
+
+
+Drawing text in vulkan:
+
+There are basically 2 ways. The first is to create a texture atlas containing glyph images and render textured boxes for each character. 
+The drawback is that you have to recreate the atlas when you want larger text otherwise it looks awful. 
+You might have noticed that in some web browsers when you zoom in the text looks like crap for a short time. 
+That is because they initially zoom up the small glyphs while generating new larger ones.
+
+The second way, which is much, much better from the typographic quality pov, is to do path rendering directly from an outline font. E.g. a truetype font. 
+The best way I’ve seen for doing this is to draw 2 triangles for each glyph and in the fragment shader fire a ray from the point being rendered, incrementing the winding number each time the ray intersects each contour belonging to the glyph. 
+Whether the number is even or odd will tell you if the point is inside or outside the glyph. 
+You can find a paper describing this technique at http://jcgt.org/published/0006/02/02/ 22 and a library (paid license unfortunately) that implements it at https://sluglibrary.com/ 14
+
+drawing shapes with shaders https://mortoray.com/2015/06/05/quickly-drawing-a-rounded-rectangle-with-a-gl-shader/
+
+
+
