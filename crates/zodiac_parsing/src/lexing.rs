@@ -60,6 +60,7 @@ enum State {
 }
 
 impl<'a> Lexer<'a> {
+    
     pub fn parse(input: &'a str) -> Self {
         Self {
             input,
