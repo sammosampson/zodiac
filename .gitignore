@@ -1,2 +1,5 @@
 /target
+
 /crates/zodiac_parsing/target
+
+/crates/zodiac_file_system/target

@@ -1,11 +1,16 @@
 extern crate hotwatch;
 extern crate zodiac_parsing;
+extern crate zodiac_file_system;
 
-use hotwatch::{Hotwatch, Event};
-use std::fs;
-use std::path::Path;
+use std::{
+    fs,
+    thread,
+    time,
+    path::{ Path }
+};
+use hotwatch::Hotwatch;
+use zodiac_file_system::watching::WriteWatcher;
 use zodiac_parsing::lexing::Lexer;
-use std::{thread, time};
 
 fn parse(path: &Path) {
     let file = fs::read_to_string(path);
@@ -25,19 +30,16 @@ fn parse(path: &Path) {
     }   
 }
 
+fn create_watcher() -> Hotwatch {
+    Hotwatch::new().expect("watcher bust")
+}
 
+fn watch(watcher: &mut impl WriteWatcher) {
+    watcher.watch_for_writes_to("test_zods", parse).expect("watcher bust");
+}
 
 fn main() {
-    let mut hotwatch = Hotwatch::new()
-        .expect("hotwatch failed to initialize!");
-
-    hotwatch
-        .watch("test_zods", |event: Event| {
-            if let Event::Write(path) = event {
-                parse(&path);
-            }
-    }).expect("failed to watch file!");
-
-    
-    thread::sleep(time::Duration::from_millis(100000));
+    let mut watcher = create_watcher();
+    watch(&mut watcher);
+    thread::sleep(time::Duration::from_secs(30));
 }
