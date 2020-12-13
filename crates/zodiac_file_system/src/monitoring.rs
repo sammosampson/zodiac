@@ -1,24 +1,36 @@
-use crate::{
-    listing::{ FileLister, FileListerError },
-    watching::{WriteWatcher, WriteWatcherError}
-};
 
-pub struct RecursiveFolderFileMonitor<'a, W, L> {
-    watcher: W,
-    lister:  L,
-    path: &'a str
+
+use std::error::Error;
+use glob::glob;
+use std::path::{ PathBuf };
+pub struct RecursiveFolderFileMonitor {
+    files: Vec<PathBuf>
 }
 
-impl <'a, W, L> RecursiveFolderFileMonitor<'a, W, L> where W: WriteWatcher, L: FileLister<'a>, {
-    pub fn monitor(watcher: W, lister: L, path: &'a str) -> Self {
-        Self {
-            watcher,
-            lister,
-            path
-        }
+impl<'a> RecursiveFolderFileMonitor {
+    fn get_pattern (folder: &'a str, file_type: &'a str) -> String {
+        format!("{}/**/*.{}", folder, file_type)
     }
 
-    pub fn get_files(&mut self) -> Result<&Vec<&str>, FileListerError> {
-        self.lister.list_files(self.path)
+    fn get_files_initially(pattern: String) -> Result<Vec<PathBuf>, Box<dyn Error>> {
+        let mut initial_files: Vec<PathBuf> = Vec::new();
+        for entry in glob(&pattern)? {
+            initial_files.push(entry?)
+        }
+        Ok(initial_files)
+    }
+    
+    pub fn monitor(folder: &str, file_type: &str) -> Result<Self, Box<dyn Error>> {
+        Ok(Self {
+            files: RecursiveFolderFileMonitor::get_files_initially(
+                RecursiveFolderFileMonitor::get_pattern(folder, file_type))?
+        })
+    }
+}
+
+impl Iterator for RecursiveFolderFileMonitor {
+    type Item = PathBuf;
+    fn next(&mut self) -> Option<PathBuf> {
+        self.files.pop()
     }
 }

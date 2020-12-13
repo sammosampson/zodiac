@@ -4,15 +4,12 @@ extern crate zodiac_file_system;
 
 use std::{
     fs,
-    thread,
-    time,
-    path::{ Path }
+    path::{ PathBuf }
 };
-use hotwatch::Hotwatch;
-use zodiac_file_system::watching::WriteWatcher;
+use zodiac_file_system::monitoring::RecursiveFolderFileMonitor;
 use zodiac_parsing::lexing::Lexer;
 
-fn parse(path: &Path) {
+fn parse(path: PathBuf) {
     let file = fs::read_to_string(path);
 
     match file {
@@ -30,16 +27,11 @@ fn parse(path: &Path) {
     }   
 }
 
-fn create_watcher() -> Hotwatch {
-    Hotwatch::new().expect("watcher bust")
-}
-
-fn watch(watcher: &mut impl WriteWatcher) {
-    watcher.watch_for_writes_to("test_zods", parse).expect("watcher bust");
-}
-
 fn main() {
-    let mut watcher = create_watcher();
-    watch(&mut watcher);
-    thread::sleep(time::Duration::from_secs(30));
+    let monitor = RecursiveFolderFileMonitor
+        ::monitor("test_zods", "zod")
+        .expect("failed to monitor folder");
+    for path in monitor {
+        parse(path);
+    }
 }
