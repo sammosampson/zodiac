@@ -30,11 +30,6 @@ fn parse(path: PathBuf) {
 fn main() {
     let mut monitor = RecursiveFolderFileMonitor::new(RecursiveFileLister{});
     monitor.monitor("test_zods", "zod").expect("failed to monitor folder");
-    for path in &monitor.iter() {
-        parse(path);
-    }
-
-
     for path in monitor {
         parse(path);
     }
