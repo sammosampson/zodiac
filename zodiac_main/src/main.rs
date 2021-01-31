@@ -6,7 +6,7 @@ use std::{
     fs,
     path::{ PathBuf }
 };
-use zodiac_file_system::monitoring::RecursiveFolderFileMonitor;
+use zodiac_file_system::monitoring::{RecursiveFolderFileMonitor, RecursiveFileLister };
 use zodiac_parsing::lexing::Lexer;
 
 fn parse(path: PathBuf) {
@@ -28,9 +28,13 @@ fn parse(path: PathBuf) {
 }
 
 fn main() {
-    let monitor = RecursiveFolderFileMonitor
-        ::monitor("test_zods", "zod")
-        .expect("failed to monitor folder");
+    let mut monitor = RecursiveFolderFileMonitor::new(RecursiveFileLister{});
+    monitor.monitor("test_zods", "zod").expect("failed to monitor folder");
+    for path in &monitor.iter() {
+        parse(path);
+    }
+
+
     for path in monitor {
         parse(path);
     }
