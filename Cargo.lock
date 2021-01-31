@@ -302,20 +302,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "zodiac_file_system"
+name = "zodiac"
 version = "0.1.0"
 dependencies = [
- "glob",
- "hotwatch",
+ "zodiac_parsing",
+ "zodiac_resources",
 ]
 
 [[package]]
-name = "zodiac_main"
+name = "zodiac_examples"
 version = "0.1.0"
 dependencies = [
- "hotwatch",
- "zodiac_file_system",
- "zodiac_parsing",
+ "zodiac",
+ "zodiac_resources_build",
 ]
 
 [[package]]
@@ -323,4 +322,19 @@ name = "zodiac_parsing"
 version = "0.1.0"
 dependencies = [
  "glob",
+]
+
+[[package]]
+name = "zodiac_resources"
+version = "0.1.0"
+dependencies = [
+ "glob",
+ "hotwatch",
+]
+
+[[package]]
+name = "zodiac_resources_build"
+version = "0.1.0"
+dependencies = [
+ "walkdir",
 ]

@@ -1,5 +1,5 @@
 [package]
-name = "zodiac_file_system"
+name = "zodiac_resources"
 version = "0.1.0"
 authors = ["Chris Sampson <sammosampson@gmail.com>"]
 edition = "2018"

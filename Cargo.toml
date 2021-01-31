@@ -1,7 +1,8 @@
 [workspace]
 
 members = [
-    "zodiac_main",
+    "zodiac_examples",
+    "zodiac",
     "zodiac_parsing",
-    "zodiac_file_system"
+    "zodiac_resources"
 ]
