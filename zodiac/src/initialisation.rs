@@ -1,44 +1,27 @@
 extern crate zodiac_parsing;
 extern crate zodiac_resources;
 
-use std::{
-    fs,
-    path::{ PathBuf }
-};
 use zodiac_parsing::lexing::Lexer;
+use zodiac_parsing::formatting::Pretty;
+use zodiac_resources::file_system;
 
 #[derive(Debug)]
 pub enum Error {
-    FailedToLoadFiles,
-    FaliedToMonitorFiles
+    FailedToLoadZodFile(file_system::Error),
 }
 
-fn parse(path: PathBuf) {
-    let file = fs::read_to_string(path);
-
-    match file {
-        Ok(text) => {
-            let lexer = Lexer::parse(text.as_str());
-            println!("{:?}", text);
-            for token in lexer {
-                match token {
-                    Ok(value) => println!("{:?}", value),
-                    Err(error) => println!("{:?}", error) 
-                }
-            }
-        },
-        Err(error) => panic!(error)
-    }   
-}
-
-pub fn initialise(zod_relative_folder_path: &str) -> Result<(), Error>  {
-    let zod_folder_path = get_full_path(zod_relative_folder_path)?;
-    let zod_app_file_path = zod_folder_path.join("app.zod");
-    parse(zod_app_file_path);
+fn parse(text: &str) -> Result<(), Error> {
+    let mut lexer = Lexer::parse(text);
+    lexer.to_pretty();
     Ok(())
 }
 
-fn get_full_path(relative_path: &str) -> Result<PathBuf, Error> {
-    zodiac_resources::file_system::from_relative_exe_path(relative_path)
-        .map_err(|_|Error::FailedToLoadFiles)
+pub fn initialise(zod_relative_folder_path: &str) -> Result<(), Error>  {
+    parse(load_app_zod_file_from_relative_path(zod_relative_folder_path)?.as_str())
+}
+
+fn load_app_zod_file_from_relative_path(zod_relative_folder_path: &str) -> Result<String, Error> {
+    file_system
+        ::load_app_zod_file_from_relative_path(zod_relative_folder_path)
+            .map_err(|error|Error::FailedToLoadZodFile(error))
 }

@@ -1,4 +1,5 @@
-<rect large-size="true" rounded-edges="true" other>
-    <line>
-    </line>
-</rect>
+<rect
+    position="(200, 100)"
+    dimensions="(200, 200)"
+    corner-radii="(1.0, 2.3, 0.2, 0.6)"
+/>
