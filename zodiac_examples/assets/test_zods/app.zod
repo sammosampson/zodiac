@@ -1,5 +1,8 @@
 <rect
     position="(200, 100)"
     dimensions="(200, 200)"
+    inner-colour="(1.0, 1.0, 1.0, 1.0)"
+    outer-colour="(0.0, 0.0, 0.0, 1.0)"
+    stroke="3"
     corner-radii="(1.0, 2.3, 0.2, 0.6)"
 />

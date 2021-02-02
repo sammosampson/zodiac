@@ -1,5 +1,5 @@
 extern crate zodiac_parsing;
-use zodiac_parsing::lexing::{Lexer, LexerError, Token};
+use zodiac_parsing::lexing::{Lexer, LexerError, Token, TokenPropertyValue};
 
 #[test]
 fn single_control_produces_correct_tokens() {
@@ -109,13 +109,80 @@ fn property_without_value_produces_boolean_property_result_inside_control() {
 }
 
 #[test]
-fn property_with_value_produces_property_and_value_result_inside_control() {
-    let mut lexer = Lexer::parse("<rect large-size=\"true\" />");
+fn property_with_string_value_produces_property_and_value_result_inside_control() {
+    let mut lexer = Lexer::parse("<rect size=\"large\" />");
     assert_eq!(Token::Control("rect"), lexer.next().unwrap().unwrap());
-    assert_eq!(Token::Property("large-size"), lexer.next().unwrap().unwrap());
-    assert_eq!(Token::PropertyValue("true"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::Property("size"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::PropertyValue(TokenPropertyValue::String("large")), lexer.next().unwrap().unwrap());
     assert_eq!(Token::EndControl("rect"), lexer.next().unwrap().unwrap());
     assert_eq!(None, lexer.next());
+}
+
+#[test]
+fn property_with_unsigned_int_value_produces_property_and_value_result_inside_control() {
+    let mut lexer = Lexer::parse("<rect size=10 />");
+    assert_eq!(Token::Control("rect"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::Property("size"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::PropertyValue(TokenPropertyValue::UnsignedInt(10)), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::EndControl("rect"), lexer.next().unwrap().unwrap());
+    assert_eq!(None, lexer.next());
+}
+
+#[test]
+fn property_with_int_value_produces_property_and_value_result_inside_control() {
+    let mut lexer = Lexer::parse("<rect size=-10 />");
+    assert_eq!(Token::Control("rect"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::Property("size"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::PropertyValue(TokenPropertyValue::Int(-10)), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::EndControl("rect"), lexer.next().unwrap().unwrap());
+    assert_eq!(None, lexer.next());
+}
+
+#[test]
+fn property_with_negative_float_value_produces_property_and_value_result_inside_control() {
+    let mut lexer = Lexer::parse("<rect size=-1.0 />");
+    assert_eq!(Token::Control("rect"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::Property("size"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::PropertyValue(TokenPropertyValue::Float(-1.0)), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::EndControl("rect"), lexer.next().unwrap().unwrap());
+    assert_eq!(None, lexer.next());
+}
+
+#[test]
+fn property_with_positive_float_value_produces_property_and_value_result_inside_control() {
+    let mut lexer = Lexer::parse("<rect size=1.0 />");
+    assert_eq!(Token::Control("rect"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::Property("size"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::PropertyValue(TokenPropertyValue::Float(1.0)), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::EndControl("rect"), lexer.next().unwrap().unwrap());
+    assert_eq!(None, lexer.next());
+}
+
+#[test]
+fn property_with_tuple_value_produces_property_and_value_result_inside_control() {
+    let mut lexer = Lexer::parse("<rect size=(1.0, 1.0) />");
+    assert_eq!(Token::Control("rect"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::Property("size"), lexer.next().unwrap().unwrap());
+    //assert_eq!(Token::PropertyValue(TokenPropertyValue::Tuple(vec!(TokenPropertyValue::Float(1.0), TokenPropertyValue::Float(1.0)))), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::PropertyValue(TokenPropertyValue::String("(1.0, 1.0)")), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::EndControl("rect"), lexer.next().unwrap().unwrap());
+    assert_eq!(None, lexer.next());
+}
+
+#[test]
+fn property_with_incorrect_unsigned_number_value_produces_error_result() {
+    let mut lexer = Lexer::parse("<rect size=1x />");
+    assert_eq!(Token::Control("rect"),  lexer.next().unwrap().unwrap());
+    assert_eq!(Token::Property("size"), lexer.next().unwrap().unwrap());
+    assert_eq!(Err(LexerError::could_not_parse_number_value(13, "1x")), lexer.next().unwrap());
+}
+
+#[test]
+fn property_with_incorrect_signed_number_value_produces_error_result() {
+    let mut lexer = Lexer::parse("<rect size=-1x />");
+    assert_eq!(Token::Control("rect"),  lexer.next().unwrap().unwrap());
+    assert_eq!(Token::Property("size"), lexer.next().unwrap().unwrap());
+    assert_eq!(Err(LexerError::could_not_parse_number_value(14, "-1x")), lexer.next().unwrap());
 }
 
 #[test]
@@ -131,12 +198,12 @@ fn multiple_properties_without_value_produces_boolean_properties_result_inside_c
 
 #[test]
 fn multiple_properties_with_value_produces_properties_result_inside_control() {
-    let mut lexer = Lexer::parse("<rect large-size=\"true\" rounded-edges=\"true\" other />");
+    let mut lexer = Lexer::parse("<rect size=\"large\" edges=\"round\" other />");
     assert_eq!(Token::Control("rect"), lexer.next().unwrap().unwrap());
-    assert_eq!(Token::Property("large-size"), lexer.next().unwrap().unwrap());
-    assert_eq!(Token::PropertyValue("true"), lexer.next().unwrap().unwrap());
-    assert_eq!(Token::Property("rounded-edges"), lexer.next().unwrap().unwrap());
-    assert_eq!(Token::PropertyValue("true"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::Property("size"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::PropertyValue(TokenPropertyValue::String("large")), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::Property("edges"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::PropertyValue(TokenPropertyValue::String("round")), lexer.next().unwrap().unwrap());
     assert_eq!(Token::Property("other"), lexer.next().unwrap().unwrap());
     assert_eq!(Token::EndControl("rect"), lexer.next().unwrap().unwrap());
     assert_eq!(None, lexer.next());
