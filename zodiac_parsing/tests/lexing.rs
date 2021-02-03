@@ -33,7 +33,7 @@ fn incorrect_opening_character_produces_error_result() {
 }
 
 #[test]
-fn whiespace_after_token_opening_produces_error_result() {
+fn whitespace_after_token_opening_produces_error_result() {
     let mut lexer = Lexer::parse("< rect/>");
     assert_eq!(Err(LexerError::could_not_find_control_name(1, ' ')), lexer.next().unwrap());
 }
@@ -44,8 +44,6 @@ fn incorrect_closing_character_produces_error_result() {
     lexer.next();
     assert_eq!(Err(LexerError::could_not_find_control_close_symbol(6, 'X')), lexer.next().unwrap());
 }
-
-
 
 #[test]
 fn multiple_consecutive_controls_produces_correct_tokens() {
@@ -129,8 +127,29 @@ fn property_with_unsigned_int_value_produces_property_and_value_result_inside_co
 }
 
 #[test]
+fn property_with_number_value_followed_by_carriage_return_produces_property_and_value_result_inside_control() {
+    let mut lexer = Lexer::parse("<rect size=1
+    />");
+    assert_eq!(Token::Control("rect"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::Property("size"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::PropertyValue(TokenPropertyValue::UnsignedInt(1)), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::EndControl("rect"), lexer.next().unwrap().unwrap());
+    assert_eq!(None, lexer.next());
+}
+
+#[test]
 fn property_with_int_value_produces_property_and_value_result_inside_control() {
     let mut lexer = Lexer::parse("<rect size=-10 />");
+    assert_eq!(Token::Control("rect"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::Property("size"), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::PropertyValue(TokenPropertyValue::Int(-10)), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::EndControl("rect"), lexer.next().unwrap().unwrap());
+    assert_eq!(None, lexer.next());
+}
+#[test]
+fn property_with_int_value_followed_by_carriage_return_produces_property_and_value_result_inside_control() {
+    let mut lexer = Lexer::parse("<rect size=-10
+    />");
     assert_eq!(Token::Control("rect"), lexer.next().unwrap().unwrap());
     assert_eq!(Token::Property("size"), lexer.next().unwrap().unwrap());
     assert_eq!(Token::PropertyValue(TokenPropertyValue::Int(-10)), lexer.next().unwrap().unwrap());
@@ -163,8 +182,7 @@ fn property_with_tuple_value_produces_property_and_value_result_inside_control()
     let mut lexer = Lexer::parse("<rect size=(1.0, 1.0) />");
     assert_eq!(Token::Control("rect"), lexer.next().unwrap().unwrap());
     assert_eq!(Token::Property("size"), lexer.next().unwrap().unwrap());
-    //assert_eq!(Token::PropertyValue(TokenPropertyValue::Tuple(vec!(TokenPropertyValue::Float(1.0), TokenPropertyValue::Float(1.0)))), lexer.next().unwrap().unwrap());
-    assert_eq!(Token::PropertyValue(TokenPropertyValue::String("(1.0, 1.0)")), lexer.next().unwrap().unwrap());
+    assert_eq!(Token::PropertyValue(TokenPropertyValue::Tuple("(1.0, 1.0)")), lexer.next().unwrap().unwrap());
     assert_eq!(Token::EndControl("rect"), lexer.next().unwrap().unwrap());
     assert_eq!(None, lexer.next());
 }

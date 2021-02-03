@@ -1,7 +1,6 @@
 use std::vec;
 use std::iter::Enumerate;
 use std::str::Chars;
-use crate::tuple_lexing::TupleValue;
 
 #[derive(PartialEq, PartialOrd, Debug)]
 pub enum TokenPropertyValue<'a> {
@@ -9,7 +8,7 @@ pub enum TokenPropertyValue<'a> {
     Int(i128),
     UnsignedInt(u128),
     Float(f64),
-    Tuple(Vec<TupleValue<'a>>)
+    Tuple(&'a str)
 }
 
 #[derive(PartialEq, PartialOrd, Debug)]
@@ -73,6 +72,9 @@ enum State {
     InWhitespace
 } 
 
+pub type LexerResult<'a> = Result<Token<'a>, LexerError<'a>>;
+pub type LexerOption<'a> = Option<LexerResult<'a>>;
+
 pub struct Lexer<'a> {
     input: &'a str,
     characters: Enumerate<Chars<'a>>,
@@ -94,7 +96,7 @@ impl<'a> Lexer<'a> {
         &self.input[from..to]
     }
 
-    fn start_if_possible(&mut self, index: usize, character: char)  -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn start_if_possible(&mut self, index: usize, character: char)  -> LexerOption<'a> {
         if character == '<' {
             self.state = State::StartControl;
             return None;
@@ -105,7 +107,7 @@ impl<'a> Lexer<'a> {
         Some(Err(LexerError::could_not_find_start_tag(index, character)))
     }
     
-    fn start_control_if_possible(&mut self, index: usize, character: char)  -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn start_control_if_possible(&mut self, index: usize, character: char)  -> LexerOption<'a> {
         if character == '/' {
             self.state = State::EndNestedControl(index + 1);
             return None;
@@ -117,13 +119,13 @@ impl<'a> Lexer<'a> {
         Some(Err(LexerError::could_not_find_control_name(index, character)))
     }
 
-    fn produce_control_result(&mut self, start: usize, index: usize)  -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn produce_control_result(&mut self, start: usize, index: usize)  -> LexerOption<'a> {
         let control_name = self.splice_input(start, index);
         self.current_parent.push(control_name);
         Some(Ok(Token::Control(control_name)))
     }
 
-    fn handle_inside_control(&mut self, start: usize, index: usize, character: char)  -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn handle_inside_control(&mut self, start: usize, index: usize, character: char)  -> LexerOption<'a> {
         if character.is_whitespace() {
             self.state = State::InWhitespace;
             return self.produce_control_result(start,index);
@@ -139,11 +141,11 @@ impl<'a> Lexer<'a> {
         None
     }
 
-    fn produce_property_result(&mut self, start: usize, index: usize)  -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn produce_property_result(&mut self, start: usize, index: usize)  -> LexerOption<'a> {
         Some(Ok(Token::Property(self.splice_input(start, index))))
     }
 
-    fn handle_inside_property(&mut self, start: usize, index: usize, character: char)  -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn handle_inside_property(&mut self, start: usize, index: usize, character: char)  -> LexerOption<'a> {
         if character.is_whitespace() {
             self.state = State::InWhitespace;
             return self.produce_property_result(start,index);
@@ -163,7 +165,7 @@ impl<'a> Lexer<'a> {
         None
     }
     
-    fn start_property_value_if_possible(&mut self, index: usize, character: char)  -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn start_property_value_if_possible(&mut self, index: usize, character: char)  -> LexerOption<'a> {
         if character == '"' {
             self.state = State::InStringPropertyValue(index + 1);
             return None;
@@ -183,11 +185,11 @@ impl<'a> Lexer<'a> {
         Some(Err(LexerError::could_not_find_property_start_symbol(index, character)))
     }  
 
-    fn produce_string_property_value_result(&mut self, start: usize, index: usize)  -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn produce_string_property_value_result(&mut self, start: usize, index: usize)  -> LexerOption<'a> {
         Some(Ok(Token::PropertyValue(TokenPropertyValue::String(self.splice_input(start, index)))))
     }
 
-    fn produce_unsigned_number_property_value_result(&mut self, start: usize, index: usize) -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn produce_unsigned_number_property_value_result(&mut self, start: usize, index: usize) -> LexerOption<'a> {
         let raw_value = self.splice_input(start, index);
         match raw_value.parse::<u128>() {
             Ok(value) => return Some(Ok(Token::PropertyValue(TokenPropertyValue::UnsignedInt(value)))),
@@ -195,7 +197,7 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn produce_signed_number_property_value_result(&mut self, start: usize, index: usize) -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn produce_signed_number_property_value_result(&mut self, start: usize, index: usize) -> LexerOption<'a> {
         let raw_value = self.splice_input(start, index);
         match raw_value.parse::<i128>() {
             Ok(value) => return Some(Ok(Token::PropertyValue(TokenPropertyValue::Int(value)))),
@@ -203,21 +205,18 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn produce_float_property_value_result(&mut self, raw_value: &'a str, index: usize) -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn produce_float_property_value_result(&mut self, raw_value: &'a str, index: usize) -> LexerOption<'a> {
         match raw_value.parse::<f64>() {
             Ok(value) => return Some(Ok(Token::PropertyValue(TokenPropertyValue::Float(value)))),
             Err(_) => return Some(Err(LexerError::could_not_parse_number_value(index, raw_value)))
         }
     }
 
-    fn produce_tuple_property_value_result(&mut self, start: usize, index: usize) -> Option<Result<Token<'a>, LexerError<'a>>> {
-        //let tuple_lexer = TupleLexer::parse(self.splice_input(start, index));
-        //let tuple_values = tuple_lexer.collect();
-        //Some(Ok(Token::PropertyValue(TokenPropertyValue::Tuple(tuple_values))))
-        Some(Ok(Token::PropertyValue(TokenPropertyValue::String(self.splice_input(start, index)))))
+    fn produce_tuple_property_value_result(&mut self, start: usize, index: usize) -> LexerOption<'a> {
+        Some(Ok(Token::PropertyValue(TokenPropertyValue::Tuple(self.splice_input(start, index)))))
     }
     
-    fn handle_inside_string_property_value(&mut self, start: usize, index: usize, character: char)  -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn handle_inside_string_property_value(&mut self, start: usize, index: usize, character: char)  -> LexerOption<'a> {
         if character == '"' {
             self.state = State::InWhitespace;
             return self.produce_string_property_value_result(start, index);
@@ -225,23 +224,23 @@ impl<'a> Lexer<'a> {
         None
     }
 
-    fn handle_inside_unsigned_number_property_value(&mut self, start: usize, index: usize, character: char)  -> Option<Result<Token<'a>, LexerError<'a>>> {
-        if character == ' ' {
+    fn handle_inside_unsigned_number_property_value(&mut self, start: usize, index: usize, character: char)  -> LexerOption<'a> {
+        if character == ' ' || character.is_whitespace() {
             self.state = State::InWhitespace;
             return self.produce_unsigned_number_property_value_result(start, index);
         }
         None
     }
 
-    fn handle_inside_signed_number_property_value(&mut self, start: usize, index: usize, character: char)  -> Option<Result<Token<'a>, LexerError<'a>>> {
-        if character == ' ' {
+    fn handle_inside_signed_number_property_value(&mut self, start: usize, index: usize, character: char)  -> LexerOption<'a> {
+        if character == ' ' || character.is_whitespace()  {
             self.state = State::InWhitespace;
             return self.produce_signed_number_property_value_result(start, index);
         }
         None
     }
 
-    fn handle_inside_tuple_property_value(&mut self, start: usize, index: usize, character: char)  -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn handle_inside_tuple_property_value(&mut self, start: usize, index: usize, character: char)  -> LexerOption<'a> {
         if character == ')' {
             self.state = State::InWhitespace;
             return self.produce_tuple_property_value_result(start, index + 1);
@@ -249,7 +248,7 @@ impl<'a> Lexer<'a> {
         None
     }
 
-    fn end_control_if_possible(&mut self, index: usize, character: char)  -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn end_control_if_possible(&mut self, index: usize, character: char)  -> LexerOption<'a> {
         if character == '>' {
             self.state = State::Start;
             match self.current_parent.pop() {
@@ -260,7 +259,7 @@ impl<'a> Lexer<'a> {
         Some(Err(LexerError::could_not_find_control_close_symbol(index, character)))
     }
 
-    fn end_nested_control_if_possible(&mut self, start: usize, index: usize, character: char)  -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn end_nested_control_if_possible(&mut self, start: usize, index: usize, character: char)  -> LexerOption<'a> {
         if character == '>' {
             self.state = State::Start;
             match self.current_parent.pop() {
@@ -277,7 +276,7 @@ impl<'a> Lexer<'a> {
         None
     }
 
-    fn handle_inside_whitespace(&mut self, index: usize, character: char)  -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn handle_inside_whitespace(&mut self, index: usize, character: char)  -> LexerOption<'a> {
         if character == '/' {
             self.state = State::EndControl;
             return None;
@@ -290,7 +289,7 @@ impl<'a> Lexer<'a> {
         None
     }    
 
-    fn transition(&mut self, index: usize, character: char) -> Option<Result<Token<'a>, LexerError<'a>>> {
+    fn transition(&mut self, index: usize, character: char) -> LexerOption<'a> {
         match self.state {
             State::Start => {
                 self.start_if_possible(index, character)
@@ -333,8 +332,8 @@ impl<'a> Lexer<'a> {
 }
 
 impl <'a> Iterator for Lexer<'a> {
-    type Item = Result<Token<'a>, LexerError<'a>>;
-    fn next(&mut self) -> Option<Result<Token<'a>, LexerError<'a>>> {
+    type Item = LexerResult<'a>;
+    fn next(&mut self) -> LexerOption<'a> {
         loop {
             return match self.characters.next() {
                 Some((index, c)) => match self.transition(index, c) {
