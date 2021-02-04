@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 zodiac_parsing = {path = "../zodiac_parsing", version = "0.1.0"}
 zodiac_resources = {path = "../zodiac_resources", version = "0.1.0"}
+zodiac_rendering = {path = "../zodiac_rendering", version = "0.1.0"}

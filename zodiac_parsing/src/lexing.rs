@@ -19,7 +19,7 @@ pub enum Token<'a> {
     PropertyValue(TokenPropertyValue<'a>),
 }
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug, Copy, Clone)]
 pub enum LexerError<'a> {
     ControlError(&'a str, usize, char),
     PropertyError(&'a str, usize, char),
@@ -82,6 +82,23 @@ pub struct Lexer<'a> {
     state: State
 }
 
+impl <'a> Iterator for Lexer<'a> {
+    type Item = LexerResult<'a>;
+    fn next(&mut self) -> LexerOption<'a> {
+        loop {
+            return match self.characters.next() {
+                Some((index, c)) => match self.transition(index, c) {
+                    None => continue,
+                    result => result
+                },
+                None => {
+                    None
+                },
+            }
+        }
+    }
+}
+
 impl<'a> Lexer<'a> {
     pub fn parse(input: &'a str) -> Self {
         Self {
@@ -89,6 +106,47 @@ impl<'a> Lexer<'a> {
             characters: input.chars().enumerate(),
             state: State::Start,
             current_parent: vec![]
+        }
+    }
+
+    fn transition(&mut self, index: usize, character: char) -> LexerOption<'a> {
+        match self.state {
+            State::Start => {
+                self.start_if_possible(index, character)
+            },
+            State::StartControl => {
+                self.start_control_if_possible(index, character)
+            },
+            State::InControl(start) => {
+                self.handle_inside_control(start, index, character)
+            },
+            State::EndControl => {
+                self.end_control_if_possible(index, character)
+            },
+            State::EndNestedControl(start) => {
+                self.end_nested_control_if_possible(start, index, character)
+            },
+            State::InProperty(start) => {
+                self.handle_inside_property(start, index, character)
+            },
+            State::StartPropertyValue => {
+                self.start_property_value_if_possible(index, character)
+            },
+            State::InStringPropertyValue(start) => {
+                self.handle_inside_string_property_value(start, index, character)
+            },
+            State::InUnsignedNumberPropertyValue(start) => {
+                self.handle_inside_unsigned_number_property_value(start, index, character)
+            },
+            State::InSignedNumberPropertyValue(start) => {
+                self.handle_inside_signed_number_property_value(start, index, character)
+            },
+            State::InTuplePropertyValue(start) => {
+                self.handle_inside_tuple_property_value(start, index, character)
+            },
+            State::InWhitespace => {
+                self.handle_inside_whitespace(index, character)
+            }
         }
     }
 
@@ -288,62 +346,4 @@ impl<'a> Lexer<'a> {
         self.state = State::InProperty(index);
         None
     }    
-
-    fn transition(&mut self, index: usize, character: char) -> LexerOption<'a> {
-        match self.state {
-            State::Start => {
-                self.start_if_possible(index, character)
-            },
-            State::StartControl => {
-                self.start_control_if_possible(index, character)
-            },
-            State::InControl(start) => {
-                self.handle_inside_control(start, index, character)
-            },
-            State::EndControl => {
-                self.end_control_if_possible(index, character)
-            },
-            State::EndNestedControl(start) => {
-                self.end_nested_control_if_possible(start, index, character)
-            },
-            State::InProperty(start) => {
-                self.handle_inside_property(start, index, character)
-            },
-            State::StartPropertyValue => {
-                self.start_property_value_if_possible(index, character)
-            },
-            State::InStringPropertyValue(start) => {
-                self.handle_inside_string_property_value(start, index, character)
-            },
-            State::InUnsignedNumberPropertyValue(start) => {
-                self.handle_inside_unsigned_number_property_value(start, index, character)
-            },
-            State::InSignedNumberPropertyValue(start) => {
-                self.handle_inside_signed_number_property_value(start, index, character)
-            },
-            State::InTuplePropertyValue(start) => {
-                self.handle_inside_tuple_property_value(start, index, character)
-            },
-            State::InWhitespace => {
-                self.handle_inside_whitespace(index, character)
-            }
-        }
-    }
-}
-
-impl <'a> Iterator for Lexer<'a> {
-    type Item = LexerResult<'a>;
-    fn next(&mut self) -> LexerOption<'a> {
-        loop {
-            return match self.characters.next() {
-                Some((index, c)) => match self.transition(index, c) {
-                    None => continue,
-                    result => result
-                },
-                None => {
-                    None
-                },
-            }
-        }
-    }
 }

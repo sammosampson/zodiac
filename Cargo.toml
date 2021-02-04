@@ -4,5 +4,6 @@ members = [
     "zodiac_examples",
     "zodiac",
     "zodiac_parsing",
-    "zodiac_resources"
+    "zodiac_resources",
+    "zodiac_rendering"
 ]

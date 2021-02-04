@@ -306,6 +306,7 @@ name = "zodiac"
 version = "0.1.0"
 dependencies = [
  "zodiac_parsing",
+ "zodiac_rendering",
  "zodiac_resources",
 ]
 
@@ -323,6 +324,10 @@ version = "0.1.0"
 dependencies = [
  "glob",
 ]
+
+[[package]]
+name = "zodiac_rendering"
+version = "0.1.0"
 
 [[package]]
 name = "zodiac_resources"
