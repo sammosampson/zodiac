@@ -1,6 +1,6 @@
 
 #[derive(PartialEq, PartialOrd, Debug)]
-pub enum AbstractSyntaxNode {
+pub enum AbstractSyntaxToken {
     Circle,
     Rectangle,
     Text,
@@ -27,7 +27,7 @@ pub enum AbstractSyntaxTokenError<'a> {
     UnknownProperty
 }
 
-pub type AbstractSyntaxTokenResult<'a> = Result<AbstractSyntaxNode, AbstractSyntaxTokenError<'a>>;
+pub type AbstractSyntaxTokenResult<'a> = Result<AbstractSyntaxToken, AbstractSyntaxTokenError<'a>>;
 pub type AbstractSyntaxTokenOption<'a> = Option<AbstractSyntaxTokenResult<'a>>;
 
 pub struct AbstractSyntaxTokenizer<'a, I> where I : Iterator<Item=SourceTokenResult<'a>> {
@@ -69,9 +69,9 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
     
     fn transition(&mut self, token: SourceToken<'a>) -> AbstractSyntaxTokenOption<'a> {
         match token {
-            SourceToken::Control("rect") => Some(Ok(AbstractSyntaxNode::Rectangle)),
-            SourceToken::Control("circle") => Some(Ok(AbstractSyntaxNode::Circle)),
-            SourceToken::Control("text") => Some(Ok(AbstractSyntaxNode::Text)),
+            SourceToken::Control("rect") => Some(Ok(AbstractSyntaxToken::Rectangle)),
+            SourceToken::Control("circle") => Some(Ok(AbstractSyntaxToken::Circle)),
+            SourceToken::Control("text") => Some(Ok(AbstractSyntaxToken::Text)),
             SourceToken::Control(_) => Some(Err(AbstractSyntaxTokenError::UnknownControl)),
             SourceToken::Property(name) => { 
                 self.current_property = name; 
@@ -81,9 +81,9 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
                 match value {
                     SourceTokenPropertyValue::UnsignedInt(value) => {
                         match self.current_property {
-                            "stroke-width" => Some(Ok(AbstractSyntaxNode::StrokeWidth(value as u16))),
-                            "radius" => Some(Ok(AbstractSyntaxNode::Radius(value as u16))),
-                            "glyph-index" => Some(Ok(AbstractSyntaxNode::GlyphIndex(value as u16))),
+                            "stroke-width" => Some(Ok(AbstractSyntaxToken::StrokeWidth(value as u16))),
+                            "radius" => Some(Ok(AbstractSyntaxToken::Radius(value as u16))),
+                            "glyph-index" => Some(Ok(AbstractSyntaxToken::GlyphIndex(value as u16))),
                             _ => Some(Err(AbstractSyntaxTokenError::UnknownProperty))
                         }
                     },
@@ -95,7 +95,7 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
                 }
                 
             },
-            SourceToken::EndControl(_) => Some(Ok(AbstractSyntaxNode::CompleteControl))
+            SourceToken::EndControl(_) => Some(Ok(AbstractSyntaxToken::CompleteControl))
         }
     }
 }
