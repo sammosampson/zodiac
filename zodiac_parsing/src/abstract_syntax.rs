@@ -1,25 +1,20 @@
 pub enum AbstractSyntaxNode {
-    Empty
-}
-
-impl AbstractSyntaxNode {
-    fn circle() -> AbstractSyntaxNode { AbstractSyntaxNode::Empty }
-    fn rectangle() -> AbstractSyntaxNode { AbstractSyntaxNode::Empty }
-    fn text() -> AbstractSyntaxNode { AbstractSyntaxNode::Empty }
-    fn set_position(position: (u16, u16)) -> AbstractSyntaxNode { AbstractSyntaxNode::Empty }
-    fn set_dimensions(dimensions: (u16, u16)) -> AbstractSyntaxNode { AbstractSyntaxNode::Empty }
-    fn set_radius(radius: u16) -> AbstractSyntaxNode { AbstractSyntaxNode::Empty }
-    fn set_glyph_index(glyph_index: u16) -> AbstractSyntaxNode { AbstractSyntaxNode::Empty }
-    fn set_stroke_colour(outer_colour: (f32, f32, f32, f32)) -> AbstractSyntaxNode { AbstractSyntaxNode::Empty }
-    fn set_colour(outer_colour: (f32, f32, f32, f32)) -> AbstractSyntaxNode { AbstractSyntaxNode::Empty }
-    fn set_corner_radii(corner_radii: (f32, f32, f32, f32)) -> AbstractSyntaxNode { AbstractSyntaxNode::Empty }
-    fn set_stroke_width(stroke_width: f32) -> AbstractSyntaxNode { AbstractSyntaxNode::Empty }
-    fn complete_control() -> AbstractSyntaxNode { AbstractSyntaxNode::Empty }
+    Circle(),
+    Rectangle(),
+    Text(),
+    Position((u16, u16)),
+    Dimensions((u16, u16)),
+    Radius(u16),
+    GlyphIndex(u16),
+    StrokeColour((f32, f32, f32, f32)),
+    Colour((f32, f32, f32, f32)),
+    CornerRadii((f32, f32, f32, f32)),
+    StrokeWidth(f32),
+    CompleteControl(),
 }
 
 use crate::lexing::{Lexer, LexerError, Token, TokenPropertyValue};
 use crate::tuple_lexing::TupleLexer;
-
 
 #[derive(PartialEq, Eq, Debug, Copy, Clone)]
 pub enum AbstractSyntaxParseError<'a> {
@@ -72,9 +67,9 @@ impl <'a> AbstractSyntaxParser<'a> {
     
     fn transition(&mut self, token: Token<'a>) -> AbstractSyntaxParserOption<'a> {
         match token {
-            Token::Control("rect") => Some(Ok(AbstractSyntaxNode::rectangle())),
-            Token::Control("circle") => Some(Ok(AbstractSyntaxNode::circle())),
-            Token::Control("text") => Some(Ok(AbstractSyntaxNode::text())),
+            Token::Control("rect") => Some(Ok(AbstractSyntaxNode::Rectangle())),
+            Token::Control("circle") => Some(Ok(AbstractSyntaxNode::Circle())),
+            Token::Control("text") => Some(Ok(AbstractSyntaxNode::Text())),
             Token::Control(_) => Some(Err(AbstractSyntaxParseError::UnknownControl)),
             Token::Property(name) => { 
                 self.current_property = name; 
@@ -84,26 +79,26 @@ impl <'a> AbstractSyntaxParser<'a> {
                 match value {
                     TokenPropertyValue::Float(value) => {
                         match self.current_property {
-                            "stroke_width" => Some(Ok(AbstractSyntaxNode::set_stroke_width(value as f32))),
+                            "stroke_width" => Some(Ok(AbstractSyntaxNode::StrokeWidth(value as f32))),
                             _ => Some(Err(AbstractSyntaxParseError::UnknownProperty))
                         }
                     },
                     TokenPropertyValue::UnsignedInt(value) => {
                         match self.current_property {
-                            "radius" => Some(Ok(AbstractSyntaxNode::set_radius(value as u16))),
-                            "glyph_index" => Some(Ok(AbstractSyntaxNode::set_glyph_index(value as u16))),
+                            "radius" => Some(Ok(AbstractSyntaxNode::Radius(value as u16))),
+                            "glyph_index" => Some(Ok(AbstractSyntaxNode::GlyphIndex(value as u16))),
                             _ => Some(Err(AbstractSyntaxParseError::UnknownProperty))
                         }
                     },
                     TokenPropertyValue::Tuple(value) => {
                         let tuple_lexer = TupleLexer::parse(value);
-                        Some(Ok(AbstractSyntaxNode::Empty)) 
+                        None
                     },
                     _ => Some(Err(AbstractSyntaxParseError::UnusedPropertyType))
                 }
                 
             },
-            Token::EndControl(_) => Some(Ok(AbstractSyntaxNode::complete_control()))
+            Token::EndControl(_) => Some(Ok(AbstractSyntaxNode::CompleteControl()))
         }
     }
 }
