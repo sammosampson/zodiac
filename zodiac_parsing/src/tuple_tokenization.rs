@@ -43,14 +43,14 @@ impl<'a> TupleLexerError<'a> {
 pub type TupleLexerResult<'a> = Result<TupleValue<'a>, TupleLexerError<'a>>;
 pub type TupleLexerOption<'a> = Option<TupleLexerResult<'a>>;
 
-pub struct TupleLexer<'a>{
+pub struct TupleTokenizer<'a>{
     input: &'a str,
     characters: Enumerate<Chars<'a>>,
     state: TupleState
 }
 
-impl<'a> TupleLexer<'a> {
-    pub fn parse(input: &'a str) -> Self {
+impl<'a> TupleTokenizer<'a> {
+    pub fn from_string(input: &'a str) -> Self {
         Self {
             input,
             characters: input.chars().enumerate(),
@@ -164,7 +164,7 @@ impl<'a> TupleLexer<'a> {
     }
 }
 
-impl <'a> Iterator for TupleLexer<'a> {
+impl <'a> Iterator for TupleTokenizer<'a> {
     type Item = TupleLexerResult<'a>;
     fn next(&mut self) -> TupleLexerOption<'a> {
         loop {

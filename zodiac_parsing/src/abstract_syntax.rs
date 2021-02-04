@@ -1,7 +1,9 @@
+
+#[derive(PartialEq, PartialOrd, Debug)]
 pub enum AbstractSyntaxNode {
-    Circle(),
-    Rectangle(),
-    Text(),
+    Circle,
+    Rectangle,
+    Text,
     Position((u16, u16)),
     Dimensions((u16, u16)),
     Radius(u16),
@@ -9,44 +11,44 @@ pub enum AbstractSyntaxNode {
     StrokeColour((f32, f32, f32, f32)),
     Colour((f32, f32, f32, f32)),
     CornerRadii((f32, f32, f32, f32)),
-    StrokeWidth(f32),
-    CompleteControl(),
+    StrokeWidth(u16),
+    CompleteControl,
 }
 
-use crate::lexing::{Lexer, LexerError, Token, TokenPropertyValue};
-use crate::tuple_lexing::TupleLexer;
+use crate::source_tokenization::{SourceTokenResult, SourceTokenError, Token, SourceTokenPropertyValue};
+use crate::tuple_tokenization::TupleTokenizer;
 
 #[derive(PartialEq, Eq, Debug, Copy, Clone)]
-pub enum AbstractSyntaxParseError<'a> {
-    LexerParseError(&'a str, usize, char),
-    LexerValueError(&'a str, usize, &'a str),
+pub enum AbstractSyntaxTokenError<'a> {
+    SourceTokenError(&'a str, usize, char),
+    SourceValueError(&'a str, usize, &'a str),
     UnknownControl,
     UnusedPropertyType,
     UnknownProperty
 }
 
-pub type AbstractSyntaxParserResult<'a> = Result<AbstractSyntaxNode, AbstractSyntaxParseError<'a>>;
-pub type AbstractSyntaxParserOption<'a> = Option<AbstractSyntaxParserResult<'a>>;
+pub type AbstractSyntaxTokenResult<'a> = Result<AbstractSyntaxNode, AbstractSyntaxTokenError<'a>>;
+pub type AbstractSyntaxTokenOption<'a> = Option<AbstractSyntaxTokenResult<'a>>;
 
-pub struct AbstractSyntaxParser<'a> {
-    lexer: Lexer<'a>,
+pub struct AbstractSyntaxTokenizer<'a, I> where I : Iterator<Item=SourceTokenResult<'a>> {
+    source_token_iterator: I,
     current_property: &'a str
 }
 
-impl <'a> Iterator for AbstractSyntaxParser<'a> {
-    type Item = AbstractSyntaxParserResult<'a>;
-    fn next(&mut self) -> AbstractSyntaxParserOption<'a> {
+impl <'a, I> Iterator for AbstractSyntaxTokenizer<'a, I> where I : Iterator<Item=SourceTokenResult<'a>> {
+    type Item = AbstractSyntaxTokenResult<'a>;
+    fn next(&mut self) -> AbstractSyntaxTokenOption<'a> {
         loop {
-            return match self.lexer.next() {
+            return match self.source_token_iterator.next() {
                 Some(result) => match result {
                     Ok(token) => match self.transition(token) {
                         None => continue,
                         some => some
                     },
                     Err(error) => match error {
-                        LexerError::ControlError(text, index, character) => Some(Err(AbstractSyntaxParseError::LexerParseError(text, index, character))),
-                        LexerError::PropertyError(text, index, character) => Some(Err(AbstractSyntaxParseError::LexerParseError(text, index, character))),
-                        LexerError::ValueError(text, index, raw_value) => Some(Err(AbstractSyntaxParseError::LexerValueError(text, index, raw_value))),
+                        SourceTokenError::ControlError(text, index, character) => Some(Err(AbstractSyntaxTokenError::SourceTokenError(text, index, character))),
+                        SourceTokenError::PropertyError(text, index, character) => Some(Err(AbstractSyntaxTokenError::SourceTokenError(text, index, character))),
+                        SourceTokenError::ValueError(text, index, raw_value) => Some(Err(AbstractSyntaxTokenError::SourceValueError(text, index, raw_value))),
                     }
                 },
                 None => {
@@ -57,48 +59,43 @@ impl <'a> Iterator for AbstractSyntaxParser<'a> {
     }
 }
 
-impl <'a> AbstractSyntaxParser<'a> {
-    pub fn parse(input: &'a str) -> Self {
+impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceTokenResult<'a>> {
+    pub fn from_source(source_token_iterator: I) -> Self {
         Self {
-            lexer: Lexer::parse(input),
+            source_token_iterator,
             current_property: "",
         }
     }
     
-    fn transition(&mut self, token: Token<'a>) -> AbstractSyntaxParserOption<'a> {
+    fn transition(&mut self, token: Token<'a>) -> AbstractSyntaxTokenOption<'a> {
         match token {
-            Token::Control("rect") => Some(Ok(AbstractSyntaxNode::Rectangle())),
-            Token::Control("circle") => Some(Ok(AbstractSyntaxNode::Circle())),
-            Token::Control("text") => Some(Ok(AbstractSyntaxNode::Text())),
-            Token::Control(_) => Some(Err(AbstractSyntaxParseError::UnknownControl)),
+            Token::Control("rect") => Some(Ok(AbstractSyntaxNode::Rectangle)),
+            Token::Control("circle") => Some(Ok(AbstractSyntaxNode::Circle)),
+            Token::Control("text") => Some(Ok(AbstractSyntaxNode::Text)),
+            Token::Control(_) => Some(Err(AbstractSyntaxTokenError::UnknownControl)),
             Token::Property(name) => { 
                 self.current_property = name; 
                 None
             },
             Token::PropertyValue(value) => {
                 match value {
-                    TokenPropertyValue::Float(value) => {
+                    SourceTokenPropertyValue::UnsignedInt(value) => {
                         match self.current_property {
-                            "stroke_width" => Some(Ok(AbstractSyntaxNode::StrokeWidth(value as f32))),
-                            _ => Some(Err(AbstractSyntaxParseError::UnknownProperty))
-                        }
-                    },
-                    TokenPropertyValue::UnsignedInt(value) => {
-                        match self.current_property {
+                            "stroke-width" => Some(Ok(AbstractSyntaxNode::StrokeWidth(value as u16))),
                             "radius" => Some(Ok(AbstractSyntaxNode::Radius(value as u16))),
-                            "glyph_index" => Some(Ok(AbstractSyntaxNode::GlyphIndex(value as u16))),
-                            _ => Some(Err(AbstractSyntaxParseError::UnknownProperty))
+                            "glyph-index" => Some(Ok(AbstractSyntaxNode::GlyphIndex(value as u16))),
+                            _ => Some(Err(AbstractSyntaxTokenError::UnknownProperty))
                         }
                     },
-                    TokenPropertyValue::Tuple(value) => {
-                        let tuple_lexer = TupleLexer::parse(value);
+                    SourceTokenPropertyValue::Tuple(value) => {
+                        let tuple_tokenizer = TupleTokenizer::from_string(value);
                         None
                     },
-                    _ => Some(Err(AbstractSyntaxParseError::UnusedPropertyType))
+                    _ => return Some(Err(AbstractSyntaxTokenError::UnusedPropertyType))
                 }
                 
             },
-            Token::EndControl(_) => Some(Ok(AbstractSyntaxNode::CompleteControl()))
+            Token::EndControl(_) => Some(Ok(AbstractSyntaxNode::CompleteControl))
         }
     }
 }
