@@ -15,7 +15,7 @@ pub enum AbstractSyntaxNode {
     CompleteControl,
 }
 
-use crate::source_tokenization::{SourceTokenResult, SourceTokenError, Token, SourceTokenPropertyValue};
+use crate::source_tokenization::{SourceTokenResult, SourceTokenError, SourceToken, SourceTokenPropertyValue};
 use crate::tuple_tokenization::TupleTokenizer;
 
 #[derive(PartialEq, Eq, Debug, Copy, Clone)]
@@ -67,17 +67,17 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
         }
     }
     
-    fn transition(&mut self, token: Token<'a>) -> AbstractSyntaxTokenOption<'a> {
+    fn transition(&mut self, token: SourceToken<'a>) -> AbstractSyntaxTokenOption<'a> {
         match token {
-            Token::Control("rect") => Some(Ok(AbstractSyntaxNode::Rectangle)),
-            Token::Control("circle") => Some(Ok(AbstractSyntaxNode::Circle)),
-            Token::Control("text") => Some(Ok(AbstractSyntaxNode::Text)),
-            Token::Control(_) => Some(Err(AbstractSyntaxTokenError::UnknownControl)),
-            Token::Property(name) => { 
+            SourceToken::Control("rect") => Some(Ok(AbstractSyntaxNode::Rectangle)),
+            SourceToken::Control("circle") => Some(Ok(AbstractSyntaxNode::Circle)),
+            SourceToken::Control("text") => Some(Ok(AbstractSyntaxNode::Text)),
+            SourceToken::Control(_) => Some(Err(AbstractSyntaxTokenError::UnknownControl)),
+            SourceToken::Property(name) => { 
                 self.current_property = name; 
                 None
             },
-            Token::PropertyValue(value) => {
+            SourceToken::PropertyValue(value) => {
                 match value {
                     SourceTokenPropertyValue::UnsignedInt(value) => {
                         match self.current_property {
@@ -95,7 +95,7 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
                 }
                 
             },
-            Token::EndControl(_) => Some(Ok(AbstractSyntaxNode::CompleteControl))
+            SourceToken::EndControl(_) => Some(Ok(AbstractSyntaxNode::CompleteControl))
         }
     }
 }

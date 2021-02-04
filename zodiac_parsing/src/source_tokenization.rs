@@ -12,7 +12,7 @@ pub enum SourceTokenPropertyValue<'a> {
 }
 
 #[derive(PartialEq, PartialOrd, Debug)]
-pub enum Token<'a> {
+pub enum SourceToken<'a> {
     Control(&'a str),
     EndControl(&'a str),
     Property(&'a str),
@@ -72,7 +72,7 @@ enum State {
     InWhitespace
 } 
 
-pub type SourceTokenResult<'a> = Result<Token<'a>, SourceTokenError<'a>>;
+pub type SourceTokenResult<'a> = Result<SourceToken<'a>, SourceTokenError<'a>>;
 pub type SourceTokenOption<'a> = Option<SourceTokenResult<'a>>;
 
 pub struct SourceTokenizer<'a> {
@@ -180,7 +180,7 @@ impl<'a> SourceTokenizer<'a> {
     fn produce_control_result(&mut self, start: usize, index: usize)  -> SourceTokenOption<'a> {
         let control_name = self.splice_input(start, index);
         self.current_parent.push(control_name);
-        Some(Ok(Token::Control(control_name)))
+        Some(Ok(SourceToken::Control(control_name)))
     }
 
     fn handle_inside_control(&mut self, start: usize, index: usize, character: char)  -> SourceTokenOption<'a> {
@@ -200,7 +200,7 @@ impl<'a> SourceTokenizer<'a> {
     }
 
     fn produce_property_result(&mut self, start: usize, index: usize)  -> SourceTokenOption<'a> {
-        Some(Ok(Token::Property(self.splice_input(start, index))))
+        Some(Ok(SourceToken::Property(self.splice_input(start, index))))
     }
 
     fn handle_inside_property(&mut self, start: usize, index: usize, character: char)  -> SourceTokenOption<'a> {
@@ -244,13 +244,13 @@ impl<'a> SourceTokenizer<'a> {
     }  
 
     fn produce_string_property_value_result(&mut self, start: usize, index: usize)  -> SourceTokenOption<'a> {
-        Some(Ok(Token::PropertyValue(SourceTokenPropertyValue::String(self.splice_input(start, index)))))
+        Some(Ok(SourceToken::PropertyValue(SourceTokenPropertyValue::String(self.splice_input(start, index)))))
     }
 
     fn produce_unsigned_number_property_value_result(&mut self, start: usize, index: usize) -> SourceTokenOption<'a> {
         let raw_value = self.splice_input(start, index);
         match raw_value.parse::<u128>() {
-            Ok(value) => return Some(Ok(Token::PropertyValue(SourceTokenPropertyValue::UnsignedInt(value)))),
+            Ok(value) => return Some(Ok(SourceToken::PropertyValue(SourceTokenPropertyValue::UnsignedInt(value)))),
             Err(_) => return self.produce_float_property_value_result(raw_value, index)
         }
     }
@@ -258,20 +258,20 @@ impl<'a> SourceTokenizer<'a> {
     fn produce_signed_number_property_value_result(&mut self, start: usize, index: usize) -> SourceTokenOption<'a> {
         let raw_value = self.splice_input(start, index);
         match raw_value.parse::<i128>() {
-            Ok(value) => return Some(Ok(Token::PropertyValue(SourceTokenPropertyValue::Int(value)))),
+            Ok(value) => return Some(Ok(SourceToken::PropertyValue(SourceTokenPropertyValue::Int(value)))),
             Err(_) => return self.produce_float_property_value_result(raw_value, index)
         }
     }
 
     fn produce_float_property_value_result(&mut self, raw_value: &'a str, index: usize) -> SourceTokenOption<'a> {
         match raw_value.parse::<f64>() {
-            Ok(value) => return Some(Ok(Token::PropertyValue(SourceTokenPropertyValue::Float(value)))),
+            Ok(value) => return Some(Ok(SourceToken::PropertyValue(SourceTokenPropertyValue::Float(value)))),
             Err(_) => return Some(Err(SourceTokenError::could_not_parse_number_value(index, raw_value)))
         }
     }
 
     fn produce_tuple_property_value_result(&mut self, start: usize, index: usize) -> SourceTokenOption<'a> {
-        Some(Ok(Token::PropertyValue(SourceTokenPropertyValue::Tuple(self.splice_input(start, index)))))
+        Some(Ok(SourceToken::PropertyValue(SourceTokenPropertyValue::Tuple(self.splice_input(start, index)))))
     }
     
     fn handle_inside_string_property_value(&mut self, start: usize, index: usize, character: char)  -> SourceTokenOption<'a> {
@@ -310,7 +310,7 @@ impl<'a> SourceTokenizer<'a> {
         if character == '>' {
             self.state = State::Start;
             match self.current_parent.pop() {
-                Some(control_name) => return Some(Ok(Token::EndControl(control_name))),
+                Some(control_name) => return Some(Ok(SourceToken::EndControl(control_name))),
                 None => return Some(Err(SourceTokenError::could_not_find_control_to_close(index, character)))
             };
         }
@@ -324,7 +324,7 @@ impl<'a> SourceTokenizer<'a> {
                 Some(control_name) => {
                     let closing_control_name = self.splice_input(start, index);
                     if closing_control_name == control_name {
-                        return Some(Ok(Token::EndControl(control_name)))
+                        return Some(Ok(SourceToken::EndControl(control_name)))
                     }
                     return Some(Err(SourceTokenError::closing_wrong_tag(index, character)))
                 },
