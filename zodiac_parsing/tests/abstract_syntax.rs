@@ -54,10 +54,91 @@ fn glyph_index_produces_glyph_index_node() {
 }
 
 #[test]
-fn position_produces_glyph_position_node() {
+fn position_produces_position_node() {
     let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text position=(100, 200) />"));
     assert_eq!(AbstractSyntaxToken::Text, tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::Position((100, 200)), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
+fn malformed_position_produces_error() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text position=(100) />"));
+    assert_eq!(AbstractSyntaxToken::Text, tokenizer.next().unwrap().unwrap());
+    assert_eq!(Err(AbstractSyntaxTokenError::BadPositionValue), tokenizer.next().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
+fn dimensions_produces_dimensions_node() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect dimensions=(100, 200) />"));
+    assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::Dimensions((100, 200)), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
+fn malformed_dimensions_produces_error() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect dimensions=(100) />"));
+    assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
+    assert_eq!(Err(AbstractSyntaxTokenError::BadDimensionsValue), tokenizer.next().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
+fn colour_produces_colour_node() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect colour=(1.0, 0.9, 0.0, 1.0) />"));
+    assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::Colour((1.0, 0.9, 0.0, 1.0)), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
+fn malformed_colour_produces_error() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect colour=(1.0, 0.9, 0.0) />"));
+    assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
+    assert_eq!(Err(AbstractSyntaxTokenError::BadColourValue), tokenizer.next().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
+fn stroke_colour_produces_stroke_colour_node() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect stroke-colour=(1.0, 0.9, 0.0, 1.0) />"));
+    assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::StrokeColour((1.0, 0.9, 0.0, 1.0)), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
+fn malformed_stroke_colour_produces_error() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect stroke-colour=(1.0, 0.9, 0.0) />"));
+    assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
+    assert_eq!(Err(AbstractSyntaxTokenError::BadStrokeColourValue), tokenizer.next().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
+fn corner_radii_produces_stroke_colour_node() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect corner-radii=(1.0, 0.9, 0.0, 1.0) />"));
+    assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CornerRadii((1.0, 0.9, 0.0, 1.0)), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
+fn malformed_corner_radii_colour_produces_error() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect corner-radii=(1.0, 0.9, 0.0) />"));
+    assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
+    assert_eq!(Err(AbstractSyntaxTokenError::BadCornerRadiiValue), tokenizer.next().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
@@ -84,7 +165,7 @@ fn parse_with_unknown_control_produces_error() {
 fn parse_with_unknown_property_type_produces_error() {
     let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<circle radius=1.0 />"));
     assert_eq!(AbstractSyntaxToken::Circle, tokenizer.next().unwrap().unwrap());
-    assert_eq!(Some(Err(AbstractSyntaxTokenError::UnusedPropertyType)), tokenizer.next());
+    assert_eq!(Err(AbstractSyntaxTokenError::UnusedPropertyType), tokenizer.next().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
@@ -93,7 +174,7 @@ fn parse_with_unknown_property_type_produces_error() {
 fn parse_with_unknown_property_produces_error() {
     let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<circle head=1 />"));
     assert_eq!(AbstractSyntaxToken::Circle, tokenizer.next().unwrap().unwrap());
-    assert_eq!(Some(Err(AbstractSyntaxTokenError::UnknownProperty)), tokenizer.next());
+    assert_eq!(Err(AbstractSyntaxTokenError::UnknownProperty), tokenizer.next().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
@@ -101,7 +182,7 @@ fn parse_with_unknown_property_produces_error() {
 #[test]
 fn parse_with_bad_tag_value_produces_error() {
     let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("x />"));
-    assert_eq!(Some(Err(AbstractSyntaxTokenError::SourceTokenError("could not find control start tag (<)", 0, 'x'))), tokenizer.next());
+    assert_eq!(Err(AbstractSyntaxTokenError::SourceTokenError("could not find control start tag (<)", 0, 'x')), tokenizer.next().unwrap());
 }
 
 #[test]

@@ -21,27 +21,83 @@ enum TupleState {
 }
 
 #[derive(PartialEq, Eq, Debug)]
-pub enum TupleLexerError<'a> {
+pub enum TupleTokenError<'a> {
     TupleError(&'a str, usize, char),
     ValueError(&'a str, usize, &'a str),
 }
 
-impl<'a> TupleLexerError<'a> {
+impl<'a> TupleTokenError<'a> {
     pub fn could_not_find_opening_parentheses(index: usize, character: char) -> Self {
-        TupleLexerError::TupleError("could not find opening parentheses '('", index, character)
+        TupleTokenError::TupleError("could not find opening parentheses '('", index, character)
     }
 
     pub fn could_not_find_closing_parentheses(index: usize, character: char) -> Self {
-        TupleLexerError::TupleError("could not find closing parentheses ')'", index, character)
+        TupleTokenError::TupleError("could not find closing parentheses ')'", index, character)
     }
 
     pub fn could_not_parse_number_value(index: usize, value: &'a str) -> Self {
-        TupleLexerError::ValueError("could not parse number value", index, value)
+        TupleTokenError::ValueError("could not parse number value", index, value)
     }
 }
 
-pub type TupleLexerResult<'a> = Result<TupleValue<'a>, TupleLexerError<'a>>;
-pub type TupleLexerOption<'a> = Option<TupleLexerResult<'a>>;
+pub struct TupleTokenFloatIterator<'a, I> where I : Iterator<Item=TupleTokenResult<'a>> {
+    token_iterator: I
+}
+
+impl<'a, I> TupleTokenFloatIterator<'a, I> where I : Iterator<Item=TupleTokenResult<'a>> {
+    pub fn from_iterator(token_iterator: I) -> Self {
+        Self {
+            token_iterator
+        }
+    }
+}
+
+impl <'a, I> Iterator for TupleTokenFloatIterator<'a, I> where I : Iterator<Item=TupleTokenResult<'a>>{
+    type Item = f32;
+    fn next(&mut self) -> Option<f32> {
+        loop {
+            return match self.token_iterator.next() {
+                Some(result) => if let Ok(TupleValue::Float(value)) = result {
+                    Some(value as f32)
+                } else {
+                    None
+                },
+                None => None
+            }
+        }
+    }
+}
+
+pub struct TupleTokenUnsignedShortIterator<'a, I> where I : Iterator<Item=TupleTokenResult<'a>> {
+    token_iterator: I
+}
+
+impl<'a, I> TupleTokenUnsignedShortIterator<'a, I> where I : Iterator<Item=TupleTokenResult<'a>> {
+    pub fn from_iterator(token_iterator: I) -> Self {
+        Self {
+            token_iterator
+        }
+    }
+}
+
+impl <'a, I> Iterator for TupleTokenUnsignedShortIterator<'a, I> where I : Iterator<Item=TupleTokenResult<'a>>{
+    type Item = u16;
+    fn next(&mut self) -> Option<u16> {
+        loop {
+            return match self.token_iterator.next() {
+                Some(result) => if let Ok(TupleValue::UnsignedInt(value)) = result {
+                    Some(value as u16)
+                } else {
+                    None
+                },
+                None => None
+            }
+        }
+    }
+}
+
+pub type TupleTokenResult<'a> = Result<TupleValue<'a>, TupleTokenError<'a>>;
+pub type TupleTokenOption<'a> = Option<TupleTokenResult<'a>>;
 
 pub struct TupleTokenizer<'a>{
     input: &'a str,
@@ -62,15 +118,15 @@ impl<'a> TupleTokenizer<'a> {
         &self.input[from..to]
     }
 
-    fn start_if_possible(&mut self, index: usize, character: char) -> TupleLexerOption<'a> {
+    fn start_if_possible(&mut self, index: usize, character: char) -> TupleTokenOption<'a> {
         if character == '(' {
             self.state = TupleState::StartValue;
             return None;
         }
-        Some(Err(TupleLexerError::could_not_find_opening_parentheses(index, character)))
+        Some(Err(TupleTokenError::could_not_find_opening_parentheses(index, character)))
     }
 
-    fn start_value_if_possible(&mut self, index: usize, character: char) -> TupleLexerOption<'a> {
+    fn start_value_if_possible(&mut self, index: usize, character: char) -> TupleTokenOption<'a> {
         if character == ')' {
             self.state = TupleState::EndTuple;
             return None;
@@ -87,10 +143,10 @@ impl<'a> TupleTokenizer<'a> {
             self.state = TupleState::InWhitespace;
             return None;
         }
-        Some(Err(TupleLexerError::could_not_find_closing_parentheses(index, character)))
+        Some(Err(TupleTokenError::could_not_find_closing_parentheses(index, character)))
     }
     
-    fn produce_signed_number_value_result(&mut self, start: usize, index: usize) -> TupleLexerOption<'a> {
+    fn produce_signed_number_value_result(&mut self, start: usize, index: usize) -> TupleTokenOption<'a> {
         let raw_value = self.splice_input(start, index);
         match raw_value.parse::<i128>() {
             Ok(value) => return Some(Ok(TupleValue::Int(value))),
@@ -98,7 +154,7 @@ impl<'a> TupleTokenizer<'a> {
         }
     }
 
-    fn produce_unsigned_number_value_result(&mut self, start: usize, index: usize) -> TupleLexerOption<'a> {
+    fn produce_unsigned_number_value_result(&mut self, start: usize, index: usize) -> TupleTokenOption<'a> {
         let raw_value = self.splice_input(start, index);
         match raw_value.parse::<u128>() {
             Ok(value) => return Some(Ok(TupleValue::UnsignedInt(value))),
@@ -106,14 +162,14 @@ impl<'a> TupleTokenizer<'a> {
         }
     }
 
-    fn produce_float_value_result(&mut self, raw_value: &'a str, index: usize) -> TupleLexerOption<'a> {
+    fn produce_float_value_result(&mut self, raw_value: &'a str, index: usize) -> TupleTokenOption<'a> {
         match raw_value.parse::<f64>() {
             Ok(value) => return Some(Ok(TupleValue::Float(value))),
-            Err(_) => return Some(Err(TupleLexerError::could_not_parse_number_value(index, raw_value)))
+            Err(_) => return Some(Err(TupleTokenError::could_not_parse_number_value(index, raw_value)))
         }
     }
 
-    fn handle_inside_unsigned_number_value(&mut self, start: usize, index: usize, character: char) -> TupleLexerOption<'a> {
+    fn handle_inside_unsigned_number_value(&mut self, start: usize, index: usize, character: char) -> TupleTokenOption<'a> {
         if character == ')' {
             self.state = TupleState::EndTuple;
             return self.produce_unsigned_number_value_result(start, index);
@@ -125,7 +181,7 @@ impl<'a> TupleTokenizer<'a> {
         None
     }
 
-    fn handle_inside_signed_number_value(&mut self, start: usize, index: usize, character: char) -> TupleLexerOption<'a> {
+    fn handle_inside_signed_number_value(&mut self, start: usize, index: usize, character: char) -> TupleTokenOption<'a> {
         if character == ')' {
             self.state = TupleState::EndTuple;
             return self.produce_signed_number_value_result(start, index);
@@ -137,7 +193,7 @@ impl<'a> TupleTokenizer<'a> {
         None
     }
 
-    fn transition(&mut self, index: usize, character: char) -> TupleLexerOption<'a> {
+    fn transition(&mut self, index: usize, character: char) -> TupleTokenOption<'a> {
         match self.state {
             TupleState::Start => {
                 self.start_if_possible(index, character)
@@ -165,8 +221,8 @@ impl<'a> TupleTokenizer<'a> {
 }
 
 impl <'a> Iterator for TupleTokenizer<'a> {
-    type Item = TupleLexerResult<'a>;
-    fn next(&mut self) -> TupleLexerOption<'a> {
+    type Item = TupleTokenResult<'a>;
+    fn next(&mut self) -> TupleTokenOption<'a> {
         loop {
             return match self.characters.next() {
                 Some((index, c)) => match self.transition(index, c) {

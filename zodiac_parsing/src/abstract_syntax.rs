@@ -1,4 +1,8 @@
 
+
+use crate::source_tokenization::{SourceTokenResult, SourceTokenError, SourceToken, SourceTokenPropertyValue};
+use crate::tuple_tokenization::{TupleTokenizer, TupleTokenUnsignedShortIterator, TupleTokenFloatIterator};
+
 #[derive(PartialEq, PartialOrd, Debug)]
 pub enum AbstractSyntaxToken {
     Circle,
@@ -15,16 +19,28 @@ pub enum AbstractSyntaxToken {
     CompleteControl,
 }
 
-use crate::source_tokenization::{SourceTokenResult, SourceTokenError, SourceToken, SourceTokenPropertyValue};
-use crate::tuple_tokenization::TupleTokenizer;
-
 #[derive(PartialEq, Eq, Debug, Copy, Clone)]
 pub enum AbstractSyntaxTokenError<'a> {
     SourceTokenError(&'a str, usize, char),
     SourceValueError(&'a str, usize, &'a str),
     UnknownControl,
     UnusedPropertyType,
-    UnknownProperty
+    UnknownProperty,
+    BadPositionValue,
+    BadDimensionsValue,
+    BadColourValue,
+    BadStrokeColourValue,
+    BadCornerRadiiValue
+}
+
+impl<'a> From<SourceTokenError<'a>> for AbstractSyntaxTokenError<'a> {
+    fn from(error: SourceTokenError<'a>) -> Self {
+        match error {
+            SourceTokenError::ControlError(text, index, character) => AbstractSyntaxTokenError::SourceTokenError(text, index, character),
+            SourceTokenError::PropertyError(text, index, character) => AbstractSyntaxTokenError::SourceTokenError(text, index, character),
+            SourceTokenError::ValueError(text, index, raw_value) => AbstractSyntaxTokenError::SourceValueError(text, index, raw_value),
+        }
+    }
 }
 
 pub type AbstractSyntaxTokenResult<'a> = Result<AbstractSyntaxToken, AbstractSyntaxTokenError<'a>>;
@@ -45,11 +61,7 @@ impl <'a, I> Iterator for AbstractSyntaxTokenizer<'a, I> where I : Iterator<Item
                         None => continue,
                         some => some
                     },
-                    Err(error) => match error {
-                        SourceTokenError::ControlError(text, index, character) => Some(Err(AbstractSyntaxTokenError::SourceTokenError(text, index, character))),
-                        SourceTokenError::PropertyError(text, index, character) => Some(Err(AbstractSyntaxTokenError::SourceTokenError(text, index, character))),
-                        SourceTokenError::ValueError(text, index, raw_value) => Some(Err(AbstractSyntaxTokenError::SourceValueError(text, index, raw_value))),
-                    }
+                    Err(error) => Some(Err(AbstractSyntaxTokenError::from(error)))
                 },
                 None => {
                     None
@@ -89,13 +101,65 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
                     },
                     SourceTokenPropertyValue::Tuple(value) => {
                         let tuple_tokenizer = TupleTokenizer::from_string(value);
-                        None
+                        return match self.current_property {
+                            "position" => {
+                                match TupleTokenUnsignedShortIterator::from_iterator(tuple_tokenizer).collect_specific_amount(2) {
+                                    Ok(values) => Some(Ok(AbstractSyntaxToken::Position((values[0], values[1])))),
+                                    Err(_) => Some(Err(AbstractSyntaxTokenError::BadPositionValue))
+                                }
+                            },
+                            "dimensions" => {
+                                match TupleTokenUnsignedShortIterator::from_iterator(tuple_tokenizer).collect_specific_amount(2) {
+                                    Ok(values) => Some(Ok(AbstractSyntaxToken::Dimensions((values[0], values[1])))),
+                                    Err(_) => Some(Err(AbstractSyntaxTokenError::BadDimensionsValue))
+                                }
+                            },
+                            "colour" => {
+                                match TupleTokenFloatIterator::from_iterator(tuple_tokenizer).collect_specific_amount(4) {
+                                    Ok(values) => Some(Ok(AbstractSyntaxToken::Colour((values[0], values[1], values[2], values[3])))),
+                                    Err(_) => Some(Err(AbstractSyntaxTokenError::BadColourValue))
+                                }
+                            },
+                            "stroke-colour" => {
+                                match TupleTokenFloatIterator::from_iterator(tuple_tokenizer).collect_specific_amount(4) {
+                                    Ok(values) => Some(Ok(AbstractSyntaxToken::StrokeColour((values[0], values[1], values[2], values[3])))),
+                                    Err(_) => Some(Err(AbstractSyntaxTokenError::BadStrokeColourValue))
+                                }
+                            },
+                            "corner-radii" => {
+                                match TupleTokenFloatIterator::from_iterator(tuple_tokenizer).collect_specific_amount(4) {
+                                    Ok(values) => Some(Ok(AbstractSyntaxToken::CornerRadii((values[0], values[1], values[2], values[3])))),
+                                    Err(_) => Some(Err(AbstractSyntaxTokenError::BadCornerRadiiValue))
+                                }
+                            },
+                            _ => Some(Err(AbstractSyntaxTokenError::UnknownProperty))
+                        };
                     },
-                    _ => return Some(Err(AbstractSyntaxTokenError::UnusedPropertyType))
+                    _ => Some(Err(AbstractSyntaxTokenError::UnusedPropertyType))
                 }
                 
             },
             SourceToken::EndControl(_) => Some(Ok(AbstractSyntaxToken::CompleteControl))
+        }
+    }
+}
+
+pub enum SpecificCollectionError {
+    NotEnoughItems(usize)
+}
+
+pub trait SpecificAmountCollector<IT, I> where IT: Iterator<Item=I> {
+    fn collect_specific_amount(&mut self, sepecific_amount: usize) -> Result<Vec::<I>, SpecificCollectionError>;
+}
+
+impl<IT, I> SpecificAmountCollector<IT, I> for IT where IT: Iterator<Item=I> {
+    fn collect_specific_amount(&mut self, specific_amount: usize) -> Result<Vec::<I>, SpecificCollectionError> {
+        let items:Vec::<I> = self.collect();
+        let count = items.len();
+        if count == specific_amount {
+            Ok(items) 
+        } else {
+            Err(SpecificCollectionError::NotEnoughItems(count))
         }
     }
 }

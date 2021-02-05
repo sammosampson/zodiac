@@ -1,5 +1,5 @@
 extern crate zodiac_parsing;
-use zodiac_parsing::tuple_tokenization::{TupleTokenizer, TupleLexerError, TupleValue};
+use zodiac_parsing::tuple_tokenization::{TupleTokenizer, TupleTokenError, TupleValue};
 
 #[test]
 fn empty_parentheses_produces_no_tuple_values() {
@@ -10,13 +10,13 @@ fn empty_parentheses_produces_no_tuple_values() {
 #[test]
 fn no_start_parentheses_produces_error() {
     let mut tokenizer = TupleTokenizer::from_string("<");
-    assert_eq!(Err(TupleLexerError::could_not_find_opening_parentheses(0, '<')), tokenizer.next().unwrap());
+    assert_eq!(Err(TupleTokenError::could_not_find_opening_parentheses(0, '<')), tokenizer.next().unwrap());
 }
 
 #[test]
 fn no_end_parentheses_produces_error() {
     let mut tokenizer = TupleTokenizer::from_string("(>");
-    assert_eq!(Err(TupleLexerError::could_not_find_closing_parentheses(1, '>')), tokenizer.next().unwrap());
+    assert_eq!(Err(TupleTokenError::could_not_find_closing_parentheses(1, '>')), tokenizer.next().unwrap());
 }
 
 #[test]
@@ -90,5 +90,5 @@ fn multiple_int_values_produces_multiple_int_tuple_values() {
 #[test]
 fn malformed_number_value_produces_error() {
     let mut tokenizer = TupleTokenizer::from_string("(-1.x)");
-    assert_eq!(Err(TupleLexerError::could_not_parse_number_value(5, "-1.x")), tokenizer.next().unwrap());
+    assert_eq!(Err(TupleTokenError::could_not_parse_number_value(5, "-1.x")), tokenizer.next().unwrap());
 }
