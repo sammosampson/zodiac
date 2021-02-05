@@ -1,5 +1,4 @@
-extern crate zodiac_parsing;
-use zodiac_parsing::tokenization::source::{SourceTokenizer, SourceTokenError, SourceToken, SourceTokenPropertyValue};
+use zodiac_parsing::tokenization::source::*;
 
 #[test]
 fn single_control_produces_correct_tokens() {

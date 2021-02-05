@@ -1,6 +1,5 @@
-extern crate zodiac_parsing;
-use zodiac_parsing::tokenization::abstract_syntax::{AbstractSyntaxTokenizer, AbstractSyntaxToken, AbstractSyntaxTokenError};
-use zodiac_parsing::tokenization::source::{SourceTokenizer, SourceTokenError};
+use zodiac_parsing::tokenization::abstract_syntax::*;
+use zodiac_parsing::tokenization::source::*;
 
 #[test]
 fn parse_rect_produces_rectangle_node() {
@@ -21,6 +20,18 @@ fn parse_circle_produces_circle_node() {
 #[test]
 fn parse_text_produces_text_node() {
     let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text />"));
+    assert_eq!(AbstractSyntaxToken::Text, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
+fn parse_multiple_controls_produces_multiple_completes() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect /><circle /><text />"));
+    assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::Circle, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::Text, tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
