@@ -20,40 +20,14 @@ pub enum SourceToken<'a> {
 }
 
 #[derive(PartialEq, Eq, Debug, Copy, Clone)]
-pub enum SourceTokenError<'a> {
-    ControlError(&'a str, usize, char),
-    PropertyError(&'a str, usize, char),
-    ValueError(&'a str, usize, &'a str)
-}
-
-impl<'a> SourceTokenError<'a> {
-    pub fn could_not_find_start_tag(index: usize, character: char) -> Self {
-        SourceTokenError::ControlError("could not find control start tag (<)", index, character)
-    }
-
-    pub fn could_not_find_control_name(index: usize, character: char) -> Self {
-        SourceTokenError::ControlError("could not find control name", index, character)
-    }
-
-    pub fn could_not_find_property_start_symbol(index: usize, character: char) -> Self {
-        SourceTokenError::PropertyError("could not find property start symbol (\")", index, character)
-    }
-
-    pub fn could_not_find_control_close_symbol(index: usize, character: char) -> Self {
-        SourceTokenError::ControlError("could not find control close symbol (>)", index, character)
-    }
-
-    pub fn closing_wrong_tag(index: usize, character: char) -> Self {
-        SourceTokenError::ControlError("trying to close the wrong control", index, character)
-    }
-
-    pub fn could_not_find_control_to_close(index: usize, character: char) -> Self {
-        SourceTokenError::ControlError("could not find control to close", index, character)
-    }
-
-    pub fn could_not_parse_number_value(index: usize, value: &'a str) -> Self {
-        SourceTokenError::ValueError("could not parse number value", index, value)
-    }
+pub enum SourceTokenError {
+    CouldNotFindStartTag(usize),
+    CouldNotParseNumberValue(usize),
+    CouldNotFindControlName(usize),
+    CouldNotFindPropertyStartSymbol(usize),
+    CouldNotFindControlToClose(usize),
+    CouldNotFindControlCloseSymbol(usize),
+    ClosingWrongTag(usize)
 }
 
 #[derive(PartialEq, Eq, Debug)]
@@ -72,7 +46,7 @@ enum State {
     InWhitespace
 } 
 
-pub type SourceTokenResult<'a> = Result<SourceToken<'a>, SourceTokenError<'a>>;
+pub type SourceTokenResult<'a> = Result<SourceToken<'a>, SourceTokenError>;
 pub type SourceTokenOption<'a> = Option<SourceTokenResult<'a>>;
 
 pub struct SourceTokenizer<'a> {
@@ -162,7 +136,7 @@ impl<'a> SourceTokenizer<'a> {
         if character.is_whitespace() {
             return None;
         }
-        Some(Err(SourceTokenError::could_not_find_start_tag(index, character)))
+        Some(Err(SourceTokenError::CouldNotFindStartTag(index)))
     }
     
     fn start_control_if_possible(&mut self, index: usize, character: char)  -> SourceTokenOption<'a> {
@@ -174,7 +148,7 @@ impl<'a> SourceTokenizer<'a> {
             self.state = State::InControl(index);
             return None;
         }
-        Some(Err(SourceTokenError::could_not_find_control_name(index, character)))
+        Some(Err(SourceTokenError::CouldNotFindControlName(index)))
     }
 
     fn produce_control_result(&mut self, start: usize, index: usize)  -> SourceTokenOption<'a> {
@@ -240,7 +214,7 @@ impl<'a> SourceTokenizer<'a> {
             self.state = State::InTuplePropertyValue(index);
             return None;
         }
-        Some(Err(SourceTokenError::could_not_find_property_start_symbol(index, character)))
+        Some(Err(SourceTokenError::CouldNotFindPropertyStartSymbol(index)))
     }  
 
     fn produce_string_property_value_result(&mut self, start: usize, index: usize)  -> SourceTokenOption<'a> {
@@ -266,7 +240,7 @@ impl<'a> SourceTokenizer<'a> {
     fn produce_float_property_value_result(&mut self, raw_value: &'a str, index: usize) -> SourceTokenOption<'a> {
         match raw_value.parse::<f64>() {
             Ok(value) => return Some(Ok(SourceToken::PropertyValue(SourceTokenPropertyValue::Float(value)))),
-            Err(_) => return Some(Err(SourceTokenError::could_not_parse_number_value(index, raw_value)))
+            Err(_) => return Some(Err(SourceTokenError::CouldNotParseNumberValue(index)))
         }
     }
 
@@ -311,10 +285,10 @@ impl<'a> SourceTokenizer<'a> {
             self.state = State::Start;
             match self.current_parent.pop() {
                 Some(control_name) => return Some(Ok(SourceToken::EndControl(control_name))),
-                None => return Some(Err(SourceTokenError::could_not_find_control_to_close(index, character)))
+                None => return Some(Err(SourceTokenError::CouldNotFindControlToClose(index)))
             };
         }
-        Some(Err(SourceTokenError::could_not_find_control_close_symbol(index, character)))
+        Some(Err(SourceTokenError::CouldNotFindControlCloseSymbol(index)))
     }
 
     fn end_nested_control_if_possible(&mut self, start: usize, index: usize, character: char)  -> SourceTokenOption<'a> {
@@ -326,9 +300,9 @@ impl<'a> SourceTokenizer<'a> {
                     if closing_control_name == control_name {
                         return Some(Ok(SourceToken::EndControl(control_name)))
                     }
-                    return Some(Err(SourceTokenError::closing_wrong_tag(index, character)))
+                    return Some(Err(SourceTokenError::ClosingWrongTag(index)))
                 },
-                None => return Some(Err(SourceTokenError::could_not_find_control_to_close(index, character)))
+                None => return Some(Err(SourceTokenError::CouldNotFindControlToClose(index)))
             };
         }
         None

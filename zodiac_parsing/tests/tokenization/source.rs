@@ -1,5 +1,5 @@
 extern crate zodiac_parsing;
-use zodiac_parsing::source_tokenization::{SourceTokenizer, SourceTokenError, SourceToken, SourceTokenPropertyValue};
+use zodiac_parsing::tokenization::source::{SourceTokenizer, SourceTokenError, SourceToken, SourceTokenPropertyValue};
 
 #[test]
 fn single_control_produces_correct_tokens() {
@@ -29,20 +29,20 @@ fn single_control_produces_correct_tokens_with_carriage_returns_at_end() {
 #[test]
 fn incorrect_opening_character_produces_error_result() {
     let mut tokenizer = SourceTokenizer::from_string("X");
-    assert_eq!(Err(SourceTokenError::could_not_find_start_tag(0, 'X')), tokenizer.next().unwrap());
+    assert_eq!(Err(SourceTokenError::CouldNotFindStartTag(0)), tokenizer.next().unwrap());
 }
 
 #[test]
 fn whitespace_after_token_opening_produces_error_result() {
     let mut tokenizer = SourceTokenizer::from_string("< rect/>");
-    assert_eq!(Err(SourceTokenError::could_not_find_control_name(1, ' ')), tokenizer.next().unwrap());
+    assert_eq!(Err(SourceTokenError::CouldNotFindControlName(1)), tokenizer.next().unwrap());
 }
 
 #[test]
 fn incorrect_closing_character_produces_error_result() {
     let mut tokenizer = SourceTokenizer::from_string("<rect/X");
     tokenizer.next();
-    assert_eq!(Err(SourceTokenError::could_not_find_control_close_symbol(6, 'X')), tokenizer.next().unwrap());
+    assert_eq!(Err(SourceTokenError::CouldNotFindControlCloseSymbol(6)), tokenizer.next().unwrap());
 }
 
 #[test]
@@ -87,14 +87,14 @@ fn control_with_incorrect_closing_produces_error_result() {
     assert_eq!(SourceToken::Control("rect"), tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::Control("line"), tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::EndControl("line"), tokenizer.next().unwrap().unwrap());
-    assert_eq!(Err(SourceTokenError::closing_wrong_tag(27, '>')), tokenizer.next().unwrap());
+    assert_eq!(Err(SourceTokenError::ClosingWrongTag(27)), tokenizer.next().unwrap());
 }
 
 #[test]
 fn control_with_incorrect_closing_final_bracket_produces_error_result() {
     let mut tokenizer = SourceTokenizer::from_string("<rect></rect/>");
     assert_eq!(SourceToken::Control("rect"),  tokenizer.next().unwrap().unwrap());
-    assert_eq!(Err(SourceTokenError::closing_wrong_tag(13, '>')), tokenizer.next().unwrap());
+    assert_eq!(Err(SourceTokenError::ClosingWrongTag(13)), tokenizer.next().unwrap());
 }
 
 #[test]
@@ -192,7 +192,7 @@ fn property_with_incorrect_unsigned_number_value_produces_error_result() {
     let mut tokenizer = SourceTokenizer::from_string("<rect size=1x />");
     assert_eq!(SourceToken::Control("rect"),  tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::Property("size"), tokenizer.next().unwrap().unwrap());
-    assert_eq!(Err(SourceTokenError::could_not_parse_number_value(13, "1x")), tokenizer.next().unwrap());
+    assert_eq!(Err(SourceTokenError::CouldNotParseNumberValue(13)), tokenizer.next().unwrap());
 }
 
 #[test]
@@ -200,7 +200,7 @@ fn property_with_incorrect_signed_number_value_produces_error_result() {
     let mut tokenizer = SourceTokenizer::from_string("<rect size=-1x />");
     assert_eq!(SourceToken::Control("rect"),  tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::Property("size"), tokenizer.next().unwrap().unwrap());
-    assert_eq!(Err(SourceTokenError::could_not_parse_number_value(14, "-1x")), tokenizer.next().unwrap());
+    assert_eq!(Err(SourceTokenError::CouldNotParseNumberValue(14)), tokenizer.next().unwrap());
 }
 
 #[test]

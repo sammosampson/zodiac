@@ -1,7 +1,8 @@
 extern crate zodiac_parsing;
 extern crate zodiac_resources;
 
-use zodiac_parsing::lexing::SourceTokenizer;
+use zodiac_parsing::tokenization::source::SourceTokenizer;
+use zodiac_parsing::tokenization::abstract_syntax::AbstractSyntaxTokenizer;
 use zodiac_parsing::formatting::Pretty;
 use zodiac_resources::file_system;
 
@@ -11,7 +12,7 @@ pub enum Error {
 }
 
 fn parse_to_renderer(text: &str) -> Result<(), Error> {
-    let mut tokenizer = SourceTokenizer::parse(text);
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string(text));
     tokenizer.to_pretty();
     Ok(())
 }

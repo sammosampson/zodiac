@@ -1,6 +1,6 @@
 extern crate zodiac_parsing;
-use zodiac_parsing::abstract_syntax::{AbstractSyntaxTokenizer, AbstractSyntaxToken, AbstractSyntaxTokenError};
-use zodiac_parsing::source_tokenization::{SourceTokenizer};
+use zodiac_parsing::tokenization::abstract_syntax::{AbstractSyntaxTokenizer, AbstractSyntaxToken, AbstractSyntaxTokenError};
+use zodiac_parsing::tokenization::source::{SourceTokenizer, SourceTokenError};
 
 #[test]
 fn parse_rect_produces_rectangle_node() {
@@ -182,14 +182,14 @@ fn parse_with_unknown_property_produces_error() {
 #[test]
 fn parse_with_bad_tag_value_produces_error() {
     let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("x />"));
-    assert_eq!(Err(AbstractSyntaxTokenError::SourceTokenError("could not find control start tag (<)", 0, 'x')), tokenizer.next().unwrap());
+    assert_eq!(Err(AbstractSyntaxTokenError::SourceTokenError(SourceTokenError::CouldNotFindStartTag(0))), tokenizer.next().unwrap());
 }
 
 #[test]
 fn parse_with_bad_property_value_produces_error() {
     let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<circle radius=1.x />"));
     assert_eq!(AbstractSyntaxToken::Circle, tokenizer.next().unwrap().unwrap());
-    assert_eq!(Some(Err(AbstractSyntaxTokenError::SourceValueError("could not parse number value", 18, "1.x"))), tokenizer.next());
+    assert_eq!(Some(Err(AbstractSyntaxTokenError::SourceTokenError(SourceTokenError::CouldNotParseNumberValue(18)))), tokenizer.next());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }

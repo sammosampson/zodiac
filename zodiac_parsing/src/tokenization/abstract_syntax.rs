@@ -1,7 +1,7 @@
 
 
-use crate::source_tokenization::{SourceTokenResult, SourceTokenError, SourceToken, SourceTokenPropertyValue};
-use crate::tuple_tokenization::{TupleTokenizer, TupleTokenUnsignedShortIterator, TupleTokenFloatIterator};
+use crate::tokenization::source::{SourceTokenResult, SourceTokenError, SourceToken, SourceTokenPropertyValue};
+use crate::tokenization::tuple::{TupleTokenizer, TupleTokenUnsignedShortIterator, TupleTokenFloatIterator};
 
 #[derive(PartialEq, PartialOrd, Debug)]
 pub enum AbstractSyntaxToken {
@@ -20,9 +20,8 @@ pub enum AbstractSyntaxToken {
 }
 
 #[derive(PartialEq, Eq, Debug, Copy, Clone)]
-pub enum AbstractSyntaxTokenError<'a> {
-    SourceTokenError(&'a str, usize, char),
-    SourceValueError(&'a str, usize, &'a str),
+pub enum AbstractSyntaxTokenError {
+    SourceTokenError(SourceTokenError),
     UnknownControl,
     UnusedPropertyType,
     UnknownProperty,
@@ -33,18 +32,14 @@ pub enum AbstractSyntaxTokenError<'a> {
     BadCornerRadiiValue
 }
 
-impl<'a> From<SourceTokenError<'a>> for AbstractSyntaxTokenError<'a> {
-    fn from(error: SourceTokenError<'a>) -> Self {
-        match error {
-            SourceTokenError::ControlError(text, index, character) => AbstractSyntaxTokenError::SourceTokenError(text, index, character),
-            SourceTokenError::PropertyError(text, index, character) => AbstractSyntaxTokenError::SourceTokenError(text, index, character),
-            SourceTokenError::ValueError(text, index, raw_value) => AbstractSyntaxTokenError::SourceValueError(text, index, raw_value),
-        }
+impl<'a> From<SourceTokenError> for AbstractSyntaxTokenError {
+    fn from(error: SourceTokenError) -> Self {
+        AbstractSyntaxTokenError::SourceTokenError(error)
     }
 }
 
-pub type AbstractSyntaxTokenResult<'a> = Result<AbstractSyntaxToken, AbstractSyntaxTokenError<'a>>;
-pub type AbstractSyntaxTokenOption<'a> = Option<AbstractSyntaxTokenResult<'a>>;
+pub type AbstractSyntaxTokenResult = Result<AbstractSyntaxToken, AbstractSyntaxTokenError>;
+pub type AbstractSyntaxTokenOption = Option<AbstractSyntaxTokenResult>;
 
 pub struct AbstractSyntaxTokenizer<'a, I> where I : Iterator<Item=SourceTokenResult<'a>> {
     source_token_iterator: I,
@@ -52,8 +47,8 @@ pub struct AbstractSyntaxTokenizer<'a, I> where I : Iterator<Item=SourceTokenRes
 }
 
 impl <'a, I> Iterator for AbstractSyntaxTokenizer<'a, I> where I : Iterator<Item=SourceTokenResult<'a>> {
-    type Item = AbstractSyntaxTokenResult<'a>;
-    fn next(&mut self) -> AbstractSyntaxTokenOption<'a> {
+    type Item = AbstractSyntaxTokenResult;
+    fn next(&mut self) -> AbstractSyntaxTokenOption {
         loop {
             return match self.source_token_iterator.next() {
                 Some(result) => match result {
@@ -79,7 +74,7 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
         }
     }
     
-    fn transition(&mut self, token: SourceToken<'a>) -> AbstractSyntaxTokenOption<'a> {
+    fn transition(&mut self, token: SourceToken<'a>) -> AbstractSyntaxTokenOption {
         match token {
             SourceToken::Control("rect") => Some(Ok(AbstractSyntaxToken::Rectangle)),
             SourceToken::Control("circle") => Some(Ok(AbstractSyntaxToken::Circle)),

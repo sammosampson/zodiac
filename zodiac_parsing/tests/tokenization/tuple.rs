@@ -1,5 +1,5 @@
 extern crate zodiac_parsing;
-use zodiac_parsing::tuple_tokenization::{TupleTokenizer, TupleTokenError, TupleValue};
+use zodiac_parsing::tokenization::tuple::{TupleTokenizer, TupleTokenError, TupleValue};
 
 #[test]
 fn empty_parentheses_produces_no_tuple_values() {
