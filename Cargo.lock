@@ -1744,6 +1744,9 @@ version = "0.1.0"
 [[package]]
 name = "zodiac_rendering"
 version = "0.1.0"
+dependencies = [
+ "glium",
+]
 
 [[package]]
 name = "zodiac_rendering_glium"
@@ -1753,6 +1756,7 @@ dependencies = [
  "image",
  "legion",
  "zodiac_entities",
+ "zodiac_rendering",
 ]
 
 [[package]]

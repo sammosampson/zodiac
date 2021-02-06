@@ -2,14 +2,25 @@ use glium::*;
 
 #[derive(Copy, Clone)]
 pub struct RenderPrimitive {
-    position: [u16; 2],
-    dimensions: [u16; 2],
-    inner_colour: [f32; 4],
-    outer_colour: [f32; 4],
-    identification: [u16; 2],
-    extra_data_1: [f32; 4],
-    extra_data_2: [f32; 4]
+    pub position: [u16; 2],
+    pub dimensions: [u16; 2],
+    pub inner_colour: [f32; 4],
+    pub outer_colour: [f32; 4],
+    pub identification: [u16; 2],
+    pub extra_data_1: [f32; 4],
+    pub extra_data_2: [f32; 4]
 }
+
+implement_vertex!(
+    RenderPrimitive,
+    position, 
+    dimensions, 
+    inner_colour,
+    outer_colour,
+    identification,
+    extra_data_1,
+    extra_data_2
+);
 
 impl RenderPrimitive {
     pub fn with_position_size_colours_identification_and_data(
@@ -82,14 +93,3 @@ impl RenderPrimitive {
         ) 
     }
 }
-
-implement_vertex!(
-    RenderPrimitive,
-    position, 
-    dimensions, 
-    inner_colour,
-    outer_colour,
-    identification,
-    extra_data_1,
-    extra_data_2
-);

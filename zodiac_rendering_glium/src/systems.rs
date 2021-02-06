@@ -1,9 +1,8 @@
 use legion::*;
 use legion::world::*;
-use glium::*;
-use glium::texture::Texture2dArray;
 use zodiac_entities::components::*;
 use crate::primitives::*;
+use crate::rendering::*;
 
 #[system(simple)]
 #[read_component(Position)]
@@ -14,14 +13,8 @@ use crate::primitives::*;
 #[read_component(StrokeWidth)]
 #[read_component(CornerRadii)]
 #[read_component(GlyphIndex)]
-pub fn render_primitives(
-    world: &mut SubWorld,
-    #[resource] display: &Display,
-    #[resource] shader_program: &Program,
-    #[resource] font_array: &Texture2dArray) {
-
+pub fn render_primitives(world: &mut SubWorld, #[resource] renderer: &mut GliumRenderer) {
     let mut primitives: Vec::<RenderPrimitive> = vec!();
-
     let mut query = <(&Position, &Dimensions, &Colour, &StrokeColour, &StrokeWidth, &CornerRadii)>
         ::query()
         .filter(component::<Rectangle>());
@@ -67,27 +60,8 @@ pub fn render_primitives(
         );
     }
 
-    let vertices = VertexBuffer::dynamic(display, &primitives).unwrap();
-    let indices = glium::index::NoIndices(glium::index::PrimitiveType::Points);
-
-    let framebuffer_dimensions = display.get_framebuffer_dimensions();
-    let resolution: [f32;2] = [framebuffer_dimensions.0 as f32, framebuffer_dimensions.1 as f32];
-
-    let uniforms = uniform! {
-        uResolution: resolution,
-        font_buffer: font_array.sampled().magnify_filter(glium::uniforms::MagnifySamplerFilter::Linear)
-    };
-
-    let params = glium::DrawParameters {
-        blend: glium::Blend::alpha_blending(),
-        .. Default::default()
-    };
-
-    let mut target = display.draw();
     let draw_frame_start = std::time::Instant::now();
-    target.clear_color(0.3, 0.3, 0.5, 1.0);
-    target.draw(&vertices, &indices, shader_program, &uniforms, &params).unwrap();
-    target.finish().unwrap();
+    renderer.render(&primitives).unwrap();
     let draw_time = std::time::Instant::now() - draw_frame_start;
     println!("frame draw time: {:?}", draw_time);
 }

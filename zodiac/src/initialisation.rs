@@ -3,24 +3,18 @@ use legion::*;
 use glium::*;
 use glium::glutin::event_loop::*;
 use glutin::event::*;
-use glium::backend::glutin::*;
-use glium::texture::*;
 use zodiac_parsing::tokenization::source::SourceTokenizer;
 use zodiac_parsing::tokenization::abstract_syntax::{AbstractSyntaxTokenizer, AbstractSyntaxTokenError};
 use zodiac_resources::file_system;
 use zodiac_rendering_glium::systems::*;
-use zodiac_rendering_glium::shaders::*;
-use zodiac_rendering_glium::display::*;
-use zodiac_rendering_glium::fonts::*;
+use zodiac_rendering_glium::rendering::*;
 use crate::abstract_syntax::world_building::WorldBuilder;
 
 #[derive(Debug)]
 pub enum ZodiacError {
     FailedToLoadZodFile(file_system::Error),
     FailedParse(AbstractSyntaxTokenError),
-    FailedToDisplayWindow(DisplayCreationError),
-    FailedToCreateShaders(ProgramCreationError),
-    FailedToLoadFont(TextureCreationError)
+    FailedToRender(RendererError)
 }
 
 impl From<AbstractSyntaxTokenError> for ZodiacError {
@@ -28,27 +22,16 @@ impl From<AbstractSyntaxTokenError> for ZodiacError {
         ZodiacError::FailedParse(error)
     }
 }
+
 impl From<file_system::Error> for ZodiacError {
     fn from(error: file_system::Error) -> Self {
         ZodiacError::FailedToLoadZodFile(error)
     }
 }
 
-impl From<DisplayCreationError> for ZodiacError {
-    fn from(error: DisplayCreationError) -> Self {
-        ZodiacError::FailedToDisplayWindow(error)
-    }
-}
-
-impl From<ProgramCreationError> for ZodiacError {
-    fn from(error: ProgramCreationError) -> Self {
-        ZodiacError::FailedToCreateShaders(error)
-    }
-}
-
-impl From<TextureCreationError> for ZodiacError {
-    fn from(error: TextureCreationError) -> Self {
-        ZodiacError::FailedToLoadFont(error)
+impl From<RendererError> for ZodiacError {
+    fn from(error: RendererError) -> Self {
+        ZodiacError::FailedToRender(error)
     }
 }
 
@@ -91,13 +74,9 @@ impl Application {
     
     pub fn run(mut self) -> Result<(), ZodiacError> {
         let event_loop: EventLoop<()> = EventLoop::new();
-        let display = create_display(&event_loop)?;
-        let shader_program = create_shader_program(&display)?;
-        let font_array = create_font_array(&display)?;
+        let renderer = GliumRenderer::new(&event_loop)?;
 
-        &mut self.resources.insert(display);
-        &mut self.resources.insert(shader_program);
-        &mut self.resources.insert(font_array);
+        &mut self.resources.insert(renderer);
 
         event_loop.run(move |ev, _, control_flow| {
             &mut self.schedule.execute(&mut self.world, &mut self.resources);
