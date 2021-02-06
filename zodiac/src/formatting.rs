@@ -4,7 +4,7 @@ use legion::*;
     abstract_syntax::AbstractSyntaxTokenizer
 }; */
 
-use crate::abstract_syntax::world_building::*;
+use crate::components::*;
 
 pub trait Pretty {
     fn to_pretty(&mut self);

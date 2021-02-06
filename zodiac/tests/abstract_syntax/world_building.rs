@@ -2,6 +2,7 @@ use legion::*;
 use zodiac_parsing::tokenization::abstract_syntax::*;
 use zodiac_parsing::tokenization::source::*;
 use zodiac::abstract_syntax::world_building::*;
+use zodiac::components::*;
 
 #[test]
 fn parse_circle_produces_circle_components_on_entity() {

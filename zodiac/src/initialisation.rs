@@ -6,7 +6,9 @@ use legion::*;
 use zodiac_parsing::tokenization::source::SourceTokenizer;
 use zodiac_parsing::tokenization::abstract_syntax::{AbstractSyntaxTokenizer, AbstractSyntaxTokenError};
 use zodiac_resources::file_system;
+
 use crate::abstract_syntax::world_building::WorldBuilder;
+use crate::systems::*;
 use crate::formatting::Pretty;
 
 #[derive(Debug)]
@@ -26,19 +28,30 @@ impl From<file_system::Error> for ZodiacError {
     }
 }
 
-fn parse_to_renderer(text: &str) -> Result<(), ZodiacError> {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string(text));
+
+pub fn initialise(zod_relative_folder_path: &str) -> Result<(), ZodiacError>  {
     let mut world = World::default();
-    tokenizer.build_world(&mut world)?;
+    let mut resources = Resources::default();
+
+    setup_world(&mut world, &mut resources);
+    parse_to_world(&mut world, load_app_zod_file_from_relative_path(zod_relative_folder_path)?.as_str())
+}
+
+fn setup_world(world: &mut World, resources: &mut Resources) {
+    let mut schedule = Schedule::builder()
+        .add_system(render_rectangles_system())
+        .build();
+
+    schedule.execute(world, resources);
+}
+
+fn parse_to_world(world: &mut World, text: &str) -> Result<(), ZodiacError> {
+    let mut tokens = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string(text));
+    tokens.build_world(world)?;
     world.to_pretty();
     Ok(())
 }
 
-pub fn initialise(zod_relative_folder_path: &str) -> Result<(), ZodiacError>  {
-    parse_to_renderer(load_app_zod_file_from_relative_path(zod_relative_folder_path)?.as_str())
-}
-
 fn load_app_zod_file_from_relative_path(zod_relative_folder_path: &str) -> Result<String, ZodiacError> {
-    file_system::load_app_zod_file_from_relative_path(zod_relative_folder_path)
-        .map_err(|error|ZodiacError::from(error))
+    Ok(file_system::load_app_zod_file_from_relative_path(zod_relative_folder_path)?)
 }
