@@ -1,13 +1,9 @@
 extern crate zodiac;
-use zodiac::initialisation::{ initialise, ZodiacError };
+use zodiac::initialisation::Application;
 
 fn main() {
-    if let Err(e) = run() {
-        println!("{:?}", e);
-    }
-}
-
-fn run() -> Result<(), ZodiacError> {
-    initialise("assets/test_zods")?;
-    Ok(())
+    Application::build().initialise("assets/test_zods")
+        .unwrap()
+        .run()
+        .unwrap();
 }

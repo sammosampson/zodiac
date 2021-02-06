@@ -60,3 +60,7 @@ pub struct CornerRadii {
     pub right_bottom: f32,
     pub left_bottom: f32,
 }
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Render {
+}

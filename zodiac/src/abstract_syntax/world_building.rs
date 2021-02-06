@@ -1,6 +1,6 @@
 use legion::*;
 use legion::storage::*;
-use crate::components::*;
+use zodiac_entities::components::*;
 use zodiac_parsing::tokenization::abstract_syntax::{
     AbstractSyntaxTokenError,
     AbstractSyntaxTokenResult,

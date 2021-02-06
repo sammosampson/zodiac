@@ -4,5 +4,38 @@
     colour=(1.0, 1.0, 1.0, 1.0)
     stroke-colour=(0.0, 0.0, 0.0, 1.0)
     stroke-width=3
-    corner-radii=(1.0, 2.3, 0.2, 0.6)
+    corner-radii=(0.2, 0.3, 0.4, 0.5)
+/>
+
+<rect
+    position=(300, 100)
+    dimensions=(200, 200)
+    colour=(1.0, 1.0, 1.0, 1.0)
+    stroke-colour=(0.0, 0.0, 0.0, 1.0)
+    stroke-width=3
+    corner-radii=(0.2, 0.3, 0.4, 0.5)
+/>
+
+<rect
+    position=(500, 100)
+    dimensions=(200, 200)
+    colour=(1.0, 1.0, 1.0, 1.0)
+    stroke-colour=(0.0, 0.0, 0.0, 1.0)
+    stroke-width=3
+    corner-radii=(0.2, 0.3, 0.4, 0.5)
+/>
+
+ <circle
+    position=(100, 100)
+    radius=100
+    colour=(1.0, 1.0, 1.0, 1.0)
+    stroke-colour=(0.0, 0.0, 0.0, 1.0)
+    stroke-width=5
+/>
+
+<text
+    position=(400, 100)
+    dimensions=(600, 600)
+    colour=(0.0, 0.0, 0.0, 1.0)
+    glyph-index=37
 />
