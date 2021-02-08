@@ -3,85 +3,101 @@ use glium::*;
 use glium::texture::Texture2dArray;
 use glium::uniforms::*;
 use glium::index::*;
-use glium::vertex::BufferCreationError;
 use glium::glutin::event_loop::*;
-use glium::backend::glutin::*;
-use glium::texture::*;
+
+use zodiac_rendering::rendering::*;
+
 use crate::primitives::*;
 use crate::shaders::*;
 use crate::display::*;
 use crate::fonts::*;
 
-#[derive(Debug)]
-pub enum RendererError {
-    FailedToDisplayWindow,
-    FailedToCreateShaders,
-    FailedToLoadFont,
-    BufferSwapError,
-    BufferCreationError,
-    DrawError
-}
-
-impl From<SwapBuffersError> for RendererError {
-    fn from(_: SwapBuffersError) -> Self {
-        RendererError::BufferSwapError
-    }
-}
-
-impl From<BufferCreationError> for RendererError {
-    fn from(_: BufferCreationError) -> Self {
-        RendererError::BufferCreationError
-    }
-}
-
-impl From<DrawError> for RendererError {
-    fn from(_: DrawError) -> Self {
-        RendererError::DrawError
-    }
-}
-
-impl From<DisplayCreationError> for RendererError {
-    fn from(_: DisplayCreationError) -> Self {
-        RendererError::FailedToDisplayWindow
-    }
-}
-
-impl From<ProgramCreationError> for RendererError {
-    fn from(_: ProgramCreationError) -> Self {
-        RendererError::FailedToCreateShaders
-    }
-}
-
-impl From<TextureCreationError> for RendererError {
-    fn from(_: TextureCreationError) -> Self {
-        RendererError::FailedToLoadFont
-    }
-}
-
 pub struct GliumRenderer {
     display: Display,
     shader_program: Program,
     font_array: Texture2dArray,
+    vertex_buffer: VertexBuffer::<RenderPrimitive>,
     resolution: [f32;2]
 }
 
 impl GliumRenderer {
     pub fn new(event_loop: &EventLoop<()>) -> Result<Self, RendererError> {
-        let display = create_display(event_loop)?;
-        let shader_program = create_shader_program(&display)?;
-        let font_array = create_font_array(&display)?;
+        let display = create_display(event_loop).map_err(|_|RendererError::FailedToDisplayWindow)?;
+        let shader_program = create_shader_program(&display).map_err(|_|RendererError::FailedToCreateShaders)?;
+        let font_array = create_font_array(&display).map_err(|_|RendererError::FailedToLoadFont)?;
         let framebuffer_dimensions = display.get_framebuffer_dimensions();
+        let vertex_buffer = VertexBuffer::<RenderPrimitive>::empty_dynamic(&display, 16384).map_err(|_|RendererError::BufferCreationError)?;
         
         Ok(Self {
             display,
             shader_program,
             font_array,
-            resolution: [framebuffer_dimensions.0 as f32, framebuffer_dimensions.1 as f32]
+            resolution: [framebuffer_dimensions.0 as f32, framebuffer_dimensions.1 as f32],
+            vertex_buffer
         })
     }
+      
+    fn queue_primitive_for_render(&mut self, index: usize, to_queue: RenderPrimitive) {
+        self.vertex_buffer.map_write().set(index, to_queue)
+    }
+}
 
-    pub fn render(&mut self, primitives: &Vec::<RenderPrimitive>) -> Result<(), RendererError> {
-        let vertices = VertexBuffer::dynamic(&self.display, primitives)?;
+impl Renderer for GliumRenderer {
+    fn queue_rectangle_for_render(
+        &mut self,
+        index: usize,
+        position: [u16; 2],
+        dimensions: [u16; 2],
+        inner_colour: [f32; 4],
+        outer_colour: [f32; 4],
+        stroke_width: f32,
+        corner_radii: [f32; 4]) {
+        self.queue_primitive_for_render(
+            index,
+            RenderPrimitive::rectangle(
+                position,
+                dimensions,
+                inner_colour,
+                outer_colour,
+                stroke_width,
+                corner_radii));
+    }
+
+    fn queue_circle_for_render(
+        &mut self,
+        index: usize,
+        position: [u16; 2],
+        radius: u16,
+        inner_colour: [f32; 4],
+        outer_colour: [f32; 4],
+        stroke_width: f32) {
+        self.queue_primitive_for_render(
+            index,
+            RenderPrimitive::circle(
+                position,
+                radius,
+                inner_colour,
+                outer_colour,
+                stroke_width));
+    }
+
+    fn queue_text_for_render(
+        &mut self,
+        index: usize,
+        position: [u16; 2],
+        dimensions: [u16; 2],
+        colour: [f32; 4],
+        glyph_index: u16) {
+        self.queue_primitive_for_render(
+            index,
+            RenderPrimitive::text(
+                position,
+                dimensions,
+                colour,
+                glyph_index));
+    }
+
+    fn render(&mut self) -> Result<(), RendererError> {
         let indices = NoIndices(glium::index::PrimitiveType::Points);
 
         let uniforms = uniform! {
@@ -96,8 +112,8 @@ impl GliumRenderer {
 
         let mut target = self.display.draw();
         target.clear_color(0.3, 0.3, 0.5, 1.0);
-        target.draw(&vertices, &indices, &self.shader_program, &uniforms, &params)?;
-        target.finish()?;
+        target.draw(&self.vertex_buffer, &indices, &self.shader_program, &uniforms, &params).map_err(|_|RendererError::DrawError)?;
+        target.finish().map_err(|_|RendererError::BufferSwapError)?;
         Ok(())
     }
 }

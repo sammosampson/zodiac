@@ -6,8 +6,9 @@ use glutin::event::*;
 use zodiac_parsing::tokenization::source::SourceTokenizer;
 use zodiac_parsing::tokenization::abstract_syntax::{AbstractSyntaxTokenizer, AbstractSyntaxTokenError};
 use zodiac_resources::file_system;
-use zodiac_rendering_glium::systems::*;
+use zodiac_rendering::rendering::*;
 use zodiac_rendering_glium::rendering::*;
+use crate::systems::*;
 use crate::abstract_syntax::world_building::WorldBuilder;
 
 #[derive(Debug)]
@@ -47,7 +48,7 @@ impl Application {
         let resources = Resources::default();
         let schedule = Schedule::builder()
             //.add_system(window_event_loop_system())
-            .add_thread_local(render_primitives_system())
+            .add_thread_local(render_primitives_system::<GliumRenderer>())
             .build();
         
         Self {

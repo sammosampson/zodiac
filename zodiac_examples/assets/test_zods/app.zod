@@ -6,7 +6,6 @@
     stroke-width=3
     corner-radii=(0.2, 0.3, 0.4, 0.5)
 />
-
 <rect
     position=(300, 100)
     dimensions=(200, 200)
@@ -15,7 +14,6 @@
     stroke-width=3
     corner-radii=(0.2, 0.3, 0.4, 0.5)
 />
-
 <rect
     position=(500, 100)
     dimensions=(200, 200)
@@ -24,7 +22,6 @@
     stroke-width=3
     corner-radii=(0.2, 0.3, 0.4, 0.5)
 />
-
  <circle
     position=(100, 100)
     radius=100
@@ -32,10 +29,15 @@
     stroke-colour=(0.0, 0.0, 0.0, 1.0)
     stroke-width=5
 />
-
 <text
     position=(400, 100)
-    dimensions=(600, 600)
+    dimensions=(900, 900)
     colour=(0.0, 0.0, 0.0, 1.0)
-    glyph-index=37
+    glyph-index=38
+/>
+<text
+    position=(800, 100)
+    dimensions=(900, 900)
+    colour=(0.0, 0.0, 0.0, 1.0)
+    glyph-index=39
 />
