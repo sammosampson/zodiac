@@ -56,7 +56,7 @@ impl<I: Iterator<Item=AbstractSyntaxTokenResult>> WorldBuilder for I {
                             add_component(world, current_entity, CornerRadii {
                                 left_top, right_top, right_bottom, left_bottom
                             }),
-                        AbstractSyntaxToken::CompleteControl => {}
+                        AbstractSyntaxToken::CompleteControl => add_component(world, current_entity, Dirty {}),
                     }
                     last_value = value;
                 },

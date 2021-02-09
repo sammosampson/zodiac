@@ -1,5 +1,6 @@
 use legion::*;
 use legion::world::*;
+use legion::systems::*;
 use zodiac_entities::components::*;
 use zodiac_rendering::rendering::*;
 
@@ -15,7 +16,7 @@ use zodiac_rendering::rendering::*;
 pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource] renderer: &mut T) {
     let mut query = <(&Position, &Dimensions, &Colour, &StrokeColour, &StrokeWidth, &CornerRadii)>
         ::query()
-        .filter(component::<Rectangle>());
+        .filter(component::<Dirty>() & component::<Rectangle>());
 
     let mut index = 0;
     
@@ -33,7 +34,7 @@ pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource]
 
     let mut query = <(&Position, &Radius, &Colour, &StrokeColour, &StrokeWidth)>
         ::query()
-        .filter(component::<Circle>());
+        .filter(component::<Dirty>() & component::<Circle>());
     
     for (position, radius, colour, stroke_colour, stroke_width) in query.iter_mut(world) {
         renderer.queue_circle_for_render(
@@ -48,7 +49,7 @@ pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource]
 
     let mut query = <(&Position, &Dimensions, &Colour, &GlyphIndex)>
         ::query()
-        .filter(component::<Text>());
+        .filter(component::<Dirty>() & component::<Text>());
     
     for (position, dimensions, colour, glyph_index) in query.iter_mut(world) {
         renderer.queue_text_for_render(
@@ -60,6 +61,10 @@ pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource]
         index += 1;
     }
 
+    if index == 0 {
+        return;
+    }
+
     let draw_frame_start = std::time::Instant::now();
     renderer.render().unwrap();
     let draw_time = std::time::Instant::now() - draw_frame_start;
@@ -67,18 +72,7 @@ pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource]
 }
 
 #[system(for_each)]
-pub fn window_event_loop(
-    _rectangle: &Rectangle, 
-    position: &Position, 
-    dimensions: &Dimensions, 
-    colour: &Colour,
-    stroke_colour: &StrokeColour,
-    stroke_width: &StrokeWidth, 
-    corner_radii: &CornerRadii) {
-        println!("{:?}", position);
-        println!("{:?}", dimensions);
-        println!("{:?}", colour);
-        println!("{:?}", stroke_colour);
-        println!("{:?}", stroke_width);
-        println!("{:?}", corner_radii);
+#[filter(component::<Dirty>())]
+pub fn complete_render(command_buffer: &mut CommandBuffer, entity: &Entity) {
+    command_buffer.remove_component::<Dirty>(*entity);
 }

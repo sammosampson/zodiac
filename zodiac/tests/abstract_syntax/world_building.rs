@@ -2,7 +2,7 @@ use legion::*;
 use zodiac_parsing::tokenization::abstract_syntax::*;
 use zodiac_parsing::tokenization::source::*;
 use zodiac::abstract_syntax::world_building::*;
-use zodiac::components::*;
+use zodiac_entities::components::*;
 
 #[test]
 fn parse_circle_produces_circle_components_on_entity() {
@@ -15,8 +15,10 @@ fn parse_circle_produces_circle_components_on_entity() {
         stroke-width=3
     />").unwrap();
     let mut entities = 0;
-    let mut query = <(&Circle, &Position, &Radius, &Colour, &StrokeColour, &StrokeWidth)>::query();
-    for (_circle, position, radius, colour, stroke_colour, stroke_width) in query.iter(&mut world) {
+    let mut query = <(&Position, &Radius, &Colour, &StrokeColour, &StrokeWidth)>::query()
+        .filter(component::<Dirty>() & component::<Circle>());
+
+    for (position, radius, colour, stroke_colour, stroke_width) in query.iter(&mut world) {
         entities += 1;
         assert_eq!(position.x, 200);
         assert_eq!(position.y, 100);
@@ -46,8 +48,10 @@ fn parse_rect_produces_rectangle_components_on_entity() {
         corner-radii=(0.5, 1.5, 2.5, 3.5)
     />").unwrap();
     let mut entities = 0;
-    let mut query = <(&Rectangle, &Position, &Dimensions, &Colour, &StrokeColour, &StrokeWidth, &CornerRadii)>::query();
-    for (_rectangle, position, dimensions, colour, stroke_colour, stroke_width, corner_radii) in query.iter(&mut world) {
+    let mut query = <(&Position, &Dimensions, &Colour, &StrokeColour, &StrokeWidth, &CornerRadii)>::query()
+        .filter(component::<Dirty>() & component::<Rectangle>());
+
+    for (position, dimensions, colour, stroke_colour, stroke_width, corner_radii) in query.iter(&mut world) {
         entities += 1;
         assert_eq!(position.x, 200);
         assert_eq!(position.y, 100);
@@ -80,8 +84,10 @@ fn parse_text_produces_text_components_on_entity() {
         colour=(1.0, 2.0, 3.0, 4.0)
     />").unwrap();
     let mut entities = 0;
-    let mut query = <(&Text, &Position, &Dimensions, &GlyphIndex, &Colour)>::query();
-    for (_text, position, dimensions, glyph_index, colour) in query.iter(&mut world) {
+    let mut query = <(&Position, &Dimensions, &GlyphIndex, &Colour)>::query()
+        .filter(component::<Dirty>() & component::<Text>());
+
+    for (position, dimensions, glyph_index, colour) in query.iter(&mut world) {
         entities += 1;
         assert_eq!(position.x, 200);
         assert_eq!(position.y, 100);

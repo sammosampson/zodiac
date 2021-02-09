@@ -62,5 +62,5 @@ pub struct CornerRadii {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Render {
+pub struct Dirty {
 }

@@ -49,6 +49,7 @@ impl Application {
         let schedule = Schedule::builder()
             //.add_system(window_event_loop_system())
             .add_thread_local(render_primitives_system::<GliumRenderer>())
+            .add_thread_local(complete_render_system())
             .build();
         
         Self {
