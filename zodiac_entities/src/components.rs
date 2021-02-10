@@ -1,3 +1,20 @@
+use legion::*;
+
+#[derive(PartialEq, PartialOrd, Debug, Copy, Clone)]
+pub enum LayoutType {
+    HorizontalStack
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Relationship {
+    pub parent: Entity,
+    pub next_sibling: Entity
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Container {
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Circle {
 }
@@ -8,6 +25,11 @@ pub struct Rectangle {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Text {
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Layout {
+    pub layout_type: LayoutType
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

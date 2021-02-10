@@ -32,12 +32,16 @@ impl<I: Iterator<Item=AbstractSyntaxTokenResult>> WorldBuilder for I {
                         current_entity = create_entity(world);
                     }
                     match value {
+                        AbstractSyntaxToken::Container => 
+                            add_component(world, current_entity, Container {}),
                         AbstractSyntaxToken::Circle =>
                             add_component(world, current_entity, Circle {}),
                         AbstractSyntaxToken::Rectangle =>
                             add_component(world, current_entity, Rectangle {}),
                         AbstractSyntaxToken::Text =>
                             add_component(world, current_entity, Text {}),
+                        AbstractSyntaxToken::Layout(layout_type) => 
+                            add_component(world, current_entity, Layout { layout_type }),
                         AbstractSyntaxToken::Position((x, y)) =>
                             add_component(world, current_entity, Position { x, y }),
                         AbstractSyntaxToken::Dimensions((x, y)) =>

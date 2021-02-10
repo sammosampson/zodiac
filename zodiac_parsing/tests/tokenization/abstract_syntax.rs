@@ -1,5 +1,14 @@
+use zodiac_entities::components::*;
 use zodiac_parsing::tokenization::abstract_syntax::*;
 use zodiac_parsing::tokenization::source::*;
+
+#[test]
+fn parse_container_produces_container_node() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<container />"));
+    assert_eq!(AbstractSyntaxToken::Container, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
 
 #[test]
 fn parse_rect_produces_rectangle_node() {
@@ -33,6 +42,25 @@ fn parse_multiple_controls_produces_multiple_completes() {
     assert_eq!(AbstractSyntaxToken::Circle, tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::Text, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+
+#[test]
+fn parse_layout_produces_layout_node() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<container layout=\"HorizontalStack\" />"));
+    assert_eq!(AbstractSyntaxToken::Container, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::Layout(LayoutType::HorizontalStack), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
+fn unknown_layout_produces_error() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<container layout=\"XorizontalStack\" />"));
+    assert_eq!(AbstractSyntaxToken::Container, tokenizer.next().unwrap().unwrap());
+    assert_eq!(Err(AbstractSyntaxTokenError::BadLayoutValue), tokenizer.next().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
@@ -173,7 +201,7 @@ fn parse_with_unknown_control_produces_error() {
 }
 
 #[test]
-fn parse_with_unknown_property_type_produces_error() {
+fn parse_with_unknown_float_property_type_produces_error() {
     let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<circle radius=1.0 />"));
     assert_eq!(AbstractSyntaxToken::Circle, tokenizer.next().unwrap().unwrap());
     assert_eq!(Err(AbstractSyntaxTokenError::UnusedPropertyType), tokenizer.next().unwrap());
@@ -182,7 +210,16 @@ fn parse_with_unknown_property_type_produces_error() {
 }
 
 #[test]
-fn parse_with_unknown_property_produces_error() {
+fn parse_with_unknown_string_property_produces_error() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<circle radius=\"1.0\" />"));
+    assert_eq!(AbstractSyntaxToken::Circle, tokenizer.next().unwrap().unwrap());
+    assert_eq!(Err(AbstractSyntaxTokenError::UnknownProperty), tokenizer.next().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
+fn parse_with_unknown_int_property_produces_error() {
     let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<circle head=1 />"));
     assert_eq!(AbstractSyntaxToken::Circle, tokenizer.next().unwrap().unwrap());
     assert_eq!(Err(AbstractSyntaxTokenError::UnknownProperty), tokenizer.next().unwrap());

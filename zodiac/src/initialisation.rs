@@ -8,7 +8,7 @@ use zodiac_parsing::tokenization::abstract_syntax::{AbstractSyntaxTokenizer, Abs
 use zodiac_resources::file_system;
 use zodiac_rendering::rendering::*;
 use zodiac_rendering_glium::rendering::*;
-use crate::systems::*;
+use crate::systems::rendering::*;
 use crate::abstract_syntax::world_building::WorldBuilder;
 
 #[derive(Debug)]

@@ -1,13 +1,15 @@
 
-
+use zodiac_entities::components::*;
 use crate::tokenization::source::{SourceTokenResult, SourceTokenError, SourceToken, SourceTokenPropertyValue};
 use crate::tokenization::tuple::{TupleTokenizer, TupleTokenUnsignedShortIterator, TupleTokenFloatIterator};
 
 #[derive(PartialEq, PartialOrd, Debug)]
 pub enum AbstractSyntaxToken {
+    Container,
     Circle,
     Rectangle,
     Text,
+    Layout(LayoutType),
     Position((u16, u16)),
     Dimensions((u16, u16)),
     Radius(u16),
@@ -25,6 +27,7 @@ pub enum AbstractSyntaxTokenError {
     UnknownControl,
     UnusedPropertyType,
     UnknownProperty,
+    BadLayoutValue,
     BadPositionValue,
     BadDimensionsValue,
     BadColourValue,
@@ -76,6 +79,7 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
     
     fn transition(&mut self, token: SourceToken<'a>) -> AbstractSyntaxTokenOption {
         match token {
+            SourceToken::Control("container") => Some(Ok(AbstractSyntaxToken::Container)),
             SourceToken::Control("rect") => Some(Ok(AbstractSyntaxToken::Rectangle)),
             SourceToken::Control("circle") => Some(Ok(AbstractSyntaxToken::Circle)),
             SourceToken::Control("text") => Some(Ok(AbstractSyntaxToken::Text)),
@@ -91,6 +95,17 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
                             "stroke-width" => Some(Ok(AbstractSyntaxToken::StrokeWidth(value as u16))),
                             "radius" => Some(Ok(AbstractSyntaxToken::Radius(value as u16))),
                             "glyph-index" => Some(Ok(AbstractSyntaxToken::GlyphIndex(value as u16))),
+                            _ => Some(Err(AbstractSyntaxTokenError::UnknownProperty))
+                        }
+                    },
+                    SourceTokenPropertyValue::String(value) => {
+                        match self.current_property {
+                            "layout" => {
+                                match value {
+                                    "HorizontalStack" => return Some(Ok(AbstractSyntaxToken::Layout(LayoutType::HorizontalStack))),
+                                    _ => return Some(Err(AbstractSyntaxTokenError::BadLayoutValue))
+                                }
+                            },
                             _ => Some(Err(AbstractSyntaxTokenError::UnknownProperty))
                         }
                     },

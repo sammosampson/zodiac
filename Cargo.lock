@@ -1774,6 +1774,9 @@ dependencies = [
 [[package]]
 name = "zodiac_entities"
 version = "0.1.0"
+dependencies = [
+ "legion",
+]
 
 [[package]]
 name = "zodiac_examples"
@@ -1786,6 +1789,9 @@ dependencies = [
 [[package]]
 name = "zodiac_parsing"
 version = "0.1.0"
+dependencies = [
+ "zodiac_entities",
+]
 
 [[package]]
 name = "zodiac_rendering"

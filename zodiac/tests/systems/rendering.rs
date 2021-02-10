@@ -1,6 +1,6 @@
 use rand::*;
 use legion::*;
-use zodiac::systems::*;
+use zodiac::systems::rendering::*;
 use zodiac_rendering::rendering::*;
 use zodiac_entities::components::*;
 

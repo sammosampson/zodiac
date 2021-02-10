@@ -4,6 +4,21 @@ use zodiac_parsing::tokenization::source::*;
 use zodiac::abstract_syntax::world_building::*;
 use zodiac_entities::components::*;
 
+
+#[test]
+fn parse_container_produces_container_components_on_entity() {
+    let mut world = World::default();
+    build_world(&mut world, "<container layout=\"HorizontalStack\" />").unwrap();
+    let mut entities = 0;
+    let mut query = <&Layout>::query()
+        .filter(component::<Dirty>() & component::<Container>());
+
+    for layout in query.iter(&mut world) {
+        entities += 1;
+        assert_eq!(layout.layout_type, LayoutType::HorizontalStack);
+    }
+    assert_eq!(entities, 1);
+}
 #[test]
 fn parse_circle_produces_circle_components_on_entity() {
     let mut world = World::default();
