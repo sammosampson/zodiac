@@ -16,7 +16,7 @@ use zodiac_rendering::rendering::*;
 pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource] renderer: &mut T) {
     let mut query = <(&Position, &Dimensions, &Colour, &StrokeColour, &StrokeWidth, &CornerRadii)>
         ::query()
-        .filter(component::<Dirty>() & component::<Rectangle>());
+        .filter(!component::<Rendered>() & component::<Rectangle>());
 
     let mut index = 0;
     
@@ -34,7 +34,7 @@ pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource]
 
     let mut query = <(&Position, &Radius, &Colour, &StrokeColour, &StrokeWidth)>
         ::query()
-        .filter(component::<Dirty>() & component::<Circle>());
+        .filter(!component::<Rendered>() & component::<Circle>());
     
     for (position, radius, colour, stroke_colour, stroke_width) in query.iter_mut(world) {
         renderer.queue_circle_for_render(
@@ -49,7 +49,7 @@ pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource]
 
     let mut query = <(&Position, &Dimensions, &Colour, &GlyphIndex)>
         ::query()
-        .filter(component::<Dirty>() & component::<Text>());
+        .filter(!component::<Rendered>() & component::<Text>());
     
     for (position, dimensions, colour, glyph_index) in query.iter_mut(world) {
         renderer.queue_text_for_render(
@@ -72,7 +72,7 @@ pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource]
 }
 
 #[system(for_each)]
-#[filter(component::<Dirty>())]
+#[filter(!component::<Rendered>())]
 pub fn complete_render(command_buffer: &mut CommandBuffer, entity: &Entity) {
-    command_buffer.remove_component::<Dirty>(*entity);
+    command_buffer.add_component(*entity, Rendered {});
 }

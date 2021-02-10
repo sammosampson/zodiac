@@ -9,7 +9,7 @@ use zodiac_resources::file_system;
 use zodiac_rendering::rendering::*;
 use zodiac_rendering_glium::rendering::*;
 use crate::systems::rendering::*;
-use crate::abstract_syntax::world_building::WorldBuilder;
+use crate::world_building::abstract_syntax::WorldBuilder;
 
 #[derive(Debug)]
 pub enum ZodiacError {
@@ -47,11 +47,10 @@ impl Application {
         let world = World::default();
         let resources = Resources::default();
         let schedule = Schedule::builder()
-            //.add_system(window_event_loop_system())
             .add_thread_local(render_primitives_system::<GliumRenderer>())
             .add_thread_local(complete_render_system())
             .build();
-        
+            
         Self {
             world,
             resources,
@@ -93,6 +92,7 @@ impl Application {
                         *control_flow = ControlFlow::Exit;
                         return;
                     },
+                    WindowEvent::Resized(_) => {}
                     _ => return,
                 },
                 _ => (),

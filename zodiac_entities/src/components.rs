@@ -1,18 +1,17 @@
 use legion::*;
 
-#[derive(PartialEq, PartialOrd, Debug, Copy, Clone)]
-pub enum LayoutType {
-    HorizontalStack
-}
-
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Relationship {
-    pub parent: Entity,
-    pub next_sibling: Entity
+    pub parent: Option<Entity>,
+    pub next_sibling: Option<Entity>
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Container {
+pub struct HorizontalLayoutContent {
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct CanvasLayoutContent {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -25,11 +24,6 @@ pub struct Rectangle {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Text {
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Layout {
-    pub layout_type: LayoutType
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -84,5 +78,5 @@ pub struct CornerRadii {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Dirty {
+pub struct Rendered {
 }

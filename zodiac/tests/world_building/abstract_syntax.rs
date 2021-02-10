@@ -1,24 +1,21 @@
 use legion::*;
 use zodiac_parsing::tokenization::abstract_syntax::*;
 use zodiac_parsing::tokenization::source::*;
-use zodiac::abstract_syntax::world_building::*;
+use zodiac::world_building::abstract_syntax::*;
 use zodiac_entities::components::*;
-
 
 #[test]
 fn parse_container_produces_container_components_on_entity() {
     let mut world = World::default();
-    build_world(&mut world, "<container layout=\"HorizontalStack\" />").unwrap();
-    let mut entities = 0;
-    let mut query = <&Layout>::query()
-        .filter(component::<Dirty>() & component::<Container>());
-
-    for layout in query.iter(&mut world) {
-        entities += 1;
-        assert_eq!(layout.layout_type, LayoutType::HorizontalStack);
-    }
-    assert_eq!(entities, 1);
+    build_world(&mut world, "<horizontal-layout-content />").unwrap();
+    
+    let entity_count = <&HorizontalLayoutContent>::query()
+        .iter(&mut world)
+        .count();
+    
+    assert_eq!(entity_count, 1);
 }
+
 #[test]
 fn parse_circle_produces_circle_components_on_entity() {
     let mut world = World::default();
@@ -31,7 +28,7 @@ fn parse_circle_produces_circle_components_on_entity() {
     />").unwrap();
     let mut entities = 0;
     let mut query = <(&Position, &Radius, &Colour, &StrokeColour, &StrokeWidth)>::query()
-        .filter(component::<Dirty>() & component::<Circle>());
+        .filter(component::<Circle>());
 
     for (position, radius, colour, stroke_colour, stroke_width) in query.iter(&mut world) {
         entities += 1;
@@ -64,7 +61,7 @@ fn parse_rect_produces_rectangle_components_on_entity() {
     />").unwrap();
     let mut entities = 0;
     let mut query = <(&Position, &Dimensions, &Colour, &StrokeColour, &StrokeWidth, &CornerRadii)>::query()
-        .filter(component::<Dirty>() & component::<Rectangle>());
+        .filter(component::<Rectangle>());
 
     for (position, dimensions, colour, stroke_colour, stroke_width, corner_radii) in query.iter(&mut world) {
         entities += 1;
@@ -100,7 +97,7 @@ fn parse_text_produces_text_components_on_entity() {
     />").unwrap();
     let mut entities = 0;
     let mut query = <(&Position, &Dimensions, &GlyphIndex, &Colour)>::query()
-        .filter(component::<Dirty>() & component::<Text>());
+        .filter(component::<Text>());
 
     for (position, dimensions, glyph_index, colour) in query.iter(&mut world) {
         entities += 1;
@@ -120,26 +117,32 @@ fn parse_text_produces_text_components_on_entity() {
 #[test]
 fn parse_multiple_controls_produces_entities() {
     let mut world = World::default();
-    build_world(&mut world, "<circle position=(200, 100) /><rect position=(200, 100) /><text position=(200, 100) />").unwrap();
-    let mut entities = 0;
-    let mut query = <&Position>::query();
-    for _position in query.iter(&mut world) {
-        entities += 1;
-    }
-    assert_eq!(entities, 3);
+    build_world(
+        &mut world, 
+        "<circle position=(200, 100) /><rect position=(200, 100) /><text position=(200, 100) />")
+        .unwrap();
+    
+    let entity_count = <&Position>::query()
+        .iter(&mut world)
+        .count();
+        
+    assert_eq!(entity_count, 3);
 }
 
 #[test]
 fn parse_malformed_property_produces_error() {
     let mut world = World::default();
-    let result = build_world(&mut world, "<circle position=(200, 100) dimensions=(200, 30x) /><rect position=(200, 100) dimensions=(200, 300) /><text position=(200, 100) />");
+    let result = build_world(
+        &mut world,
+        "<circle position=(200, 100) dimensions=(200, 30x) /><rect position=(200, 100) dimensions=(200, 300) /><text position=(200, 100) />");
+    
     assert_eq!(result, Err(AbstractSyntaxTokenError::BadDimensionsValue));
-    let mut entities = 0;
-    let mut query = <&Position>::query();
-    for _position in query.iter(&mut world) {
-        entities += 1;
-    }
-    assert_eq!(entities, 1);
+    
+    let entity_count = <&Position>::query()
+        .iter(&mut world)
+        .count();
+        
+    assert_eq!(entity_count, 1);
 }
 
 fn build_world(world: &mut World, source: &str) -> Result<(), AbstractSyntaxTokenError> {

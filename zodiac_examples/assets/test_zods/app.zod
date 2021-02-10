@@ -1,4 +1,4 @@
-<container layout="HorizontalStack">
+<horizontal-layout-content>
     <rect
         position=(200, 100)
         dimensions=(200, 200)
@@ -42,4 +42,4 @@
         colour=(0.0, 0.0, 0.0, 1.0)
         glyph-index=39
     />
-<container/>
+</horizontal-layout-content>
