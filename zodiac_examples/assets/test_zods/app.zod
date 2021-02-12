@@ -1,4 +1,4 @@
-<canvas-layout-content>
+<canvas-layout-content offset=(200, 100)>
     <rect
         offset=(200, 100)
         dimensions=(200, 200)
