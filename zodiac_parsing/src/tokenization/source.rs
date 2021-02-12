@@ -313,6 +313,10 @@ impl<'a> SourceTokenizer<'a> {
             self.state = State::EndControl;
             return None;
         }
+        if character == '>' {
+            self.state = State::Start;
+            return None;
+        }
         if character.is_whitespace() {
             return None;
         }
