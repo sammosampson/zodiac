@@ -16,8 +16,9 @@ impl<I: Iterator<Item=AbstractSyntaxTokenResult>> WorldBuilder for I {
                         AbstractSyntaxToken::Circle => entity_builder.create_circle_entity(),
                         AbstractSyntaxToken::Rectangle => entity_builder.create_rectangle_entity(),
                         AbstractSyntaxToken::Text => entity_builder.create_text_entity(),
+                        AbstractSyntaxToken::CanvasLayoutContent => entity_builder.create_canvas_layout_content_entity(),
                         AbstractSyntaxToken::HorizontalLayoutContent => entity_builder.create_horizontal_layout_content_entity(),
-                        AbstractSyntaxToken::Position((x, y)) => entity_builder.add_position_component(x, y),
+                        AbstractSyntaxToken::Offset((x, y)) => entity_builder.add_offset_component(x, y),
                         AbstractSyntaxToken::Dimensions((x, y)) => entity_builder.add_dimensions_component(x, y),
                         AbstractSyntaxToken::Radius(radius) => entity_builder.add_radius_component(radius),
                         AbstractSyntaxToken::StrokeWidth(width) => entity_builder.add_stroke_width_component(width),
@@ -29,7 +30,7 @@ impl<I: Iterator<Item=AbstractSyntaxTokenResult>> WorldBuilder for I {
                             right_top,
                             right_bottom,
                             left_bottom),
-                        AbstractSyntaxToken::CompleteControl => {},
+                        AbstractSyntaxToken::CompleteControl => entity_builder.complete_entity(),
                     }
                 },
                 Err(err) => return Err(err)

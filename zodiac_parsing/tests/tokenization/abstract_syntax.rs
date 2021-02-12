@@ -2,7 +2,15 @@ use zodiac_parsing::tokenization::abstract_syntax::*;
 use zodiac_parsing::tokenization::source::*;
 
 #[test]
-fn parse_container_produces_container_node() {
+fn parse_canvas_layout_container_produces_container_node() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<canvas-layout-content />"));
+    assert_eq!(AbstractSyntaxToken::CanvasLayoutContent, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
+fn parse_horizontal_layout_container_produces_container_node() {
     let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<horizontal-layout-content />"));
     assert_eq!(AbstractSyntaxToken::HorizontalLayoutContent, tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
@@ -84,18 +92,18 @@ fn glyph_index_produces_glyph_index_node() {
 
 #[test]
 fn position_produces_position_node() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text position=(100, 200) />"));
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text offset=(100, 200) />"));
     assert_eq!(AbstractSyntaxToken::Text, tokenizer.next().unwrap().unwrap());
-    assert_eq!(AbstractSyntaxToken::Position((100, 200)), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::Offset((100, 200)), tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
 
 #[test]
 fn malformed_position_produces_error() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text position=(100) />"));
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text offset=(100) />"));
     assert_eq!(AbstractSyntaxToken::Text, tokenizer.next().unwrap().unwrap());
-    assert_eq!(Err(AbstractSyntaxTokenError::BadPositionValue), tokenizer.next().unwrap());
+    assert_eq!(Err(AbstractSyntaxTokenError::BadOffsetValue), tokenizer.next().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }

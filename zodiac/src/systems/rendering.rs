@@ -13,6 +13,7 @@ use zodiac_rendering::rendering::*;
 #[read_component(StrokeWidth)]
 #[read_component(CornerRadii)]
 #[read_component(GlyphIndex)]
+#[read_component(Entity)]
 pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource] renderer: &mut T) {
     let mut query = <(&Position, &Dimensions, &Colour, &StrokeColour, &StrokeWidth, &CornerRadii)>
         ::query()

@@ -7,8 +7,9 @@ pub enum AbstractSyntaxToken {
     Circle,
     Rectangle,
     Text,
+    CanvasLayoutContent,
     HorizontalLayoutContent,
-    Position((u16, u16)),
+    Offset((u16, u16)),
     Dimensions((u16, u16)),
     Radius(u16),
     GlyphIndex(u16),
@@ -26,7 +27,7 @@ pub enum AbstractSyntaxTokenError {
     UnusedPropertyType,
     UnknownProperty,
     BadLayoutValue,
-    BadPositionValue,
+    BadOffsetValue,
     BadDimensionsValue,
     BadColourValue,
     BadStrokeColourValue,
@@ -77,6 +78,7 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
     
     fn transition(&mut self, token: SourceToken<'a>) -> AbstractSyntaxTokenOption {
         match token {
+            SourceToken::Control("canvas-layout-content") => Some(Ok(AbstractSyntaxToken::CanvasLayoutContent)),
             SourceToken::Control("horizontal-layout-content") => Some(Ok(AbstractSyntaxToken::HorizontalLayoutContent)),
             SourceToken::Control("rect") => Some(Ok(AbstractSyntaxToken::Rectangle)),
             SourceToken::Control("circle") => Some(Ok(AbstractSyntaxToken::Circle)),
@@ -99,10 +101,10 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
                     SourceTokenPropertyValue::Tuple(value) => {
                         let tuple_tokenizer = TupleTokenizer::from_string(value);
                         return match self.current_property {
-                            "position" => {
+                            "offset" => {
                                 match TupleTokenUnsignedShortIterator::from_iterator(tuple_tokenizer).collect_specific_amount(2) {
-                                    Ok(values) => Some(Ok(AbstractSyntaxToken::Position((values[0], values[1])))),
-                                    Err(_) => Some(Err(AbstractSyntaxTokenError::BadPositionValue))
+                                    Ok(values) => Some(Ok(AbstractSyntaxToken::Offset((values[0], values[1])))),
+                                    Err(_) => Some(Err(AbstractSyntaxTokenError::BadOffsetValue))
                                 }
                             },
                             "dimensions" => {

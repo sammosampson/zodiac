@@ -1,8 +1,9 @@
 use legion::*;
-/* use zodiac_parsing::tokenization::{
+use legion::world::*;
+ use zodiac_parsing::tokenization::{
     source::SourceTokenResult,
     abstract_syntax::AbstractSyntaxTokenizer
-}; */
+};
 
 use zodiac_entities::components::*;
 
@@ -21,7 +22,7 @@ pub trait Pretty {
     }
 } */
 
-/* impl<'a, I> Pretty for AbstractSyntaxTokenizer<'a, I> where I : Iterator<Item=SourceTokenResult<'a>> {
+impl<'a, I> Pretty for AbstractSyntaxTokenizer<'a, I> where I : Iterator<Item=SourceTokenResult<'a>> {
     fn to_pretty(&mut self) {
         for token in self {
             match token {
@@ -30,14 +31,26 @@ pub trait Pretty {
             }
         }
     }
-} */
+}
 
 impl Pretty for World {
     fn to_pretty(&mut self) {
-        let mut query = <(&Position, &Dimensions)>::query();
-        for (position, dimensions) in query.iter(self) {
-            println!("{:?}", position);
-            println!("{:?}", dimensions);
+        let mut query = <(Entity, &Offset, &Relationship)>::query();
+        for (entity, offset, relationship) in query.iter(self) {
+            println!("{:?}", entity);
+            println!("{:?}", offset);
+            println!("{:?}", relationship);
+        }
+    }
+}
+
+impl<'a> Pretty for SubWorld<'a> {
+    fn to_pretty(&mut self) {
+        let mut query = <(Entity, &Offset, &Relationship)>::query();
+        for (entity, offset, relationship) in query.iter(self) {
+            println!("{:?}", entity);
+            println!("{:?}", offset);
+            println!("{:?}", relationship);
         }
     }
 }
