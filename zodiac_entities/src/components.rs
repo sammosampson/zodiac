@@ -10,7 +10,27 @@ pub struct Relationship {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ResizeRequest {
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct RelationshipMapped {
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct LeftOffsetMapped {
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct TopOffsetMapped {
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WidthMapped {
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct HeightMapped {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -34,22 +54,32 @@ pub struct Text {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Offset {
-    pub x: u16,
-    pub y: u16,
+pub struct Left {
+    pub left: u16
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Top {
+    pub top: u16
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct OffsetsMapped {
 }
 
-impl Default for Offset {
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Position {
+    pub x: u16,
+    pub y: u16,
+}
+
+impl Default for Position {
     fn default() -> Self { 
         Self { x: 0, y: 0 }
     }
 }
 
-impl Add for Offset {
+impl Add for Position {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
@@ -61,26 +91,24 @@ impl Add for Offset {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Position {
-    pub x: u16,
-    pub y: u16,
+pub struct Width {
+    pub width: u16
 }
 
-impl From<Offset> for Position {
-    fn from(offset: Offset) -> Self {
-        Position { x: offset.x, y: offset.y }
-    }
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Height {
+    pub height: u16
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Radius {
+    pub radius: u16
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Dimensions {
     pub x: u16,
     pub y: u16,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Radius {
-    pub radius: u16
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

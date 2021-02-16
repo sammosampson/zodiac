@@ -1,62 +1,66 @@
-use std::collections::{ HashMap };
 use legion::*;
 use legion::world::*;
 use legion::systems::*;
+use crate::systems::maps::*;
 use zodiac_entities::components::*;
 
-pub struct AbsoluteOffsetMap {
-    map: HashMap<Entity, Offset>
+fn get_absolute_offset(
+    relationship_map: &mut RelationshipMap,
+    left_offset_map: &mut LeftOffsetMap,
+    top_offset_map: &mut TopOffsetMap,
+    entity: &Entity) -> Position {
+        let left_offset = match left_offset_map.get(entity) {
+            Some(left) => Position { x: left.left, y: 0 },
+            None => Position::default()
+        };
+        
+        let top_offset = match top_offset_map.get(entity) {
+            Some(top) => Position { x: 0, y: top.top },
+            None => Position::default()
+        };
+
+        let mut offset = left_offset + top_offset;
+
+        if let Some(parent) = relationship_map.get_parent(entity) {
+            offset = offset + get_absolute_offset(relationship_map, left_offset_map, top_offset_map, &parent);
+        }
+
+        offset
+    }
+
+fn set_position_on_renderables(
+    relationship_map: &mut RelationshipMap,
+    left_offset_map: &mut LeftOffsetMap,
+    top_offset_map: &mut TopOffsetMap,
+    world: &mut SubWorld,
+    command_buffer: &mut CommandBuffer) {
+    for entity in <Entity>::query()
+        .filter(!component::<Position>() & (component::<Rectangle>() | component::<Circle>() | component::<Text>()))
+        .iter(world) {
+            let position = get_absolute_offset(relationship_map, left_offset_map, top_offset_map, entity);
+            command_buffer.add_component(*entity, position);
+        }
 }
 
-impl AbsoluteOffsetMap {
-    pub fn new() -> Self {
-        Self {
-            map: HashMap::<Entity, Offset>::new()
+fn set_dimensions_on_renderables(
+    world: &mut SubWorld,
+    command_buffer: &mut CommandBuffer) {
+    for (entity, width, height) in <(Entity, &Width, &Height)>::query()
+        .filter(!component::<Dimensions>() & (component::<Rectangle>() | component::<Text>()))
+        .iter(world) {
+            command_buffer.add_component(*entity, Dimensions { x: width.width, y: height.height })
         }
-    }
-
-    pub fn get_offset_for_entity(&self, entity: &Entity) -> Option<&Offset> {
-        self.map.get(entity)
-    }
-
-    pub fn add_offset_for_entity(&mut self, entity: Entity, offset: Offset) {
-        self.map.insert(entity, offset);
-    }
 }
 
 #[system(simple)]
-#[read_component(Offset)]
-#[read_component(Relationship)]
-pub fn position_children_of_canvases(
-    #[resource] offset_map: &mut AbsoluteOffsetMap,
+#[read_component(Width)]
+#[read_component(Height)]
+pub fn layout(
+    #[resource] relationship_map: &mut RelationshipMap,
+    #[resource] left_offset_map: &mut LeftOffsetMap,
+    #[resource] top_offset_map: &mut TopOffsetMap,
     world: &mut SubWorld,
     command_buffer: &mut CommandBuffer) {
-        for (entity, possible_offset, relationship) in <(Entity, TryRead<Offset>, &Relationship)>::query()
-            .filter(!component::<OffsetsMapped>())
-            .iter(world) {
-                let mut absolute_offset = Offset::default();
-                
-                if let Some(offset) = possible_offset {
-                    absolute_offset = *offset;
-                }
-
-                if let Some(parent) = relationship.parent {
-                    if let Some(parent_offset) = offset_map.get_offset_for_entity(&parent) {
-                        absolute_offset = *parent_offset + absolute_offset;
-                    }
-                }
-
-                offset_map.add_offset_for_entity(*entity, absolute_offset);
-                command_buffer.add_component(*entity, OffsetsMapped {});
-            }
-        
-        
-        for entity in <Entity>::query()
-            .filter(component::<Rectangle>() | component::<Circle>() | component::<Text>())
-            .iter(world) {
-                if let Some(offset) = offset_map.get_offset_for_entity(&entity) {
-                    command_buffer.add_component(*entity, Position::from(*offset))
-                }
-            }
-
+        set_position_on_renderables(relationship_map, left_offset_map, top_offset_map, world, command_buffer);
+        set_dimensions_on_renderables(world, command_buffer);
 }

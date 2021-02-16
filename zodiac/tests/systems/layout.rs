@@ -2,29 +2,39 @@ use legion::*;
 use zodiac::world_building::entities::*;
 use zodiac::systems::layout::*;
 use zodiac_entities::components::*;
+use zodiac::systems::maps::*;
 
 #[test]
-fn system_performs_absolute_positioning_on_screen() {
+fn layout_system_performs_absolute_positioning_on_screen() {
     let mut world = World::default();
     let mut resources = Resources::default();
     let mut schedule = Schedule::builder()
-        .add_thread_local(position_children_of_canvases_system())
+        .add_system(build_relationship_map_system())
+        .add_system(build_left_offset_map_system())
+        .add_system(build_top_offset_map_system())
+        .flush()
+        .add_thread_local(layout_system())
         .build();
 
     let mut builder = WorldEntityBuilder::for_world(&mut world);
     builder.create_rectangle_entity();
-    builder.add_offset_component(10, 11);
+    builder.add_left_component(10);
+    builder.add_top_component(11);
     builder.complete_entity();
 
     builder.create_circle_entity();
-    builder.add_offset_component(11, 12);
+    builder.add_left_component(11);
+    builder.add_top_component(12);
     builder.complete_entity();
 
     builder.create_text_entity();
-    builder.add_offset_component(12, 13);
+    builder.add_left_component(12);
+    builder.add_top_component(13);
     builder.complete_entity();
 
-    resources.insert(AbsoluteOffsetMap::new()); 
+    resources.insert(create_relationship_map()); 
+    resources.insert(create_left_offset_map()); 
+    resources.insert(create_top_offset_map()); 
     schedule.execute(&mut world, &mut resources);
     
     let positions: Vec::<&Position> = <&Position>::query()
@@ -41,32 +51,41 @@ fn system_performs_absolute_positioning_on_screen() {
 }
 
 #[test]
-fn absolute_positioning_on_canvas_offset_from_screen() {
+fn layouts_system_performs_absolute_positioning_on_canvas_offset_from_screen() {
     let mut world = World::default();
     let mut resources = Resources::default();
     let mut schedule = Schedule::builder()
-        .add_thread_local(position_children_of_canvases_system())
+        .add_system(build_relationship_map_system())
+        .add_system(build_left_offset_map_system())
+        .add_system(build_top_offset_map_system())
+        .flush()
+        .add_thread_local(layout_system())
         .build();
 
     let mut builder = WorldEntityBuilder::for_world(&mut world);
-    builder.create_canvas_layout_content_entity();
-    builder.add_offset_component(10, 11);
-
     builder.create_horizontal_layout_content_entity();
+    builder.add_left_component(10);
+    builder.add_top_component(11);
+
+    builder.create_canvas_layout_content_entity();
     
     builder.create_rectangle_entity();
-    builder.add_offset_component(10, 11);
+    builder.add_left_component(10);
+    builder.add_top_component(11);
     builder.complete_entity();
 
     builder.create_rectangle_entity();
-    builder.add_offset_component(11, 12);
+    builder.add_left_component(11);
+    builder.add_top_component(12);
     builder.complete_entity();
 
     builder.complete_entity();
     
     builder.complete_entity();
 
-    resources.insert(AbsoluteOffsetMap::new()); 
+    resources.insert(create_relationship_map()); 
+    resources.insert(create_left_offset_map()); 
+    resources.insert(create_top_offset_map());
     schedule.execute(&mut world, &mut resources);
     
     let positions: Vec::<&Position> = <&Position>::query()

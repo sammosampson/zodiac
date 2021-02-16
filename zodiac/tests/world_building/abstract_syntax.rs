@@ -32,20 +32,21 @@ fn parse_canvas_layout_container_produces_container_components_on_entity() {
 fn parse_circle_produces_circle_components_on_entity() {
     let mut world = World::default();
     build_world(&mut world, "<circle
-        offset=(200, 100)
+        left=200
+        top=100
         radius=50
         colour=(1.0, 2.0, 3.0, 4.0)
         stroke-colour=(0.0, 1.0, 2.0, 3.0)
         stroke-width=3
     />").unwrap();
     let mut entities = 0;
-    let mut query = <(&Offset, &Radius, &Colour, &StrokeColour, &StrokeWidth)>::query()
+    let mut query = <(&Left, &Top, &Radius, &Colour, &StrokeColour, &StrokeWidth)>::query()
         .filter(component::<Circle>());
 
-    for (offset, radius, colour, stroke_colour, stroke_width) in query.iter(&mut world) {
+    for (left, top, radius, colour, stroke_colour, stroke_width) in query.iter(&mut world) {
         entities += 1;
-        assert_eq!(offset.x, 200);
-        assert_eq!(offset.y, 100);
+        assert_eq!(left.left, 200);
+        assert_eq!(top.top, 100);
         assert_eq!(radius.radius, 50);
         assert_eq!(colour.r, 1.0);
         assert_eq!(colour.g, 2.0);
@@ -64,23 +65,24 @@ fn parse_circle_produces_circle_components_on_entity() {
 fn parse_rect_produces_rectangle_components_on_entity() {
     let mut world = World::default();
     build_world(&mut world, "<rect
-        offset=(200, 100)
-        dimensions=(200, 300)
+        left=200
+        top=100
+        height=200
+        width=300
         colour=(1.0, 2.0, 3.0, 4.0)
         stroke-colour=(0.0, 1.0, 2.0, 3.0)
         stroke-width=3
         corner-radii=(0.5, 1.5, 2.5, 3.5)
     />").unwrap();
     let mut entities = 0;
-    let mut query = <(&Offset, &Dimensions, &Colour, &StrokeColour, &StrokeWidth, &CornerRadii)>::query()
+    let mut query = <(&Top, &Width, &Height, &Colour, &StrokeColour, &StrokeWidth, &CornerRadii)>::query()
         .filter(component::<Rectangle>());
 
-    for (offset, dimensions, colour, stroke_colour, stroke_width, corner_radii) in query.iter(&mut world) {
+    for (top, width, height, colour, stroke_colour, stroke_width, corner_radii) in query.iter(&mut world) {
         entities += 1;
-        assert_eq!(offset.x, 200);
-        assert_eq!(offset.y, 100);
-        assert_eq!(dimensions.x, 200);
-        assert_eq!(dimensions.y, 300);
+        assert_eq!(top.top, 100);
+        assert_eq!(width.width, 300);
+        assert_eq!(height.height, 200);
         assert_eq!(colour.r, 1.0);
         assert_eq!(colour.g, 2.0);
         assert_eq!(colour.b, 3.0);
@@ -102,21 +104,23 @@ fn parse_rect_produces_rectangle_components_on_entity() {
 fn parse_text_produces_text_components_on_entity() {
     let mut world = World::default();
     build_world(&mut world, "<text
-        offset=(200, 100)
-        dimensions=(200, 300)
+        left=200
+        top=100
+        height=200
+        width=300
         glyph-index=32
         colour=(1.0, 2.0, 3.0, 4.0)
     />").unwrap();
     let mut entities = 0;
-    let mut query = <(&Offset, &Dimensions, &GlyphIndex, &Colour)>::query()
+    let mut query = <(&Left, &Top, &Height, &Width, &GlyphIndex, &Colour)>::query()
         .filter(component::<Text>());
 
-    for (offset, dimensions, glyph_index, colour) in query.iter(&mut world) {
+    for (left, top, height, width, glyph_index, colour) in query.iter(&mut world) {
         entities += 1;
-        assert_eq!(offset.x, 200);
-        assert_eq!(offset.y, 100);
-        assert_eq!(dimensions.x, 200);
-        assert_eq!(dimensions.y, 300);
+        assert_eq!(left.left, 200);
+        assert_eq!(top.top, 100);
+        assert_eq!(height.height, 200);
+        assert_eq!(width.width, 300);
         assert_eq!(glyph_index.index, 32);
         assert_eq!(colour.r, 1.0);
         assert_eq!(colour.g, 2.0);
@@ -131,10 +135,10 @@ fn parse_multiple_controls_produces_entities() {
     let mut world = World::default();
     build_world(
         &mut world, 
-        "<circle offset=(200, 100) /><rect offset=(200, 100) /><text offset=(200, 100) />")
+        "<circle top=200 /><rect top=200 /><text top=200 />")
         .unwrap();
     
-    let entity_count = <&Offset>::query()
+    let entity_count = <&Top>::query()
         .iter(&mut world)
         .count();
         
@@ -146,7 +150,7 @@ fn parse_hierarchical_controls_produces_relationships() {
     let mut world = World::default();
     build_world(
         &mut world, 
-        "<horizontal-layout-content><rect offset=(200, 100) /></horizontal-layout-content>")
+        "<horizontal-layout-content><rect top=200 /></horizontal-layout-content>")
         .unwrap();
     
     let relationships:Vec::<&Relationship> = <&Relationship>::query()
@@ -176,11 +180,11 @@ fn parse_malformed_property_produces_error() {
     let mut world = World::default();
     let result = build_world(
         &mut world,
-        "<circle offset=(200, 100) dimensions=(200, 30x) /><rect offset=(200, 100) dimensions=(200, 300) /><text offset=(200, 100) />");
+        "<circle width=100 colour=(1.0, 10x) /><rect Left=200 /><text Left=200/>");
     
-    assert_eq!(result, Err(AbstractSyntaxTokenError::BadDimensionsValue));
+    assert_eq!(result, Err(AbstractSyntaxTokenError::BadColourValue));
     
-    let entity_count = <&Offset>::query()
+    let entity_count = <&Width>::query()
         .iter(&mut world)
         .count();
         

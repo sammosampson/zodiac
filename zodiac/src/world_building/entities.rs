@@ -20,7 +20,7 @@ impl<'a> WorldEntityBuilder<'a> {
         }
     }
 
-    pub fn get_current_entity(&self) -> Entity{
+    pub fn get_current_entity(&self) -> Entity {
         self.current_entity
     }
 
@@ -52,12 +52,20 @@ impl<'a> WorldEntityBuilder<'a> {
         self.create_entity_with_component(Text {});
     }
     
-    pub fn add_offset_component(&mut self, x: u16, y: u16) {
-        self.add_component_to_current_entity(Offset { x, y});
+    pub fn add_left_component(&mut self, left: u16) {
+        self.add_component_to_current_entity(Left { left });
     }
     
-    pub fn add_dimensions_component(&mut self, x: u16, y: u16) {
-        self.add_component_to_current_entity(Dimensions { x, y});
+    pub fn add_top_component(&mut self, top: u16) {
+        self.add_component_to_current_entity(Top { top });
+    }
+    
+    pub fn add_width_component(&mut self, width: u16) {
+        self.add_component_to_current_entity(Width { width });
+    }
+    
+    pub fn add_height_component(&mut self, height: u16) {
+        self.add_component_to_current_entity(Height { height });
     }
 
     pub fn add_radius_component(&mut self, radius: u16) {
@@ -129,7 +137,7 @@ impl<'a> WorldEntityBuilder<'a> {
         }
     }
     
-    fn add_component_to_current_entity<T:Component>(&mut self, component: T) {
+    pub fn add_component_to_current_entity<T:Component>(&mut self, component: T) {
         self.add_component(self.current_entity, component)
     }
 }

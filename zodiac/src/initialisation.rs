@@ -9,7 +9,7 @@ use zodiac_resources::file_system;
 use zodiac_rendering::rendering::*;
 use zodiac_rendering_glium::rendering::*;
 use crate::systems::rendering::*;
-use crate::systems::relationships::*;
+use crate::systems::maps::*;
 use crate::systems::layout::*;
 use crate::world_building::abstract_syntax::WorldBuilder;
 
@@ -50,7 +50,12 @@ impl Application {
         let resources = Resources::default();
         let schedule = Schedule::builder()
             .add_system(build_relationship_map_system())
-            .add_system(position_children_of_canvases_system())
+            .add_system(build_left_offset_map_system())
+            .add_system(build_top_offset_map_system())
+            .add_system(build_width_map_system())
+            .add_system(build_height_map_system())
+            .flush()
+            .add_system(layout_system())
             .flush()
             .add_thread_local(render_primitives_system::<GliumRenderer>())
             .add_thread_local(complete_render_system())
@@ -80,10 +85,13 @@ impl Application {
     
     pub fn run(mut self) -> Result<(), ZodiacError> {
         let event_loop: EventLoop<()> = EventLoop::new();
-        
+
         &mut self.resources.insert(GliumRenderer::new(&event_loop)?);
-        &mut self.resources.insert(RelationshipMap::new());
-        &mut self.resources.insert(AbsoluteOffsetMap::new());
+        &mut self.resources.insert(create_relationship_map());
+        &mut self.resources.insert(create_left_offset_map());
+        &mut self.resources.insert(create_top_offset_map());
+        &mut self.resources.insert(create_width_map());
+        &mut self.resources.insert(create_height_map());
 
         event_loop.run(move |ev, _, control_flow| {
             &mut self.schedule.execute(&mut self.world, &mut self.resources);

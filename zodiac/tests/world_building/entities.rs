@@ -1,6 +1,7 @@
 use legion::*;
 use zodiac::world_building::entities::*;
 use zodiac_entities::components::*;
+use zodiac::formatting::*;
 
 #[test]
 fn builder_creates_screen_entity() {
@@ -84,54 +85,40 @@ fn builder_closes_entities() {
     assert_eq!(builder.get_current_entity(), screen);
 }
 
+
 #[test]
 fn builder_creates_hierarchical_relationships_to_one_level() {
     let mut world = World::default();
     let mut builder = WorldEntityBuilder::for_world(&mut world);
     let screen = builder.get_current_entity();
     
-    builder.create_rectangle_entity();
-    let rectangle = builder.get_current_entity();
+    builder.create_horizontal_layout_content_entity();
+    let layout = builder.get_current_entity();
     builder.complete_entity();
     
-    builder.create_circle_entity();
-    let circle = builder.get_current_entity();
-    builder.complete_entity();
-
-    builder.create_text_entity();
-    let text = builder.get_current_entity();
-    builder.complete_entity();
+    world.to_pretty();
 
     let relationships: Vec::<&Relationship> = <&Relationship>::query()
         .iter(&mut world)
         .collect();
 
-    assert_eq!(relationships[0].parent, None);
-    assert_eq!(relationships[0].next_sibling, None);
-    assert_eq!(relationships[0].first_child, Some(rectangle));
-    assert_eq!(relationships[0].last_child, Some(text));
-
-    assert_eq!(relationships[1].parent, Some(screen));
-    assert_eq!(relationships[1].next_sibling, Some(circle));
-    assert_eq!(relationships[1].first_child, None);
-    assert_eq!(relationships[1].last_child, None);
-
-    assert_eq!(relationships[2].parent, Some(screen));
-    assert_eq!(relationships[2].next_sibling, Some(text));
-    assert_eq!(relationships[2].first_child, None);
-    assert_eq!(relationships[2].last_child, None);
-
-    assert_eq!(relationships[3].parent, Some(screen));
-    assert_eq!(relationships[3].next_sibling, None);
-    assert_eq!(relationships[3].first_child, None);
-    assert_eq!(relationships[3].last_child, None);
+    let mut index = 0;
+    assert_eq!(relationships[index].parent, None);
+    assert_eq!(relationships[index].next_sibling, None);
+    assert_eq!(relationships[index].first_child, Some(layout));
+    assert_eq!(relationships[index].last_child, Some(layout));
     
-    assert_eq!(relationships.len(), 4);
+    index += 1;
+    assert_eq!(relationships[index].parent, Some(screen));
+    assert_eq!(relationships[index].next_sibling, None);
+    assert_eq!(relationships[index].first_child, None);
+    assert_eq!(relationships[index].last_child, None);
+    
+    assert_eq!(relationships.len(), 2);
 }
 
-
 #[test]
-fn builder_creates_hierarchical_relationships_to_multiple_levels() {
+fn builder_creates_hierarchical_relationships_to_two_levels() {
     let mut world = World::default();
     let mut builder = WorldEntityBuilder::for_world(&mut world);
     let screen = builder.get_current_entity();
@@ -139,9 +126,12 @@ fn builder_creates_hierarchical_relationships_to_multiple_levels() {
     builder.create_horizontal_layout_content_entity();
     let content = builder.get_current_entity();
     builder.create_rectangle_entity();
+
     let rectangle = builder.get_current_entity();
     builder.complete_entity();
     builder.complete_entity();
+    
+    world.to_pretty();
 
     let relationships: Vec::<&Relationship> = <&Relationship>::query()
         .iter(&mut world)
@@ -166,19 +156,36 @@ fn builder_creates_hierarchical_relationships_to_multiple_levels() {
 }
 
 #[test]
-fn builder_creates_entity_with_offset() {
+fn builder_creates_entity_with_left() {
     let mut world = World::default();
     let mut builder = WorldEntityBuilder::for_world(&mut world);
     let mut entity_count = 0;
     builder.create_rectangle_entity();
-    builder.add_offset_component(1, 2);
+    builder.add_left_component(1);
     builder.complete_entity();
 
-    for position in <&Offset>::query()
+    for left in <&Left>::query()
         .filter(component::<Rectangle>())
         .iter(&mut world) {
-            assert_eq!(position.x, 1);
-            assert_eq!(position.y, 2);
+            assert_eq!(left.left, 1);
+            entity_count += 1;
+        }
+
+    assert_eq!(entity_count, 1);
+}
+#[test]
+fn builder_creates_entity_with_top() {
+    let mut world = World::default();
+    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut entity_count = 0;
+    builder.create_rectangle_entity();
+    builder.add_top_component(2);
+    builder.complete_entity();
+
+    for top in <&Top>::query()
+        .filter(component::<Rectangle>())
+        .iter(&mut world) {
+            assert_eq!(top.top, 2);
             entity_count += 1;
         }
 
@@ -186,19 +193,37 @@ fn builder_creates_entity_with_offset() {
 }
 
 #[test]
-fn builder_creates_entity_with_dimensions() {
+fn builder_creates_entity_with_width() {
     let mut world = World::default();
     let mut builder = WorldEntityBuilder::for_world(&mut world);
     let mut entity_count = 0;
     builder.create_rectangle_entity();
-    builder.add_dimensions_component(1, 2);
+    builder.add_width_component(2);
     builder.complete_entity();
 
-    for dimensions in <&Dimensions>::query()
+    for width in <&Width>::query()
         .filter(component::<Rectangle>())
         .iter(&mut world) {
-            assert_eq!(dimensions.x, 1);
-            assert_eq!(dimensions.y, 2);
+            assert_eq!(width.width, 2);
+            entity_count += 1;
+        }
+
+    assert_eq!(entity_count, 1);
+}
+
+#[test]
+fn builder_creates_entity_with_height() {
+    let mut world = World::default();
+    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut entity_count = 0;
+    builder.create_rectangle_entity();
+    builder.add_height_component(2);
+    builder.complete_entity();
+
+    for height in <&Height>::query()
+        .filter(component::<Rectangle>())
+        .iter(&mut world) {
+            assert_eq!(height.height, 2);
             entity_count += 1;
         }
 

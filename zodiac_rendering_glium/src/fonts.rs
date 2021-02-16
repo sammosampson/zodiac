@@ -29,7 +29,7 @@ pub fn create_font_array(display: &Display) -> Result<Texture2dArray, TextureCre
 
         let glyph_image_dimensions = glyph_image.dimensions();
 
-        glyphs.push(RawImage2d::from_raw_rgba_reversed(&glyph_image.into_raw(), glyph_image_dimensions));
+        glyphs.push(RawImage2d::from_raw_rgba(glyph_image.into_raw(), glyph_image_dimensions));
     }
 
     Texture2dArray::new(display, glyphs)  

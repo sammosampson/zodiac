@@ -91,37 +91,37 @@ fn glyph_index_produces_glyph_index_node() {
 }
 
 #[test]
-fn position_produces_position_node() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text offset=(100, 200) />"));
+fn left_produces_left_node() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text left=100 />"));
     assert_eq!(AbstractSyntaxToken::Text, tokenizer.next().unwrap().unwrap());
-    assert_eq!(AbstractSyntaxToken::Offset((100, 200)), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::Left(100), tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
 
 #[test]
-fn malformed_position_produces_error() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text offset=(100) />"));
+fn top_produces_top_node() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text top=100 />"));
     assert_eq!(AbstractSyntaxToken::Text, tokenizer.next().unwrap().unwrap());
-    assert_eq!(Err(AbstractSyntaxTokenError::BadOffsetValue), tokenizer.next().unwrap());
+    assert_eq!(AbstractSyntaxToken::Top(100), tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
 
 #[test]
-fn dimensions_produces_dimensions_node() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect dimensions=(100, 200) />"));
+fn width_produces_width_node() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect width=100 />"));
     assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
-    assert_eq!(AbstractSyntaxToken::Dimensions((100, 200)), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::Width(100), tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
 
 #[test]
-fn malformed_dimensions_produces_error() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect dimensions=(100) />"));
+fn height_produces_height_node() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect height=100 />"));
     assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
-    assert_eq!(Err(AbstractSyntaxTokenError::BadDimensionsValue), tokenizer.next().unwrap());
+    assert_eq!(AbstractSyntaxToken::Height(100), tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }

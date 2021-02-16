@@ -1,6 +1,6 @@
 
 use crate::tokenization::source::{SourceTokenResult, SourceTokenError, SourceToken, SourceTokenPropertyValue};
-use crate::tokenization::tuple::{TupleTokenizer, TupleTokenUnsignedShortIterator, TupleTokenFloatIterator};
+use crate::tokenization::tuple::{TupleTokenizer, TupleTokenFloatIterator};
 
 #[derive(PartialEq, PartialOrd, Debug)]
 pub enum AbstractSyntaxToken {
@@ -9,8 +9,10 @@ pub enum AbstractSyntaxToken {
     Text,
     CanvasLayoutContent,
     HorizontalLayoutContent,
-    Offset((u16, u16)),
-    Dimensions((u16, u16)),
+    Left(u16),
+    Top(u16),
+    Width(u16),
+    Height(u16),
     Radius(u16),
     GlyphIndex(u16),
     StrokeColour((f32, f32, f32, f32)),
@@ -26,9 +28,6 @@ pub enum AbstractSyntaxTokenError {
     UnknownControl,
     UnusedPropertyType,
     UnknownProperty,
-    BadLayoutValue,
-    BadOffsetValue,
-    BadDimensionsValue,
     BadColourValue,
     BadStrokeColourValue,
     BadCornerRadiiValue
@@ -92,6 +91,10 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
                 match value {
                     SourceTokenPropertyValue::UnsignedInt(value) => {
                         match self.current_property {
+                            "left" => Some(Ok(AbstractSyntaxToken::Left(value as u16))),
+                            "top" => Some(Ok(AbstractSyntaxToken::Top(value as u16))),
+                            "width" => Some(Ok(AbstractSyntaxToken::Width(value as u16))),
+                            "height" => Some(Ok(AbstractSyntaxToken::Height(value as u16))),
                             "stroke-width" => Some(Ok(AbstractSyntaxToken::StrokeWidth(value as u16))),
                             "radius" => Some(Ok(AbstractSyntaxToken::Radius(value as u16))),
                             "glyph-index" => Some(Ok(AbstractSyntaxToken::GlyphIndex(value as u16))),
@@ -101,18 +104,6 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
                     SourceTokenPropertyValue::Tuple(value) => {
                         let tuple_tokenizer = TupleTokenizer::from_string(value);
                         return match self.current_property {
-                            "offset" => {
-                                match TupleTokenUnsignedShortIterator::from_iterator(tuple_tokenizer).collect_specific_amount(2) {
-                                    Ok(values) => Some(Ok(AbstractSyntaxToken::Offset((values[0], values[1])))),
-                                    Err(_) => Some(Err(AbstractSyntaxTokenError::BadOffsetValue))
-                                }
-                            },
-                            "dimensions" => {
-                                match TupleTokenUnsignedShortIterator::from_iterator(tuple_tokenizer).collect_specific_amount(2) {
-                                    Ok(values) => Some(Ok(AbstractSyntaxToken::Dimensions((values[0], values[1])))),
-                                    Err(_) => Some(Err(AbstractSyntaxTokenError::BadDimensionsValue))
-                                }
-                            },
                             "colour" => {
                                 match TupleTokenFloatIterator::from_iterator(tuple_tokenizer).collect_specific_amount(4) {
                                     Ok(values) => Some(Ok(AbstractSyntaxToken::Colour((values[0], values[1], values[2], values[3])))),
