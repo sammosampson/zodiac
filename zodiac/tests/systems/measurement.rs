@@ -107,7 +107,7 @@ fn measurement_system_measures_fixed_width_children_to_one_level() {
         .add_system(build_relationship_map_system())
         .add_system(build_width_map_system())
         .flush()
-        .add_thread_local(measure_fixed_constraints_system())
+        .add_thread_local(measure_fixed_width_constraints_system())
         .build();
 
     let mut builder = WorldEntityBuilder::for_world(&mut world);
@@ -141,7 +141,7 @@ fn measurement_system_measures_fixed_width_children_to_multiple_levels() {
         .add_system(build_relationship_map_system())
         .add_system(build_width_map_system())
         .flush()
-        .add_thread_local(measure_fixed_constraints_system())
+        .add_thread_local(measure_fixed_width_constraints_system())
         .build();
 
     let mut builder = WorldEntityBuilder::for_world(&mut world);
@@ -184,7 +184,7 @@ fn measurement_system_measures_ignores_fixed_width_children_for_fixed_width_pare
         .add_system(build_relationship_map_system())
         .add_system(build_width_map_system())
         .flush()
-        .add_thread_local(measure_fixed_constraints_system())
+        .add_thread_local(measure_fixed_width_constraints_system())
         .build();
 
     let mut builder = WorldEntityBuilder::for_world(&mut world);
@@ -209,4 +209,116 @@ fn measurement_system_measures_ignores_fixed_width_children_for_fixed_width_pare
     let width_map = resources.get::<MinimumWidthMap>().unwrap();
     assert_ne!(width_map.get(&screen), None);
     assert_eq!(width_map.get(&screen).unwrap().width, 10);
+}
+
+#[test]
+fn measurement_system_measures_fixed_height_children_to_one_level() {
+    let mut world = World::default();
+    let mut resources = Resources::default();
+    let mut schedule = Schedule::builder()
+        .add_system(build_relationship_map_system())
+        .add_system(build_height_map_system())
+        .flush()
+        .add_thread_local(measure_fixed_height_constraints_system())
+        .build();
+
+    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let screen = builder.get_current_entity();
+    builder.create_rectangle_entity();
+    builder.add_height_component(10);
+    builder.complete_entity();
+
+    builder.create_circle_entity();
+    builder.add_height_component(20);
+    builder.complete_entity();
+
+    builder.create_text_entity();
+    builder.complete_entity();
+
+    resources.insert(create_relationship_map()); 
+    resources.insert(create_height_map()); 
+    resources.insert(create_minimum_height_map()); 
+    schedule.execute(&mut world, &mut resources);
+    
+    let height_map = resources.get::<MinimumHeightMap>().unwrap();
+    assert_ne!(height_map.get(&screen), None);
+    assert_eq!(height_map.get(&screen).unwrap().height, 30);
+}
+
+#[test]
+fn measurement_system_measures_fixed_height_children_to_multiple_levels() {
+    let mut world = World::default();
+    let mut resources = Resources::default();
+    let mut schedule = Schedule::builder()
+        .add_system(build_relationship_map_system())
+        .add_system(build_height_map_system())
+        .flush()
+        .add_thread_local(measure_fixed_height_constraints_system())
+        .build();
+
+    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let screen = builder.get_current_entity();
+
+    builder.create_rectangle_entity();
+    builder.add_height_component(10);
+    builder.complete_entity();
+
+    builder.create_canvas_layout_content_entity();
+    let layout = builder.get_current_entity();
+
+    builder.create_circle_entity();
+    builder.add_height_component(20);
+    builder.complete_entity();
+
+    builder.create_text_entity();
+    builder.add_height_component(5);
+    builder.complete_entity();
+
+    builder.complete_entity();
+
+    resources.insert(create_relationship_map()); 
+    resources.insert(create_height_map()); 
+    resources.insert(create_minimum_height_map()); 
+    schedule.execute(&mut world, &mut resources);
+    
+    let height_map = resources.get::<MinimumHeightMap>().unwrap();
+    assert_ne!(height_map.get(&screen), None);
+    assert_eq!(height_map.get(&screen).unwrap().height, 35);
+    assert_ne!(height_map.get(&layout), None);
+    assert_eq!(height_map.get(&layout).unwrap().height, 25);
+}
+
+#[test]
+fn measurement_system_measures_ignores_fixed_height_children_for_fixed_height_parent() {
+    let mut world = World::default();
+    let mut resources = Resources::default();
+    let mut schedule = Schedule::builder()
+        .add_system(build_relationship_map_system())
+        .add_system(build_height_map_system())
+        .flush()
+        .add_thread_local(measure_fixed_height_constraints_system())
+        .build();
+
+    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    builder.add_height_component(10);
+    let screen = builder.get_current_entity();
+
+    builder.create_circle_entity();
+    builder.add_height_component(20);
+    builder.complete_entity();
+
+    builder.create_text_entity();
+    builder.add_height_component(5);
+    builder.complete_entity();
+
+    builder.complete_entity();
+
+    resources.insert(create_relationship_map()); 
+    resources.insert(create_height_map()); 
+    resources.insert(create_minimum_height_map()); 
+    schedule.execute(&mut world, &mut resources);
+    
+    let height_map = resources.get::<MinimumHeightMap>().unwrap();
+    assert_ne!(height_map.get(&screen), None);
+    assert_eq!(height_map.get(&screen).unwrap().height, 10);
 }

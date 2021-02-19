@@ -57,7 +57,7 @@ impl Application {
             .add_system(build_height_map_system())
             .flush()
             .add_system(mark_as_mapped_system())
-            .add_system(measure_fixed_constraints_system())
+            .add_system(measure_fixed_width_constraints_system())
             .flush()
             .add_system(layout_system())
             .flush()
@@ -96,6 +96,7 @@ impl Application {
         &mut self.resources.insert(create_top_offset_map());
         &mut self.resources.insert(create_width_map());
         &mut self.resources.insert(create_height_map());
+        &mut self.resources.insert(create_minimum_width_map());
 
         event_loop.run(move |ev, _, control_flow| {
             &mut self.schedule.execute(&mut self.world, &mut self.resources);

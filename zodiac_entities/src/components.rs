@@ -84,9 +84,13 @@ pub struct MinimumWidth {
     pub width: u16
 }
 
-
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Height {
+    pub height: u16
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct MinimumHeight {
     pub height: u16
 }
 

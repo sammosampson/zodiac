@@ -21,6 +21,11 @@ pub fn create_minimum_width_map() -> MinimumWidthMap {
     MinimumWidthMap::new()
 }
 
+pub type MinimumHeightMap = HashMap<Entity, MinimumHeight>;
+
+pub fn create_minimum_height_map() -> MinimumHeightMap {
+    MinimumHeightMap::new()
+}
 
 #[system(for_each)]
 #[filter(!component::<Mapped>())]
@@ -64,10 +69,42 @@ fn measure_fixed_widths(
 
 #[system(for_each)]
 #[filter(component::<Root>() & !component::<Mapped>())]
-pub fn measure_fixed_constraints(
+pub fn measure_fixed_width_constraints(
     #[resource] relationship_map: &RelationshipMap,
     #[resource] width_map: &WidthMap,
     #[resource] minimum_width_map: &mut MinimumWidthMap,
     entity: &Entity) {
         measure_fixed_widths(relationship_map, width_map, minimum_width_map, entity);
-}                      
+}
+
+fn measure_fixed_heights(
+    relationship_map: &RelationshipMap,
+    height_map: &HeightMap,
+    minimum_height_map: &mut MinimumHeightMap,
+    entity: &Entity) -> u16 {
+        let mut minimum_height = 0;
+
+        for child in relationship_map.get_children(entity) {
+            minimum_height += measure_fixed_heights(relationship_map, height_map, minimum_height_map, &child);
+        }
+
+        if let Some(height) = height_map.get(entity) {
+            minimum_height = height.height;
+        }
+
+        if minimum_height > 0 {
+            minimum_height_map.insert(*entity, MinimumHeight { height: minimum_height });
+        }
+
+        minimum_height
+} 
+
+#[system(for_each)]
+#[filter(component::<Root>() & !component::<Mapped>())]
+pub fn measure_fixed_height_constraints(
+    #[resource] relationship_map: &RelationshipMap,
+    #[resource] height_map: &HeightMap,
+    #[resource] minimum_height_map: &mut MinimumHeightMap,
+    entity: &Entity) {
+        measure_fixed_heights(relationship_map, height_map, minimum_height_map, entity);
+}                   
