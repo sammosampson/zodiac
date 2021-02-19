@@ -10,6 +10,7 @@ pub struct WorldEntityBuilder<'a> {
 impl<'a> WorldEntityBuilder<'a> {
     pub fn for_world(world: &'a mut World) -> Self {
         let screen_entity = world.push((
+            Root {},
             CanvasLayoutContent {}, 
             Relationship { parent: None, next_sibling: None, first_child: None, last_child: None }
         ));

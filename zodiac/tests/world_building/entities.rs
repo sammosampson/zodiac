@@ -4,12 +4,12 @@ use zodiac_entities::components::*;
 use zodiac::formatting::*;
 
 #[test]
-fn builder_creates_screen_entity() {
+fn builder_creates_root_entity() {
     let mut world = World::default();
     WorldEntityBuilder::for_world(&mut world);
     
     let relationships: Vec::<&Relationship> = <&Relationship>::query()
-        .filter(component::<CanvasLayoutContent>())
+        .filter(component::<Root>() & component::<CanvasLayoutContent>())
         .iter(&mut world)
         .collect();
 

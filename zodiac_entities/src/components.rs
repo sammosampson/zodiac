@@ -10,27 +10,11 @@ pub struct Relationship {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct ResizeRequest {
+pub struct Root {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct RelationshipMapped {
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct LeftOffsetMapped {
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct TopOffsetMapped {
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct WidthMapped {
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct HeightMapped {
+pub struct Mapped {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

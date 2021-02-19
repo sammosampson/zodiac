@@ -8,9 +8,10 @@ use zodiac_parsing::tokenization::abstract_syntax::{AbstractSyntaxTokenizer, Abs
 use zodiac_resources::file_system;
 use zodiac_rendering::rendering::*;
 use zodiac_rendering_glium::rendering::*;
-use crate::systems::rendering::*;
-use crate::systems::maps::*;
+use crate::systems::relationships::*;
+use crate::systems::measurement::*;
 use crate::systems::layout::*;
+use crate::systems::rendering::*;
 use crate::world_building::abstract_syntax::WorldBuilder;
 
 #[derive(Debug)]
@@ -54,6 +55,9 @@ impl Application {
             .add_system(build_top_offset_map_system())
             .add_system(build_width_map_system())
             .add_system(build_height_map_system())
+            .flush()
+            .add_system(mark_as_mapped_system())
+            .add_system(measure_fixed_constraints_system())
             .flush()
             .add_system(layout_system())
             .flush()
