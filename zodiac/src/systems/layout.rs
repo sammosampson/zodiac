@@ -66,7 +66,7 @@ fn set_position_on_renderables(
     world: &mut SubWorld,
     command_buffer: &mut CommandBuffer) {
     for entity in <Entity>::query()
-        .filter(!component::<Position>() & (component::<Rectangle>() | component::<Circle>() | component::<Text>()))
+        .filter(!component::<Position>() & component::<Renderable>())
         .iter(world) {
             let position = get_absolute_offset(relationship_map, left_offset_map, top_offset_map, entity);
             command_buffer.add_component(*entity, position);
@@ -77,7 +77,7 @@ fn set_dimensions_on_renderables(
     world: &mut SubWorld,
     command_buffer: &mut CommandBuffer) {
     for (entity, width, height) in <(Entity, &Width, &Height)>::query()
-        .filter(!component::<Dimensions>() & (component::<Rectangle>() | component::<Text>()))
+        .filter(!component::<Dimensions>() & component::<Renderable>())
         .iter(world) {
             command_buffer.add_component(*entity, Dimensions { x: width.width, y: height.height })
         }

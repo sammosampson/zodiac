@@ -17,7 +17,7 @@ use zodiac_rendering::rendering::*;
 pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource] renderer: &mut T) {
     let mut query = <(&Position, &Dimensions, &Colour, &StrokeColour, &StrokeWidth, &CornerRadii)>
         ::query()
-        .filter(!component::<Rendered>() & component::<Rectangle>());
+        .filter(!component::<Rendered>());
 
     let mut index = 0;
     
@@ -35,7 +35,7 @@ pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource]
 
     let mut query = <(&Position, &Radius, &Colour, &StrokeColour, &StrokeWidth)>
         ::query()
-        .filter(!component::<Rendered>() & component::<Circle>());
+        .filter(!component::<Rendered>());
     
     for (position, radius, colour, stroke_colour, stroke_width) in query.iter_mut(world) {
         renderer.queue_circle_for_render(
@@ -50,7 +50,7 @@ pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource]
 
     let mut query = <(&Position, &Dimensions, &Colour, &GlyphIndex)>
         ::query()
-        .filter(!component::<Rendered>() & component::<Text>());
+        .filter(!component::<Rendered>());
     
     for (position, dimensions, colour, glyph_index) in query.iter_mut(world) {
         renderer.queue_text_for_render(

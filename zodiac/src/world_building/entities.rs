@@ -11,7 +11,7 @@ impl<'a> WorldEntityBuilder<'a> {
     pub fn for_world(world: &'a mut World) -> Self {
         let screen_entity = world.push((
             Root {},
-            CanvasLayoutContent {}, 
+            LayoutContent { layout_type: LayoutType::Canvas }, 
             Relationship { parent: None, next_sibling: None, first_child: None, last_child: None }
         ));
         
@@ -34,23 +34,23 @@ impl<'a> WorldEntityBuilder<'a> {
     }
     
     pub fn create_canvas_layout_content_entity(&mut self) {
-        self.create_entity_with_component(CanvasLayoutContent {});
+        self.create_entity_with_component(LayoutContent { layout_type: LayoutType::Canvas });
     }
     
     pub fn create_horizontal_layout_content_entity(&mut self) {
-        self.create_entity_with_component(HorizontalLayoutContent {});
+        self.create_entity_with_component(LayoutContent { layout_type: LayoutType::Horizontal });
     }
 
     pub fn create_rectangle_entity(&mut self) {
-        self.create_entity_with_component(Rectangle {});
+        self.create_entity_with_component(Renderable { render_type: RenderType::Rectangle });
     }
     
     pub fn create_circle_entity(&mut self) {
-        self.create_entity_with_component(Circle {});
+        self.create_entity_with_component(Renderable { render_type: RenderType::Circle });
     }
     
     pub fn create_text_entity(&mut self) {
-        self.create_entity_with_component(Text {});
+        self.create_entity_with_component(Renderable { render_type: RenderType::Text });
     }
     
     pub fn add_left_component(&mut self, left: u16) {

@@ -35,13 +35,11 @@ impl<'a, I> Pretty for AbstractSyntaxTokenizer<'a, I> where I : Iterator<Item=So
 
 impl Pretty for World {
     fn to_pretty(&mut self) {
-        let mut query = <(Entity, &Relationship, TryRead<CanvasLayoutContent>, TryRead<HorizontalLayoutContent>)>::query();
-        for (entity, relationship, canvas_opiton, layout_opiton) in query.iter(self) {
-            if let Some(_) = canvas_opiton {
-                println!("canvas");
-            }
-            if let Some(_) = layout_opiton {
-                println!("horizontal");
+        let mut query = <(Entity, &Relationship, &LayoutContent)>::query();
+        for (entity, relationship, layout) in query.iter(self) {
+            match layout.layout_type {
+                LayoutType::Canvas => println!("canvas"),
+                LayoutType::Horizontal => println!("horizontal")
             }
             println!("{:?}", entity);
             println!("{:?}", relationship);

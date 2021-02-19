@@ -18,23 +18,26 @@ pub struct Mapped {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct HorizontalLayoutContent {
+pub enum LayoutType {
+    Horizontal,
+    Canvas,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct CanvasLayoutContent {
+pub struct LayoutContent {
+    pub layout_type: LayoutType
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Circle {
+pub enum RenderType {
+    Circle,
+    Rectangle,
+    Text
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Rectangle {
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Text {
+pub struct Renderable { 
+    pub render_type: RenderType 
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

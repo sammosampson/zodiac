@@ -183,7 +183,7 @@ fn layouts_system_performs_absolute_positioning_on_canvas_offset_from_screen() {
     schedule.execute(&mut world, &mut resources);
     
     let positions: Vec::<&Position> = <&Position>::query()
-        .filter(component::<Rectangle>())
+        .filter(component::<Renderable>())
         .iter(&mut world)
         .collect();
 

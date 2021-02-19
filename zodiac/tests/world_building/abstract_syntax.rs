@@ -9,11 +9,13 @@ fn parse_horizontal_layoutcontainer_produces_container_components_on_entity() {
     let mut world = World::default();
     build_world(&mut world, "<horizontal-layout-content />").unwrap();
     
-    let entity_count = <&HorizontalLayoutContent>::query()
+    let entities:Vec::<&LayoutContent> = <&LayoutContent>::query()
         .iter(&mut world)
-        .count();
-    
-    assert_eq!(entity_count, 1);
+        .collect();
+
+    assert_eq!(entities[0].layout_type, LayoutType::Canvas);
+    assert_eq!(entities[1].layout_type, LayoutType::Horizontal);
+    assert_eq!(entities.len(), 2);
 }
 
 #[test]
@@ -21,11 +23,13 @@ fn parse_canvas_layout_container_produces_container_components_on_entity() {
     let mut world = World::default();
     build_world(&mut world, "<canvas-layout-content />").unwrap();
     
-    let entity_count = <&CanvasLayoutContent>::query()
+    let entities:Vec::<&LayoutContent> = <&LayoutContent>::query()
         .iter(&mut world)
-        .count();
+        .collect();
     
-    assert_eq!(entity_count, 2);
+    assert_eq!(entities[0].layout_type, LayoutType::Canvas);
+    assert_eq!(entities[1].layout_type, LayoutType::Canvas);
+    assert_eq!(entities.len(), 2);
 }
 
 #[test]
@@ -41,7 +45,7 @@ fn parse_circle_produces_circle_components_on_entity() {
     />").unwrap();
     let mut entities = 0;
     let mut query = <(&Left, &Top, &Radius, &Colour, &StrokeColour, &StrokeWidth)>::query()
-        .filter(component::<Circle>());
+        .filter(component::<Renderable>());
 
     for (left, top, radius, colour, stroke_colour, stroke_width) in query.iter(&mut world) {
         entities += 1;
@@ -76,7 +80,7 @@ fn parse_rect_produces_rectangle_components_on_entity() {
     />").unwrap();
     let mut entities = 0;
     let mut query = <(&Top, &Width, &Height, &Colour, &StrokeColour, &StrokeWidth, &CornerRadii)>::query()
-        .filter(component::<Rectangle>());
+        .filter(component::<Renderable>());
 
     for (top, width, height, colour, stroke_colour, stroke_width, corner_radii) in query.iter(&mut world) {
         entities += 1;
@@ -113,7 +117,7 @@ fn parse_text_produces_text_components_on_entity() {
     />").unwrap();
     let mut entities = 0;
     let mut query = <(&Left, &Top, &Height, &Width, &GlyphIndex, &Colour)>::query()
-        .filter(component::<Text>());
+        .filter(component::<Renderable>());
 
     for (left, top, height, width, glyph_index, colour) in query.iter(&mut world) {
         entities += 1;

@@ -167,16 +167,16 @@ fn setup_schedule() -> Schedule {
     schedule
 }
 
-fn create_rectangle_component() -> Rectangle {
-    Rectangle {}
+fn create_rectangle_component() -> Renderable {
+    Renderable { render_type: RenderType::Rectangle }
 }
 
-fn create_circle_component() -> Circle {
-    Circle {}
+fn create_circle_component() -> Renderable {
+    Renderable { render_type: RenderType::Circle }
 }
 
-fn create_text_component() -> Text {
-    Text {}
+fn create_text_component() -> Renderable {
+    Renderable { render_type: RenderType::Text }
 }
 
 fn create_radius_component() -> Radius {

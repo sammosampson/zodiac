@@ -9,7 +9,7 @@ fn builder_creates_root_entity() {
     WorldEntityBuilder::for_world(&mut world);
     
     let relationships: Vec::<&Relationship> = <&Relationship>::query()
-        .filter(component::<Root>() & component::<CanvasLayoutContent>())
+        .filter(component::<Root>() & component::<LayoutContent>())
         .iter(&mut world)
         .collect();
 
@@ -26,8 +26,13 @@ fn builder_creates_canvas_layout_content_entity() {
     let mut builder = WorldEntityBuilder::for_world(&mut world);
     builder.create_canvas_layout_content_entity();
 
-    let entity_count = <&CanvasLayoutContent>::query().iter(&mut world).count();
-    assert_eq!(entity_count, 2);
+    let entities:Vec::<&LayoutContent> = <&LayoutContent>::query()
+        .iter(&mut world)
+        .collect();
+    
+    assert_eq!(entities[0].layout_type, LayoutType::Canvas);
+    assert_eq!(entities[1].layout_type, LayoutType::Canvas);
+    assert_eq!(entities.len(), 2);
 }
 
 #[test]
@@ -36,8 +41,13 @@ fn builder_creates_horizontal_layout_content_entity() {
     let mut builder = WorldEntityBuilder::for_world(&mut world);
     builder.create_horizontal_layout_content_entity();
 
-    let entity_count = <&HorizontalLayoutContent>::query().iter(&mut world).count();
-    assert_eq!(entity_count, 1);
+    let entities:Vec::<&LayoutContent> = <&LayoutContent>::query()
+        .iter(&mut world)
+        .collect();
+    
+    assert_eq!(entities[0].layout_type, LayoutType::Canvas);
+    assert_eq!(entities[1].layout_type, LayoutType::Horizontal);
+    assert_eq!(entities.len(), 2);
 }
 
 #[test]
@@ -46,7 +56,7 @@ fn builder_creates_rectangle_entity() {
     let mut builder = WorldEntityBuilder::for_world(&mut world);
     builder.create_rectangle_entity();
 
-    let entity_count = <&Rectangle>::query().iter(&mut world).count();
+    let entity_count = <&Renderable>::query().iter(&mut world).count();
     assert_eq!(entity_count, 1);
 }
 
@@ -56,7 +66,7 @@ fn builder_creates_circle_entity() {
     let mut builder = WorldEntityBuilder::for_world(&mut world);
     builder.create_circle_entity();
 
-    let entity_count = <&Circle>::query().iter(&mut world).count();
+    let entity_count = <&Renderable>::query().iter(&mut world).count();
     assert_eq!(entity_count, 1);
 }
 
@@ -66,7 +76,7 @@ fn builder_creates_text_entity() {
     let mut builder = WorldEntityBuilder::for_world(&mut world);
     builder.create_text_entity();
 
-    let entity_count = <&Text>::query().iter(&mut world).count();
+    let entity_count = <&Renderable>::query().iter(&mut world).count();
     assert_eq!(entity_count, 1);
 }
 
@@ -165,7 +175,7 @@ fn builder_creates_entity_with_left() {
     builder.complete_entity();
 
     for left in <&Left>::query()
-        .filter(component::<Rectangle>())
+        .filter(component::<Renderable>())
         .iter(&mut world) {
             assert_eq!(left.left, 1);
             entity_count += 1;
@@ -183,7 +193,7 @@ fn builder_creates_entity_with_top() {
     builder.complete_entity();
 
     for top in <&Top>::query()
-        .filter(component::<Rectangle>())
+        .filter(component::<Renderable>())
         .iter(&mut world) {
             assert_eq!(top.top, 2);
             entity_count += 1;
@@ -202,7 +212,7 @@ fn builder_creates_entity_with_width() {
     builder.complete_entity();
 
     for width in <&Width>::query()
-        .filter(component::<Rectangle>())
+        .filter(component::<Renderable>())
         .iter(&mut world) {
             assert_eq!(width.width, 2);
             entity_count += 1;
@@ -221,7 +231,7 @@ fn builder_creates_entity_with_height() {
     builder.complete_entity();
 
     for height in <&Height>::query()
-        .filter(component::<Rectangle>())
+        .filter(component::<Renderable>())
         .iter(&mut world) {
             assert_eq!(height.height, 2);
             entity_count += 1;
@@ -240,7 +250,7 @@ fn builder_creates_entity_with_radius() {
     builder.complete_entity();
 
     for radius in <&Radius>::query()
-        .filter(component::<Circle>())
+        .filter(component::<Renderable>())
         .iter(&mut world) {
             assert_eq!(radius.radius, 1);
             entity_count += 1;
@@ -259,7 +269,7 @@ fn builder_creates_entity_with_stroke_width() {
     builder.complete_entity();
 
     for stroke_width in <&StrokeWidth>::query()
-        .filter(component::<Circle>())
+        .filter(component::<Renderable>())
         .iter(&mut world) {
             assert_eq!(stroke_width.width, 1);
             entity_count += 1;
@@ -278,7 +288,7 @@ fn builder_creates_entity_with_glyph_index() {
     builder.complete_entity();
 
     for glyph_index in <&GlyphIndex>::query()
-        .filter(component::<Text>())
+        .filter(component::<Renderable>())
         .iter(&mut world) {
             assert_eq!(glyph_index.index, 1);
             entity_count += 1;
@@ -297,7 +307,7 @@ fn builder_creates_entity_with_colour() {
     builder.complete_entity();
 
     for colour in <&Colour>::query()
-        .filter(component::<Text>())
+        .filter(component::<Renderable>())
         .iter(&mut world) {
             assert_eq!(colour.r, 1.0);
             assert_eq!(colour.g, 0.9);
@@ -319,7 +329,7 @@ fn builder_creates_entity_with_stroke_colour() {
     builder.complete_entity();
 
     for colour in <&StrokeColour>::query()
-        .filter(component::<Circle>())
+        .filter(component::<Renderable>())
         .iter(&mut world) {
             assert_eq!(colour.r, 1.0);
             assert_eq!(colour.g, 0.9);
@@ -341,7 +351,7 @@ fn builder_creates_entity_with_corner_radii() {
     builder.complete_entity();
 
     for colour in <&CornerRadii>::query()
-        .filter(component::<Rectangle>())
+        .filter(component::<Renderable>())
         .iter(&mut world) {
             assert_eq!(colour.left_top, 1.0);
             assert_eq!(colour.right_top, 0.9);
