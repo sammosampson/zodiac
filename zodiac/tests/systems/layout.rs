@@ -193,7 +193,7 @@ fn resize_system_performs_absolute_positioning_on_screen() {
 }
 
 #[test]
-fn layouts_system_performs_absolute_positioning_on_canvas_offset_from_screen() {
+fn resize_system_performs_absolute_positioning_on_canvas_offset_from_screen() {
     let mut world = World::default();
     let mut resources = Resources::default();
     let mut schedule = Schedule::builder()
@@ -284,4 +284,62 @@ fn resize_system_makes_dimensions_fit_parent_when_not_specified() {
     assert_eq!(changes[0].width, 100);
     assert_eq!(changes[0].height, 110);
     assert_eq!(changes.len(), 1);
+}
+
+
+#[test]
+fn resize_system_performs_horizontal_layout_to_one_level() {
+    let mut world = World::default();
+    let mut resources = Resources::default();
+    let mut schedule = Schedule::builder()
+        .add_system(build_relationship_map_system())
+        .add_system(build_left_offset_map_system())
+        .add_system(build_top_offset_map_system())
+        .add_system(build_width_map_system())
+        .add_system(build_height_map_system())
+        .add_system(build_layout_type_map_system())
+        .flush()
+        .add_thread_local(measure_fixed_width_constraints_system())
+        .flush()
+        .add_thread_local(resize_system())
+        .build();
+
+    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    builder.add_component_to_current_entity(ResizeRequest { left: 0, top: 0, width: 100, height: 100});
+
+    builder.create_horizontal_layout_content_entity();
+    
+    builder.create_rectangle_entity();
+    builder.complete_entity();
+
+    builder.create_rectangle_entity();
+    builder.complete_entity();
+    
+    builder.complete_entity();
+
+    resources.insert(create_relationship_map());
+    resources.insert(create_layout_type_map());
+    resources.insert(create_left_offset_map());
+    resources.insert(create_top_offset_map());
+    resources.insert(create_width_map());
+    resources.insert(create_height_map());
+    resources.insert(create_minimum_width_map());
+    resources.insert(create_minimum_height_map());
+
+    schedule.execute(&mut world, &mut resources);
+    
+    let changes: Vec::<&LayoutChange> = <&LayoutChange>::query()
+        .iter(&mut world)
+        .collect();
+
+    assert_eq!(changes[0].left, 0);
+    assert_eq!(changes[0].top, 0);
+    assert_eq!(changes[0].width, 50);
+    assert_eq!(changes[0].height, 100);
+
+    assert_eq!(changes[1].left, 50);
+    assert_eq!(changes[1].top, 0);
+    assert_eq!(changes[1].width, 50);
+    assert_eq!(changes[1].height, 100);
+    assert_eq!(changes.len(), 2);
 }
