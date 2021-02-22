@@ -5,6 +5,8 @@ pub fn create_shader_program(display: &Display) -> Result<Program, ProgramCreati
         #version 330 core
 
         uniform vec2 uResolution;
+        uniform mat2 uCamera;
+        uniform mat2 uView;
         
         layout (location = 0) in ivec2 position;
         layout (location = 1) in ivec2 dimensions;
@@ -17,6 +19,7 @@ pub fn create_shader_program(display: &Display) -> Result<Program, ProgramCreati
         out VS_OUT
         {
             vec2 dimensions;
+            vec2 clip_space_dimensions;
             vec4 inner_colour;
             vec4 outer_colour;
             flat ivec2 identification;
@@ -34,7 +37,10 @@ pub fn create_shader_program(display: &Display) -> Result<Program, ProgramCreati
         
         void main()
         {
-            gl_Position = vec4(toClipSpace(uResolution, vec2(position)), 0.0, 1.0);
+            vec2 screen_position = uView * uCamera * (position + dimensions / 2);
+            vec2 screen_dimensions = uView * uCamera * dimensions;
+            gl_Position = vec4(toClipSpace(uResolution, vec2(screen_position)), 0.0, 1.0);
+            vs_out.clip_space_dimensions = screen_dimensions / uResolution.xy;
             vs_out.dimensions = dimensions;
             vs_out.inner_colour = inner_colour;
             vs_out.outer_colour = outer_colour;
@@ -50,11 +56,10 @@ pub fn create_shader_program(display: &Display) -> Result<Program, ProgramCreati
         layout(points) in;
         layout(triangle_strip, max_vertices = 4) out;
 
-        uniform vec2 uResolution;
-
         in VS_OUT
         {
             vec2 dimensions;
+            vec2 clip_space_dimensions;
             vec4 inner_colour;
             vec4 outer_colour;
             flat ivec2 identification;
@@ -75,6 +80,7 @@ pub fn create_shader_program(display: &Display) -> Result<Program, ProgramCreati
 
         void createVertex(vec2 pos, vec2 scale, vec2 corner, float u, float v) {
             vec2 scaled = scale * corner;
+            //vec2 transformed = uView * uCamera * (pos + scaled);
             vec2 transformed = pos + scaled;
             gl_Position = vec4(transformed, 0.0, 1.0);
             gm_out.texture_coord = vec2(u, v);
@@ -86,17 +92,11 @@ pub fn create_shader_program(display: &Display) -> Result<Program, ProgramCreati
             gm_out.extra_data_2 = gm_in[0].extra_data_2;
             EmitVertex();
         }
-
+        
         void main()
         {
             vec2 pos = gl_in[0].gl_Position.xy;;
-            vec2 size = gm_in[0].dimensions / uResolution.xy; 
-
-            mat3 scale = mat3(
-                size.x, 0.0, 0.0,
-                0.0, size.y, 0.0,
-                0.0, 0.0, 1.0
-            );
+            vec2 size = gm_in[0].clip_space_dimensions; 
 
             float one = 1.0;
             vec2 bottomLeft = vec2(-one, -one);

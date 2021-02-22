@@ -93,7 +93,7 @@ impl<'a> WorldEntityBuilder<'a> {
         self.add_component_to_current_entity(CornerRadii { left_top, right_top, right_bottom, left_bottom });
     }
 
-    fn create_entity_with_component<T:Component>(&mut self, component: T) {
+    pub fn create_entity_with_component<T:Component>(&mut self, component: T) {
         let parent = self.current_entity;
         self.current_entity = self.world.push((component,));
         self.setup_current_entity_relationships(parent);

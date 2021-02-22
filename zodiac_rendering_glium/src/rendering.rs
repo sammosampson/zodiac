@@ -11,6 +11,7 @@ use crate::primitives::*;
 use crate::shaders::*;
 use crate::display::*;
 use crate::fonts::*;
+use crate::matrices::*;
 
 pub struct GliumRenderer {
     display: Display,
@@ -80,7 +81,7 @@ impl Renderer for GliumRenderer {
                 outer_colour,
                 stroke_width));
     }
-
+    
     fn queue_text_for_render(
         &mut self,
         index: usize,
@@ -100,17 +101,22 @@ impl Renderer for GliumRenderer {
     fn render(&mut self) -> Result<(), RendererError> {
         let indices = NoIndices(glium::index::PrimitiveType::Points);
 
-        let uniforms = uniform! {
-            uResolution: self.resolution,
-            font_buffer: self.font_array.sampled().magnify_filter(MagnifySamplerFilter::Linear)
-        };
-
         let params = glium::DrawParameters {
             blend: glium::Blend::alpha_blending(),
             .. Default::default()
         };
 
         let mut target = self.display.draw();
+
+        let (width, height) = target.get_dimensions();
+
+        let uniforms = uniform! {
+            uResolution: self.resolution,
+            uCamera: orthographic_camera_matrix(self.resolution[0] as u32, self.resolution[1] as u32),
+            uView: orthographic_view_matrix(width, height, self.resolution[0] as u32, self.resolution[1] as u32),
+            font_buffer: self.font_array.sampled().magnify_filter(MagnifySamplerFilter::Linear)
+        };
+
         target.clear_color(0.3, 0.3, 0.5, 1.0);
         target.draw(&self.vertex_buffer, &indices, &self.shader_program, &uniforms, &params).map_err(|_|RendererError::DrawError)?;
         target.finish().map_err(|_|RendererError::BufferSwapError)?;

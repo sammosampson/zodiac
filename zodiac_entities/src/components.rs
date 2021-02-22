@@ -14,6 +14,36 @@ pub struct Root {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+pub struct RootWindowResized {
+    pub width: u16,
+    pub height: u16
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ResizeRequest {
+    pub left: u16,
+    pub top: u16,
+    pub width: u16,
+    pub height: u16
+}
+
+impl From<&RootWindowResized> for ResizeRequest {
+    fn from(window_resized: &RootWindowResized) -> Self {
+        ResizeRequest {
+            left: 0, 
+            top: 0, 
+            width: 
+            window_resized.width, 
+            height: window_resized.height
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Resized {
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Mapped {
 }
 
@@ -55,31 +85,46 @@ pub struct OffsetsMapped {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Position {
-    pub x: u16,
-    pub y: u16,
+pub struct LayoutChange {
+    pub left: u16,
+    pub top: u16,
+    pub width: u16,
+    pub height: u16
 }
 
-impl Default for Position {
+impl Default for LayoutChange {
     fn default() -> Self { 
-        Self { x: 0, y: 0 }
+        Self { left: 0, top: 0, width: 0, height: 0 }
     }
 }
 
-impl Add for Position {
+impl Add<Left> for LayoutChange {
     type Output = Self;
 
-    fn add(self, other: Self) -> Self {
-        Self {
-            x: self.x + other.x,
-            y: self.y + other.y,
-        }
+    fn add(self, other: Left) -> Self {
+        Self { left: self.left + other.left, top: self.top, width: self.width, height: self.height }
+    }
+}
+
+impl Add<Top> for LayoutChange {
+    type Output = Self;
+
+    fn add(self, other: Top) -> Self {
+        Self { left: self.left, top: self.top + other.top, width: self.width, height: self.height }
     }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Width {
     pub width: u16
+}
+
+impl From<&Radius> for Width {
+    fn from(radius: &Radius) -> Self {
+        Width {
+            width: radius.radius
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -92,6 +137,14 @@ pub struct Height {
     pub height: u16
 }
 
+impl From<&Radius> for Height {
+    fn from(radius: &Radius) -> Self {
+        Height {
+            height: radius.radius
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct MinimumHeight {
     pub height: u16
@@ -100,12 +153,6 @@ pub struct MinimumHeight {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Radius {
     pub radius: u16
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Dimensions {
-    pub x: u16,
-    pub y: u16,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -140,8 +187,4 @@ pub struct CornerRadii {
     pub right_top: f32,
     pub right_bottom: f32,
     pub left_bottom: f32,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Rendered {
 }

@@ -79,7 +79,6 @@ fn system_builds_height_map() {
     assert_eq!(rectangle_height.height, 12);
 }
 
-
 #[test]
 fn system_does_not_add_heights_already_mapped() {
     let mut world = World::default();
@@ -97,6 +96,63 @@ fn system_does_not_add_heights_already_mapped() {
     schedule.execute(&mut world, &mut resources);
     
     assert_eq!(resources.get::<HeightMap>().unwrap().get(&screen), None);
+}
+
+#[test]
+fn system_builds_width_and_height_maps_from_radius() {
+    let mut world = World::default();
+    let mut resources = Resources::default();
+    let mut schedule = Schedule::builder()
+        .add_system(build_width_and_height_maps_from_radius_system())
+        .build();
+
+    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    
+    builder.create_circle_entity();
+    let circle1 = builder.get_current_entity();
+    builder.add_radius_component(12);
+    builder.complete_entity();
+
+    builder.create_circle_entity();
+    let circle2 = builder.get_current_entity();
+    builder.add_radius_component(13);
+    builder.complete_entity();
+
+    resources.insert(create_width_map()); 
+    resources.insert(create_height_map()); 
+    schedule.execute(&mut world, &mut resources);
+
+    let width_map = resources.get::<WidthMap>().unwrap();
+    let height_map = resources.get::<HeightMap>().unwrap();
+
+    assert_eq!(width_map.get(&circle1).unwrap().width, 12);
+    assert_eq!(height_map.get(&circle1).unwrap().height, 12);
+    assert_eq!(width_map.get(&circle2).unwrap().width, 13);
+    assert_eq!(height_map.get(&circle2).unwrap().height, 13);
+}
+
+#[test]
+fn system_does_not_add_widths_and_heights_already_mapped_from_radius() {
+    let mut world = World::default();
+    let mut resources = Resources::default();
+    let mut schedule = Schedule::builder()
+        .add_system(build_width_and_height_maps_from_radius_system())
+        .build();
+
+    let mut builder = WorldEntityBuilder::for_world(&mut world);
+
+    builder.create_circle_entity();
+    builder.add_radius_component(12);
+    builder.add_component_to_current_entity(Mapped {});
+    let circle = builder.get_current_entity();
+    builder.complete_entity();
+
+    resources.insert(create_width_map()); 
+    resources.insert(create_height_map()); 
+    schedule.execute(&mut world, &mut resources);
+    
+    assert_eq!(resources.get::<HeightMap>().unwrap().get(&circle), None);
+    assert_eq!(resources.get::<WidthMap>().unwrap().get(&circle), None);
 }
 
 #[test]

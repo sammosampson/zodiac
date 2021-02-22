@@ -45,6 +45,18 @@ pub fn build_height_map(
         height_map.insert(*entity, *height);
     }
 
+
+#[system(for_each)]
+#[filter(!component::<Mapped>())]
+pub fn build_width_and_height_maps_from_radius(
+    #[resource] height_map: &mut HeightMap,
+    #[resource] width_map: &mut WidthMap,
+    entity: &Entity,
+    radius: &Radius) {
+        width_map.insert(*entity, Width::from(radius));
+        height_map.insert(*entity, Height::from(radius));
+    }
+
 fn measure_fixed_widths(
     relationship_map: &RelationshipMap,
     width_map: &WidthMap,

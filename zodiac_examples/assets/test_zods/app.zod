@@ -20,23 +20,16 @@
         stroke-width=3
         corner-radii=(0.2, 0.3, 0.4, 0.5)
     />
-    <rect
-        left=600
-        width=200
-        height=200
-        colour=(1.0, 1.0, 1.0, 1.0)
-        stroke-colour=(0.0, 0.0, 0.0, 1.0)
-        stroke-width=3
-        corner-radii=(0.2, 0.3, 0.4, 0.5)
-    />
     <circle
-        left=800
-        radius=100
+        left=600
+        radius=800
         colour=(1.0, 1.0, 1.0, 1.0)
         stroke-colour=(0.0, 0.0, 0.0, 1.0)
-        stroke-width=5
+        stroke-width=10
+        corner-radii=(0.0, 0.0, 0.0, 0.0)
     />
     <text
+        left=0
         top=100
         width=96
         height=96
@@ -44,6 +37,7 @@
         glyph-index=67
     />
     <text
+        left=0
         top=200
         width=96
         height=96
@@ -51,6 +45,7 @@
         glyph-index=37
     />
     <text
+        left=0
         top=300
         width=96
         height=96
