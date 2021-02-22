@@ -75,30 +75,49 @@ impl From<&ResizeRequest> for LayoutConstraints {
 }
 
 enum LayoutConstraintsSubDivisionType {
-    SizeNotSpecified(Entity)
+    SizeNotSpecified(Entity),
+    FixedSizeSpecified(Entity, u16)
 }
 
 struct LayoutConstraintsWidthSubDivider {
     from_constraints: LayoutConstraints,
-    subdivisions: Vec::<LayoutConstraintsSubDivisionType>
+    subdivisions: Vec::<LayoutConstraintsSubDivisionType>,
+    total_fixed_width: u16,
+    total_no_specified_width_columns: usize
 }
 
 impl LayoutConstraintsWidthSubDivider {
     fn from_constraints(constraints: LayoutConstraints) -> Self {
         LayoutConstraintsWidthSubDivider {
             from_constraints: constraints,
-            subdivisions: vec!()
+            subdivisions: vec!(),
+            total_fixed_width: 0, 
+            total_no_specified_width_columns: 0
         }
     }
 
-    fn subdivide_for_entity(&mut self, entity: &Entity) {
-        self.subdivisions.push(LayoutConstraintsSubDivisionType::SizeNotSpecified(*entity))
+    fn subdivide_for_entity(&mut self, entity: &Entity, minimum_width_map: &MinimumWidthMap) {
+        match minimum_width_map.get(entity) {
+            Some(width) => {
+                self.subdivisions.push(LayoutConstraintsSubDivisionType::FixedSizeSpecified(*entity, width.width));
+                self.total_fixed_width += width.width;
+            },
+            None => {
+                self.subdivisions.push(LayoutConstraintsSubDivisionType::SizeNotSpecified(*entity));
+                self.total_no_specified_width_columns += 1;
+            }
+        }
     }
 
-    fn width_slice(&self, slice_index: usize) -> LayoutConstraints {
-        let width = self.from_constraints.width / self.subdivisions.len() as u16;
+    fn width_slice(&self, culmative_width: u16) -> LayoutConstraints {
+        self.fixed_width_slice(
+            culmative_width, 
+            (self.from_constraints.width - self.total_fixed_width) / self.total_no_specified_width_columns as u16)
+    }
+    
+    fn fixed_width_slice(&self, culmative_width: u16, width: u16) -> LayoutConstraints {
         LayoutConstraints {
-            left: self.from_constraints.left + (slice_index as u16 * width),
+            left: self.from_constraints.left + culmative_width,
             top: self.from_constraints.top,
             width,
             height: self.from_constraints.height
@@ -108,14 +127,16 @@ impl LayoutConstraintsWidthSubDivider {
     fn iter(&self) -> LayoutConstraintsWidthSubDividerIterator {
         LayoutConstraintsWidthSubDividerIterator {
             subdivider: self,
-            current_index: 0
+            current_index: 0,
+            culmative_width: 0
         }
     }
 }
 
 struct LayoutConstraintsWidthSubDividerIterator<'a> {
     subdivider: &'a LayoutConstraintsWidthSubDivider,
-    current_index: usize
+    current_index: usize,
+    culmative_width: u16
 }
 
 impl<'a> Iterator for LayoutConstraintsWidthSubDividerIterator<'a> {
@@ -123,8 +144,16 @@ impl<'a> Iterator for LayoutConstraintsWidthSubDividerIterator<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(subdivision_type) = self.subdivider.subdivisions.get(self.current_index) {
             let result = match subdivision_type {
-                LayoutConstraintsSubDivisionType::SizeNotSpecified(entity) => 
-                    Some((*entity, self.subdivider.width_slice(self.current_index)))
+                LayoutConstraintsSubDivisionType::SizeNotSpecified(entity) => {
+                    let new_constraints = self.subdivider.width_slice(self.culmative_width);
+                    self.culmative_width += new_constraints.width;
+                    Some((*entity, new_constraints))
+                },
+                LayoutConstraintsSubDivisionType::FixedSizeSpecified(entity, width) => {
+                    let new_constraints = self.subdivider.fixed_width_slice(self.culmative_width, *width);
+                    self.culmative_width += width;
+                    Some((*entity, new_constraints))
+                }
             };
             self.current_index += 1;
             result
@@ -287,7 +316,7 @@ fn layout_horizontal(
         let mut subdivider = constraints.into_width_subdivider();
 
         for child in maps.relationship_map.get_children(entity) {
-            subdivider.subdivide_for_entity(&child);
+            subdivider.subdivide_for_entity(&child, &maps.minimum_width_map);
         }
         
         for (child, new_constraints) in subdivider.iter() {
