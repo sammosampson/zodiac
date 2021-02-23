@@ -1,55 +1,16 @@
-<canvas-layout-content
-    left=500
-    top=600
->
-    <rect
-        left=200
-        width=200
-        height=200
-        colour=(1.0, 1.0, 1.0, 1.0)
-        stroke-colour=(0.0, 0.0, 0.0, 1.0)
-        stroke-width=3
-        corner-radii=(0.2, 0.3, 0.4, 0.5)
-    />
-    <rect
-        left=400
-        width=200
-        height=200
-        colour=(1.0, 1.0, 1.0, 1.0)
-        stroke-colour=(0.0, 0.0, 0.0, 1.0)
-        stroke-width=3
-        corner-radii=(0.2, 0.3, 0.4, 0.5)
-    />
-    <circle
-        left=600
-        radius=800
-        colour=(1.0, 1.0, 1.0, 1.0)
-        stroke-colour=(0.0, 0.0, 0.0, 1.0)
-        stroke-width=10
-        corner-radii=(0.0, 0.0, 0.0, 0.0)
-    />
-    <text
-        left=0
-        top=100
-        width=96
-        height=96
-        colour=(0.0, 0.0, 0.0, 1.0)
-        glyph-index=67
-    />
-    <text
-        left=0
-        top=200
-        width=96
-        height=96
-        colour=(0.0, 0.0, 0.0, 1.0)
-        glyph-index=37
-    />
-    <text
-        left=0
-        top=300
-        width=96
-        height=96
-        colour=(0.0, 0.0, 0.0, 1.0)
-        glyph-index=38
-    />
+<canvas-layout-content>
+    <horizontal-layout-content>
+        <text
+            colour=(0.4, 0.4, 0.4, 1.0)
+            glyph-index=37
+        />
+        <text
+            colour=(1.0, 1.0, 1.0, 1.0)
+            glyph-index=38
+        />
+        <text
+            colour=(0.8, 0.8, 0.8, 1.0)
+            glyph-index=39
+        />
+    </horizontal-layout-content>
 </canvas-layout-content>
