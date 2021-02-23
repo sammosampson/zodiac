@@ -12,6 +12,7 @@ legion = "0.3.1"
 glium = "*"
 zodiac_entities = {path = "../zodiac_entities", version = "0.1.0"}
 zodiac_parsing = {path = "../zodiac_parsing", version = "0.1.0"}
+zodiac_layout = {path = "../zodiac_layout", version = "0.1.0"}
 zodiac_resources = {path = "../zodiac_resources", version = "0.1.0"}
 zodiac_rendering = {path = "../zodiac_rendering", version = "0.1.0"}
 zodiac_rendering_glium = {path = "../zodiac_rendering_glium", version = "0.1.0"}

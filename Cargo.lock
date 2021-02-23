@@ -1765,6 +1765,7 @@ dependencies = [
  "legion",
  "rand",
  "zodiac_entities",
+ "zodiac_layout",
  "zodiac_parsing",
  "zodiac_rendering",
  "zodiac_rendering_glium",
@@ -1787,9 +1788,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "zodiac_layout"
+version = "0.1.0"
+dependencies = [
+ "legion",
+ "zodiac_entities",
+]
+
+[[package]]
 name = "zodiac_parsing"
 version = "0.1.0"
 dependencies = [
+ "legion",
  "zodiac_entities",
 ]
 

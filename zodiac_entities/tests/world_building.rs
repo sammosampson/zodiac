@@ -1,7 +1,6 @@
 use legion::*;
-use zodiac::world_building::entities::*;
+use zodiac_entities::world_building::*;
 use zodiac_entities::components::*;
-use zodiac::formatting::*;
 
 #[test]
 fn builder_creates_root_entity() {
@@ -120,8 +119,6 @@ fn builder_creates_hierarchical_relationships_to_one_level() {
     builder.create_horizontal_layout_content_entity();
     let layout = builder.get_current_entity();
     builder.complete_entity();
-    
-    world.to_pretty();
 
     let relationships: Vec::<&Relationship> = <&Relationship>::query()
         .iter(&mut world)
@@ -155,8 +152,6 @@ fn builder_creates_hierarchical_relationships_to_two_levels() {
     let rectangle = builder.get_current_entity();
     builder.complete_entity();
     builder.complete_entity();
-    
-    world.to_pretty();
 
     let relationships: Vec::<&Relationship> = <&Relationship>::query()
         .iter(&mut world)

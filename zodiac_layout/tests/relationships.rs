@@ -1,7 +1,7 @@
 use legion::*;
-use zodiac::world_building::entities::*;
-use zodiac::systems::relationships::*;
+use zodiac_entities::world_building::*;
 use zodiac_entities::components::*;
+use zodiac_layout::relationships::*;
 
 #[test]
 fn system_builds_relationship_map() {

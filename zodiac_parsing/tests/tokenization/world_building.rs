@@ -1,8 +1,8 @@
 use legion::*;
 use zodiac_parsing::tokenization::abstract_syntax::*;
 use zodiac_parsing::tokenization::source::*;
-use zodiac::world_building::abstract_syntax::*;
 use zodiac_entities::components::*;
+use zodiac_parsing::tokenization::world_building::*;
 
 #[test]
 fn parse_horizontal_layoutcontainer_produces_container_components_on_entity() {

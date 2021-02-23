@@ -1,6 +1,6 @@
 use legion::*;
 use legion::storage::*;
-use zodiac_entities::components::*;
+use crate::components::*;
 
 pub struct WorldEntityBuilder<'a> {
     world: &'a mut World,

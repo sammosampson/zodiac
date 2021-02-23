@@ -3,6 +3,7 @@
 members = [
     "zodiac_examples",
     "zodiac",
+    "zodiac_layout",
     "zodiac_entities",
     "zodiac_parsing",
     "zodiac_resources",

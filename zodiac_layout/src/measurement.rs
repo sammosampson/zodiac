@@ -1,6 +1,6 @@
 use std::collections::{ HashMap };
 use legion::*;
-use crate::systems::relationships::*;
+use crate::relationships::*;
 use zodiac_entities::components::*;
 
 pub type WidthMap = HashMap<Entity, Width>;

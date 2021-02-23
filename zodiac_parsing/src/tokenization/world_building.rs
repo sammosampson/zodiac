@@ -1,6 +1,6 @@
 use legion::*;
-use zodiac_parsing::tokenization::abstract_syntax::*;
-use crate::world_building::entities::*;
+use zodiac_entities::world_building::*;
+use crate::tokenization::abstract_syntax::*;
 
 pub trait WorldBuilder {
     fn build_world(&mut self, world: &mut World) -> Result<(), AbstractSyntaxTokenError>;
