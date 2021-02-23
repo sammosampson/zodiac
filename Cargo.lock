@@ -1797,7 +1797,8 @@ dependencies = [
 name = "zodiac_rendering"
 version = "0.1.0"
 dependencies = [
- "glium",
+ "legion",
+ "zodiac_entities",
 ]
 
 [[package]]

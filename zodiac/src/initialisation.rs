@@ -12,7 +12,6 @@ use zodiac_entities::components::*;
 use crate::systems::relationships::*;
 use crate::systems::measurement::*;
 use crate::systems::layout::*;
-use crate::systems::rendering::*;
 use crate::systems::cleanup::*;
 use crate::world_building::abstract_syntax::WorldBuilder;
 
