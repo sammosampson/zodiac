@@ -18,6 +18,7 @@ impl<I: Iterator<Item=AbstractSyntaxTokenResult>> WorldBuilder for I {
                         AbstractSyntaxToken::Text => entity_builder.create_text_entity(),
                         AbstractSyntaxToken::CanvasLayoutContent => entity_builder.create_canvas_layout_content_entity(),
                         AbstractSyntaxToken::HorizontalLayoutContent => entity_builder.create_horizontal_layout_content_entity(),
+                        AbstractSyntaxToken::VerticalLayoutContent => entity_builder.create_vertical_layout_content_entity(),
                         AbstractSyntaxToken::Left(left) => entity_builder.add_left_component(left),
                         AbstractSyntaxToken::Top(top) => entity_builder.add_top_component(top),
                         AbstractSyntaxToken::Width(width) => entity_builder.add_width_component(width),

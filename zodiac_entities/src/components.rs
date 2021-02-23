@@ -50,6 +50,7 @@ pub struct Mapped {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum LayoutType {
     Horizontal,
+    Vertical,
     Canvas,
 }
 

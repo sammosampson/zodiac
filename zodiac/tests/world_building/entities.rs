@@ -51,6 +51,21 @@ fn builder_creates_horizontal_layout_content_entity() {
 }
 
 #[test]
+fn builder_creates_vertical_layout_content_entity() {
+    let mut world = World::default();
+    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    builder.create_vertical_layout_content_entity();
+
+    let entities:Vec::<&LayoutContent> = <&LayoutContent>::query()
+        .iter(&mut world)
+        .collect();
+    
+    assert_eq!(entities[0].layout_type, LayoutType::Canvas);
+    assert_eq!(entities[1].layout_type, LayoutType::Vertical);
+    assert_eq!(entities.len(), 2);
+}
+
+#[test]
 fn builder_creates_rectangle_entity() {
     let mut world = World::default();
     let mut builder = WorldEntityBuilder::for_world(&mut world);

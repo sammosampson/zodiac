@@ -9,6 +9,7 @@ pub enum AbstractSyntaxToken {
     Text,
     CanvasLayoutContent,
     HorizontalLayoutContent,
+    VerticalLayoutContent,
     Left(u16),
     Top(u16),
     Width(u16),
@@ -79,6 +80,7 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
         match token {
             SourceToken::Control("canvas-layout-content") => Some(Ok(AbstractSyntaxToken::CanvasLayoutContent)),
             SourceToken::Control("horizontal-layout-content") => Some(Ok(AbstractSyntaxToken::HorizontalLayoutContent)),
+            SourceToken::Control("vertical-layout-content") => Some(Ok(AbstractSyntaxToken::VerticalLayoutContent)),
             SourceToken::Control("rect") => Some(Ok(AbstractSyntaxToken::Rectangle)),
             SourceToken::Control("circle") => Some(Ok(AbstractSyntaxToken::Circle)),
             SourceToken::Control("text") => Some(Ok(AbstractSyntaxToken::Text)),

@@ -41,6 +41,10 @@ impl<'a> WorldEntityBuilder<'a> {
         self.create_entity_with_component(LayoutContent { layout_type: LayoutType::Horizontal });
     }
 
+    pub fn create_vertical_layout_content_entity(&mut self) {
+        self.create_entity_with_component(LayoutContent { layout_type: LayoutType::Vertical });
+    }
+
     pub fn create_rectangle_entity(&mut self) {
         self.create_entity_with_component(Renderable { render_type: RenderType::Rectangle });
     }

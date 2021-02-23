@@ -28,6 +28,14 @@ fn parse_container_with_children_produces_container_node_and_children() {
 }
 
 #[test]
+fn parse_vertical_layout_container_produces_container_node() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<vertical-layout-content />"));
+    assert_eq!(AbstractSyntaxToken::VerticalLayoutContent, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
 fn parse_rect_produces_rectangle_node() {
     let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect />"));
     assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());

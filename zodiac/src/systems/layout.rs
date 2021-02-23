@@ -34,8 +34,13 @@ struct LayoutConstraints {
 }
 
 impl LayoutConstraints {
-    fn into_width_subdivider(&self) -> LayoutConstraintsWidthSubDivider {
-        LayoutConstraintsWidthSubDivider::from_constraints(*self)
+    fn into_width_subdivider<'a>(&self, minimum_width_map: &'a MinimumWidthMap) -> LayoutConstraintsSubDivider<LayoutConstraintsWidthResizer<'a>> {
+        LayoutConstraintsSubDivider::<LayoutConstraintsWidthResizer<'a>>
+            ::from_resizer(LayoutConstraintsWidthResizer(*self, minimum_width_map))
+    }
+    fn into_height_subdivider<'a>(&self, minimum_height_map: &'a MinimumHeightMap) -> LayoutConstraintsSubDivider<LayoutConstraintsHeightResizer<'a>> {
+        LayoutConstraintsSubDivider::<LayoutConstraintsHeightResizer<'a>>
+            ::from_resizer(LayoutConstraintsHeightResizer(*self, minimum_height_map))
     }
 }
 
@@ -79,79 +84,132 @@ enum LayoutConstraintsSubDivisionType {
     FixedSizeSpecified(Entity, u16)
 }
 
-struct LayoutConstraintsWidthSubDivider {
-    from_constraints: LayoutConstraints,
-    subdivisions: Vec::<LayoutConstraintsSubDivisionType>,
-    total_fixed_width: u16,
-    total_no_specified_width_columns: usize
+trait LayoutConstraintsResizer {
+    fn resize(&self, culmative_size: u16, size: u16) -> LayoutConstraints;
+    fn get_size(&self) -> u16;
+    fn get_minimum_size(&self, entity: &Entity) -> Option<u16>;
 }
 
-impl LayoutConstraintsWidthSubDivider {
-    fn from_constraints(constraints: LayoutConstraints) -> Self {
-        LayoutConstraintsWidthSubDivider {
-            from_constraints: constraints,
-            subdivisions: vec!(),
-            total_fixed_width: 0, 
-            total_no_specified_width_columns: 0
+struct LayoutConstraintsWidthResizer<'a> (LayoutConstraints, &'a MinimumWidthMap);
+
+impl<'a> LayoutConstraintsResizer for LayoutConstraintsWidthResizer<'a>  {
+    fn resize(&self, culmative_size: u16, size: u16) -> LayoutConstraints {
+        LayoutConstraints {
+            left: self.0.left + culmative_size,
+            top: self.0.top,
+            width: size,
+            height: self.0.height
         }
     }
 
-    fn subdivide_for_entity(&mut self, entity: &Entity, minimum_width_map: &MinimumWidthMap) {
-        match minimum_width_map.get(entity) {
-            Some(width) => {
-                self.subdivisions.push(LayoutConstraintsSubDivisionType::FixedSizeSpecified(*entity, width.width));
-                self.total_fixed_width += width.width;
+    fn get_size(&self) -> u16 {
+        self.0.width
+    }
+
+    fn get_minimum_size(&self, entity: &Entity) -> Option<u16> {
+        if let Some(width) = self.1.get(entity) {
+            return Some(width.width);
+        }
+        None
+    }
+}
+
+struct LayoutConstraintsHeightResizer<'a> (LayoutConstraints, &'a MinimumHeightMap);
+
+impl<'a> LayoutConstraintsResizer for LayoutConstraintsHeightResizer<'a> {
+    fn resize(&self, culmative_size: u16, size: u16) -> LayoutConstraints {
+        LayoutConstraints {
+            left: self.0.left,
+            top: self.0.top + culmative_size,
+            width: self.0.width,
+            height: size
+        }
+    }
+
+    fn get_size(&self) -> u16 {
+        self.0.height
+    }
+
+    fn get_minimum_size(&self, entity: &Entity) -> Option<u16> {
+        if let Some(height) = self.1.get(entity) {
+            return Some(height.height);
+        }
+        None
+    }
+}
+
+struct LayoutConstraintsSubDivider<TResizer: LayoutConstraintsResizer> {
+    resizer: TResizer,
+    subdivisions: Vec::<LayoutConstraintsSubDivisionType>,
+    total_fixed_size: u16,
+    total_no_specified_size_items: usize
+}
+
+impl <TResizer> LayoutConstraintsSubDivider<TResizer>  where TResizer: LayoutConstraintsResizer {
+    fn from_resizer(resizer: TResizer) -> Self {
+        LayoutConstraintsSubDivider::<TResizer> {
+            resizer,
+            subdivisions: vec!(),
+            total_fixed_size: 0, 
+            total_no_specified_size_items: 0
+        }
+    }
+
+    fn subdivide_for_entity(&mut self, entity: &Entity) {
+        match self.resizer.get_minimum_size(entity) {
+            Some(size) => {
+                self.subdivisions.push(LayoutConstraintsSubDivisionType::FixedSizeSpecified(*entity, size));
+                self.total_fixed_size += size;
             },
             None => {
                 self.subdivisions.push(LayoutConstraintsSubDivisionType::SizeNotSpecified(*entity));
-                self.total_no_specified_width_columns += 1;
+                self.total_no_specified_size_items += 1;
             }
         }
     }
 
-    fn width_slice(&self, culmative_width: u16) -> LayoutConstraints {
-        self.fixed_width_slice(
-            culmative_width, 
-            (self.from_constraints.width - self.total_fixed_width) / self.total_no_specified_width_columns as u16)
-    }
-    
-    fn fixed_width_slice(&self, culmative_width: u16, width: u16) -> LayoutConstraints {
-        LayoutConstraints {
-            left: self.from_constraints.left + culmative_width,
-            top: self.from_constraints.top,
-            width,
-            height: self.from_constraints.height
-        }
-    }
-
-    fn iter(&self) -> LayoutConstraintsWidthSubDividerIterator {
-        LayoutConstraintsWidthSubDividerIterator {
+    fn iter(&self) -> LayoutConstraintsSubDividerIterator::<TResizer> {
+        LayoutConstraintsSubDividerIterator::<TResizer> {
             subdivider: self,
             current_index: 0,
-            culmative_width: 0
+            culmative_size: 0
         }
+    }
+
+    fn get_subdivision(&self, index: usize) -> Option<&LayoutConstraintsSubDivisionType> {
+        self.subdivisions.get(index)
+    }
+
+    fn slice(&self, culmative_size: u16) -> (LayoutConstraints, u16) {
+        let size = (self.resizer.get_size() - self.total_fixed_size) / self.total_no_specified_size_items as u16;
+        let slice = self.fixed_slice(culmative_size, size);
+        (slice, size)
+    }
+    
+    fn fixed_slice(&self, culmative_size: u16, size: u16) -> LayoutConstraints {
+        self.resizer.resize(culmative_size, size)
     }
 }
 
-struct LayoutConstraintsWidthSubDividerIterator<'a> {
-    subdivider: &'a LayoutConstraintsWidthSubDivider,
+struct LayoutConstraintsSubDividerIterator<'a, TResizer: LayoutConstraintsResizer> {
+    subdivider: &'a LayoutConstraintsSubDivider<TResizer>,
     current_index: usize,
-    culmative_width: u16
+    culmative_size: u16
 }
 
-impl<'a> Iterator for LayoutConstraintsWidthSubDividerIterator<'a> {
+impl<'a, TResizer> Iterator for LayoutConstraintsSubDividerIterator<'a, TResizer>  where TResizer: LayoutConstraintsResizer{
     type Item = (Entity, LayoutConstraints);
     fn next(&mut self) -> Option<Self::Item> {
-        if let Some(subdivision_type) = self.subdivider.subdivisions.get(self.current_index) {
+        if let Some(subdivision_type) = self.subdivider.get_subdivision(self.current_index) {
             let result = match subdivision_type {
                 LayoutConstraintsSubDivisionType::SizeNotSpecified(entity) => {
-                    let new_constraints = self.subdivider.width_slice(self.culmative_width);
-                    self.culmative_width += new_constraints.width;
+                    let (new_constraints, size) = self.subdivider.slice(self.culmative_size);
+                    self.culmative_size += size;
                     Some((*entity, new_constraints))
                 },
-                LayoutConstraintsSubDivisionType::FixedSizeSpecified(entity, width) => {
-                    let new_constraints = self.subdivider.fixed_width_slice(self.culmative_width, *width);
-                    self.culmative_width += width;
+                LayoutConstraintsSubDivisionType::FixedSizeSpecified(entity, size) => {
+                    let new_constraints = self.subdivider.fixed_slice(self.culmative_size, *size);
+                    self.culmative_size += size;
                     Some((*entity, new_constraints))
                 }
             };
@@ -282,7 +340,8 @@ fn perform_layout(
         if let Some(layout_type) = maps.layout_map.get(entity) {
             match layout_type {
                 LayoutType::Canvas => layout_canvas(maps, world, command_buffer, entity, constraints),
-                LayoutType::Horizontal => layout_horizontal(maps, world, command_buffer, entity, constraints)
+                LayoutType::Horizontal => layout_horizontal(maps, world, command_buffer, entity, constraints),
+                LayoutType::Vertical => layout_vertical(maps, world, command_buffer, entity, constraints)
             }
         } else {
             layout_renderable(maps, command_buffer, entity, constraints);
@@ -313,10 +372,27 @@ fn layout_horizontal(
     command_buffer: &mut CommandBuffer,
     entity: &Entity, 
     constraints: &LayoutConstraints) {
-        let mut subdivider = constraints.into_width_subdivider();
+        let mut subdivider = constraints.into_width_subdivider(&maps.minimum_width_map);
 
         for child in maps.relationship_map.get_children(entity) {
-            subdivider.subdivide_for_entity(&child, &maps.minimum_width_map);
+            subdivider.subdivide_for_entity(&child);
+        }
+        
+        for (child, new_constraints) in subdivider.iter() {
+            perform_layout(maps, world, command_buffer, &child, &new_constraints);
+        }
+}
+
+fn layout_vertical(
+    maps: &LayoutMaps,
+    world: &mut SubWorld,
+    command_buffer: &mut CommandBuffer,
+    entity: &Entity, 
+    constraints: &LayoutConstraints) {
+        let mut subdivider = constraints.into_height_subdivider(&maps.minimum_height_map);
+
+        for child in maps.relationship_map.get_children(entity) {
+            subdivider.subdivide_for_entity(&child);
         }
         
         for (child, new_constraints) in subdivider.iter() {

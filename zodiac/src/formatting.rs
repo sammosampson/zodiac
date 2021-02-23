@@ -39,7 +39,8 @@ impl Pretty for World {
         for (entity, relationship, layout) in query.iter(self) {
             match layout.layout_type {
                 LayoutType::Canvas => println!("canvas"),
-                LayoutType::Horizontal => println!("horizontal")
+                LayoutType::Horizontal => println!("horizontal"),
+                LayoutType::Vertical => println!("vertical")
             }
             println!("{:?}", entity);
             println!("{:?}", relationship);
