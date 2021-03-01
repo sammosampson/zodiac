@@ -17,8 +17,7 @@ pub struct GliumRenderer {
     display: Display,
     shader_program: Program,
     font_array: Texture2dArray,
-    vertex_buffer: VertexBuffer::<RenderPrimitive>,
-    resolution: [f32;2]
+    vertex_buffer: VertexBuffer::<RenderPrimitive>
 }
 
 impl GliumRenderer {
@@ -26,14 +25,12 @@ impl GliumRenderer {
         let display = create_display(event_loop).map_err(|_|RendererError::FailedToDisplayWindow)?;
         let shader_program = create_shader_program(&display).map_err(|_|RendererError::FailedToCreateShaders)?;
         let font_array = create_font_array(&display).map_err(|_|RendererError::FailedToLoadFont)?;
-        let framebuffer_dimensions = display.get_framebuffer_dimensions();
         let vertex_buffer = VertexBuffer::<RenderPrimitive>::empty_dynamic(&display, 16384).map_err(|_|RendererError::BufferCreationError)?;
         
         Ok(Self {
             display,
             shader_program,
             font_array,
-            resolution: [framebuffer_dimensions.0 as f32, framebuffer_dimensions.1 as f32],
             vertex_buffer
         })
     }
@@ -107,13 +104,12 @@ impl Renderer for GliumRenderer {
         };
 
         let mut target = self.display.draw();
-
         let (width, height) = target.get_dimensions();
 
+        println!("width: {}, height: {}", width, height);
+
         let uniforms = uniform! {
-            uResolution: self.resolution,
-            uCamera: orthographic_camera_matrix(self.resolution[0] as u32, self.resolution[1] as u32),
-            uView: orthographic_view_matrix(width, height, self.resolution[0] as u32, self.resolution[1] as u32),
+            uResolution: [width as f32, height as f32],
             font_buffer: self.font_array.sampled().magnify_filter(MagnifySamplerFilter::Linear)
         };
 

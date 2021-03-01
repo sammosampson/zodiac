@@ -5,8 +5,6 @@ pub fn create_shader_program(display: &Display) -> Result<Program, ProgramCreati
         #version 330 core
 
         uniform vec2 uResolution;
-        uniform mat2 uCamera;
-        uniform mat2 uView;
         
         layout (location = 0) in ivec2 position;
         layout (location = 1) in ivec2 dimensions;
@@ -37,8 +35,8 @@ pub fn create_shader_program(display: &Display) -> Result<Program, ProgramCreati
         
         void main()
         {
-            vec2 screen_position = uView * uCamera * (position + dimensions / 2);
-            vec2 screen_dimensions = uView * uCamera * dimensions;
+            vec2 screen_position = (position + dimensions / 2);
+            vec2 screen_dimensions = dimensions;
             gl_Position = vec4(toClipSpace(uResolution, vec2(screen_position)), 0.0, 1.0);
             vs_out.clip_space_dimensions = screen_dimensions / uResolution.xy;
             vs_out.dimensions = dimensions;
@@ -80,7 +78,6 @@ pub fn create_shader_program(display: &Display) -> Result<Program, ProgramCreati
 
         void createVertex(vec2 pos, vec2 scale, vec2 corner, float u, float v) {
             vec2 scaled = scale * corner;
-            //vec2 transformed = uView * uCamera * (pos + scaled);
             vec2 transformed = pos + scaled;
             gl_Position = vec4(transformed, 0.0, 1.0);
             gm_out.texture_coord = vec2(u, v);
@@ -116,6 +113,7 @@ pub fn create_shader_program(display: &Display) -> Result<Program, ProgramCreati
     let fragment_shader_src = r#"
         #version 330 core
 
+        uniform vec2 uResolution;
         uniform sampler2DArray font_buffer;
         float smoothness = 0.002;
         
@@ -142,7 +140,7 @@ pub fn create_shader_program(display: &Display) -> Result<Program, ProgramCreati
             return length(position) - radius;
         }
         
-        float box_signed_dist(in vec2 position, in vec4 corner_radii)
+        float box_signed_dist(in vec2 position, in vec4 corner_radii, float aspect)
         {
             vec2 bounds = vec2(0.5);
             vec2 quadrant_position = step(vec2(0.5), position);
@@ -158,6 +156,7 @@ pub fn create_shader_program(display: &Display) -> Result<Program, ProgramCreati
         {
             vec3 inner_colour = fs_in.inner_colour.rgb;
             vec3 outer_colour = fs_in.outer_colour.rgb;
+            float aspect = uResolution.y / uResolution.x;
             float stroke_width = fs_in.extra_data_1.r / fs_in.dimensions.x;
         
             float alpha = 0.00;
@@ -176,7 +175,7 @@ pub fn create_shader_program(display: &Display) -> Result<Program, ProgramCreati
             if(fs_in.identification.r == 1) 
             {
                 vec4 corner_radii = fs_in.extra_data_2;
-                float dist = box_signed_dist(fs_in.texture_coord, corner_radii);
+                float dist = box_signed_dist(fs_in.texture_coord, corner_radii, aspect);
                 float outer = smoothstep(smoothness, -smoothness, dist);
                 float inner = smoothstep(-stroke_width + smoothness, -stroke_width - smoothness, dist);
                 alpha = smoothstep(0.00, -smoothness, dist);

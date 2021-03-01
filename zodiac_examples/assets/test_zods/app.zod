@@ -1,16 +1,7 @@
-<canvas-layout-content>
-    <horizontal-layout-content>
-        <text
-            colour=(0.4, 0.4, 0.4, 1.0)
-            glyph-index=37
-        />
-        <text
-            colour=(1.0, 1.0, 1.0, 1.0)
-            glyph-index=38
-        />
-        <text
-            colour=(0.8, 0.8, 0.8, 1.0)
-            glyph-index=39
-        />
-    </horizontal-layout-content>
-</canvas-layout-content>
+<rect
+    colour=(0.4, 0.4, 0.4, 1.0)
+    stroke-colour=(0.0, 0.0, 0.0, 1.0)
+    stroke-width=6
+    corner-radii=(0.2, 0.2, 0.2, 0.2)
+/>
+        
