@@ -79,8 +79,8 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
     fn transition(&mut self, token: SourceToken<'a>) -> AbstractSyntaxTokenOption {
         match token {
             SourceToken::Control("canvas") => Some(Ok(AbstractSyntaxToken::CanvasLayoutContent)),
-            SourceToken::Control("horizontal-layout-content") => Some(Ok(AbstractSyntaxToken::HorizontalLayoutContent)),
-            SourceToken::Control("vertical-layout-content") => Some(Ok(AbstractSyntaxToken::VerticalLayoutContent)),
+            SourceToken::Control("horizontal-stack") => Some(Ok(AbstractSyntaxToken::HorizontalLayoutContent)),
+            SourceToken::Control("vertical-stack") => Some(Ok(AbstractSyntaxToken::VerticalLayoutContent)),
             SourceToken::Control("rect") => Some(Ok(AbstractSyntaxToken::Rectangle)),
             SourceToken::Control("circle") => Some(Ok(AbstractSyntaxToken::Circle)),
             SourceToken::Control("text") => Some(Ok(AbstractSyntaxToken::Text)),

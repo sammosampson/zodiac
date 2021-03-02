@@ -7,7 +7,7 @@ use zodiac_parsing::tokenization::world_building::*;
 #[test]
 fn parse_horizontal_layoutcontainer_produces_container_components_on_entity() {
     let mut world = World::default();
-    build_world(&mut world, "<horizontal-layout-content />").unwrap();
+    build_world(&mut world, "<horizontal-stack />").unwrap();
     
     let entities:Vec::<&LayoutContent> = <&LayoutContent>::query()
         .iter(&mut world)
@@ -154,7 +154,7 @@ fn parse_hierarchical_controls_produces_relationships() {
     let mut world = World::default();
     build_world(
         &mut world, 
-        "<horizontal-layout-content><rect top=200 /></horizontal-layout-content>")
+        "<horizontal-stack><rect top=200 /></horizontal-stack>")
         .unwrap();
     
     let relationships:Vec::<&Relationship> = <&Relationship>::query()

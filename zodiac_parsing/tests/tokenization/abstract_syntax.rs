@@ -11,7 +11,7 @@ fn parse_canvas_layout_container_produces_container_node() {
 
 #[test]
 fn parse_horizontal_layout_container_produces_container_node() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<horizontal-layout-content />"));
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<horizontal-stack />"));
     assert_eq!(AbstractSyntaxToken::HorizontalLayoutContent, tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
@@ -19,7 +19,7 @@ fn parse_horizontal_layout_container_produces_container_node() {
 
 #[test]
 fn parse_container_with_children_produces_container_node_and_children() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<horizontal-layout-content><circle/></horizontal-layout-content>"));
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<horizontal-stack><circle/></horizontal-stack>"));
     assert_eq!(AbstractSyntaxToken::HorizontalLayoutContent, tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::Circle, tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
@@ -29,7 +29,7 @@ fn parse_container_with_children_produces_container_node_and_children() {
 
 #[test]
 fn parse_vertical_layout_container_produces_container_node() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<vertical-layout-content />"));
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<vertical-stack />"));
     assert_eq!(AbstractSyntaxToken::VerticalLayoutContent, tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
