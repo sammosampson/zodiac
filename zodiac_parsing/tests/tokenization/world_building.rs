@@ -21,7 +21,7 @@ fn parse_horizontal_layoutcontainer_produces_container_components_on_entity() {
 #[test]
 fn parse_canvas_layout_container_produces_container_components_on_entity() {
     let mut world = World::default();
-    build_world(&mut world, "<canvas-layout-content />").unwrap();
+    build_world(&mut world, "<canvas />").unwrap();
     
     let entities:Vec::<&LayoutContent> = <&LayoutContent>::query()
         .iter(&mut world)

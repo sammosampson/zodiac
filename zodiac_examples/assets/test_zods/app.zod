@@ -1,5 +1,5 @@
 
-<canvas-layout-content>
+<canvas>
     <horizontal-layout-content>
         <rect
             colour=(0.4, 0.4, 0.4, 1.0)
@@ -13,4 +13,4 @@
             stroke-width=20
         />
     </horizontal-layout-content>
-</canvas-layout-content>
+</canvas>

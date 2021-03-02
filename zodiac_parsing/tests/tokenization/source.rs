@@ -58,38 +58,38 @@ fn multiple_consecutive_controls_produces_correct_tokens() {
 
 #[test]
 fn multiple_nested_controls_produces_correct_tokens() {
-    let mut tokenizer = SourceTokenizer::from_string("<canvas-layout-content><circle><line/></circle></canvas-layout-content>");
-    assert_eq!(SourceToken::Control("canvas-layout-content"),  tokenizer.next().unwrap().unwrap());
+    let mut tokenizer = SourceTokenizer::from_string("<canvas><circle><line/></circle></canvas>");
+    assert_eq!(SourceToken::Control("canvas"),  tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::Control("circle"),  tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::Control("line"),  tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::EndControl("line"), tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::EndControl("circle"), tokenizer.next().unwrap().unwrap());
-    assert_eq!(SourceToken::EndControl("canvas-layout-content"), tokenizer.next().unwrap().unwrap());
+    assert_eq!(SourceToken::EndControl("canvas"), tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
 
 #[test]
 fn multiple_nested_controls_with_valueless_properties_produces_correct_tokens() {
-    let mut tokenizer = SourceTokenizer::from_string("<canvas-layout-content other><circle other></circle></canvas-layout-content>");
-    assert_eq!(SourceToken::Control("canvas-layout-content"),  tokenizer.next().unwrap().unwrap());
+    let mut tokenizer = SourceTokenizer::from_string("<canvas other><circle other></circle></canvas>");
+    assert_eq!(SourceToken::Control("canvas"),  tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::Property("other"), tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::Control("circle"),  tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::Property("other"), tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::EndControl("circle"), tokenizer.next().unwrap().unwrap());
-    assert_eq!(SourceToken::EndControl("canvas-layout-content"), tokenizer.next().unwrap().unwrap());
+    assert_eq!(SourceToken::EndControl("canvas"), tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
 
 #[test]
 fn multiple_nested_controls_with_properties_with_values_produces_correct_tokens() {
-    let mut tokenizer = SourceTokenizer::from_string("<canvas-layout-content offset=(200, 100)><circle other></circle></canvas-layout-content>");
-    assert_eq!(SourceToken::Control("canvas-layout-content"),  tokenizer.next().unwrap().unwrap());
+    let mut tokenizer = SourceTokenizer::from_string("<canvas offset=(200, 100)><circle other></circle></canvas>");
+    assert_eq!(SourceToken::Control("canvas"),  tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::Property("offset"), tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::PropertyValue(SourceTokenPropertyValue::Tuple("(200, 100)")), tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::Control("circle"),  tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::Property("other"), tokenizer.next().unwrap().unwrap());
     assert_eq!(SourceToken::EndControl("circle"), tokenizer.next().unwrap().unwrap());
-    assert_eq!(SourceToken::EndControl("canvas-layout-content"), tokenizer.next().unwrap().unwrap());
+    assert_eq!(SourceToken::EndControl("canvas"), tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
 

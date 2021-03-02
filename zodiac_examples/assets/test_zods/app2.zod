@@ -1,4 +1,4 @@
-<canvas-layout-content>
+<canvas>
     <horizontal-layout-content>
         <rect
             colour=(0.4, 0.4, 0.4, 1.0)
@@ -19,4 +19,4 @@
             corner-radii=(0, 0, 0, 0)
         />
     </horizontal-layout-content>
-</canvas-layout-content>
+</canvas>
