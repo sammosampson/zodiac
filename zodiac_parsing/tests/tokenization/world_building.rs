@@ -76,7 +76,7 @@ fn parse_rect_produces_rectangle_components_on_entity() {
         colour=(1.0, 2.0, 3.0, 4.0)
         stroke-colour=(0.0, 1.0, 2.0, 3.0)
         stroke-width=3
-        corner-radii=(0.5, 1.5, 2.5, 3.5)
+        corner-radii=(5, 15, 25, 35)
     />").unwrap();
     let mut entities = 0;
     let mut query = <(&Top, &Width, &Height, &Colour, &StrokeColour, &StrokeWidth, &CornerRadii)>::query()
@@ -96,10 +96,10 @@ fn parse_rect_produces_rectangle_components_on_entity() {
         assert_eq!(stroke_colour.b, 2.0);
         assert_eq!(stroke_colour.a, 3.0);
         assert_eq!(stroke_width.width, 3);
-        assert_eq!(corner_radii.left_top, 0.5);
-        assert_eq!(corner_radii.right_top, 1.5);
-        assert_eq!(corner_radii.right_bottom, 2.5);
-        assert_eq!(corner_radii.left_bottom, 3.5);
+        assert_eq!(corner_radii.left_top, 5);
+        assert_eq!(corner_radii.right_top, 15);
+        assert_eq!(corner_radii.right_bottom, 25);
+        assert_eq!(corner_radii.left_bottom, 35);
     }
     assert_eq!(entities, 1);
 }

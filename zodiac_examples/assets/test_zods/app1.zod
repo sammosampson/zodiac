@@ -1,0 +1,6 @@
+<rect
+    colour=(1.0, 1.0, 1.0, 1.0)
+    stroke-colour=(0.4, 0.4, 0.4, 1.0)
+    stroke-width=20
+    corner-radii=(50, 50, 50, 50)
+/>

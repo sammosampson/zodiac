@@ -11,7 +11,6 @@ use crate::primitives::*;
 use crate::shaders::*;
 use crate::display::*;
 use crate::fonts::*;
-use crate::matrices::*;
 
 pub struct GliumRenderer {
     display: Display,
@@ -49,7 +48,7 @@ impl Renderer for GliumRenderer {
         inner_colour: [f32; 4],
         outer_colour: [f32; 4],
         stroke_width: f32,
-        corner_radii: [f32; 4]) {
+        corner_radii: [u16; 4]) {
         self.queue_primitive_for_render(
             index,
             RenderPrimitive::rectangle(

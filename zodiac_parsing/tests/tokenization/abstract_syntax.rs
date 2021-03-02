@@ -172,16 +172,16 @@ fn malformed_stroke_colour_produces_error() {
 
 #[test]
 fn corner_radii_produces_stroke_colour_node() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect corner-radii=(1.0, 0.9, 0.0, 1.0) />"));
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect corner-radii=(10, 9, 0, 10) />"));
     assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
-    assert_eq!(AbstractSyntaxToken::CornerRadii((1.0, 0.9, 0.0, 1.0)), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CornerRadii((10, 9, 0, 10)), tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
 
 #[test]
 fn malformed_corner_radii_colour_produces_error() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect corner-radii=(1.0, 0.9, 0.0) />"));
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect corner-radii=(10, 9, 0) />"));
     assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
     assert_eq!(Err(AbstractSyntaxTokenError::BadCornerRadiiValue), tokenizer.next().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());

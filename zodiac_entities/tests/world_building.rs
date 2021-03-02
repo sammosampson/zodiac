@@ -357,16 +357,16 @@ fn builder_creates_entity_with_corner_radii() {
     let mut builder = WorldEntityBuilder::for_world(&mut world);
     let mut entity_count = 0;
     builder.create_rectangle_entity();
-    builder.add_corner_radii_component(1.0, 0.9, 0.8, 0.7);
+    builder.add_corner_radii_component(100, 90, 80, 70);
     builder.complete_entity();
 
     for colour in <&CornerRadii>::query()
         .filter(component::<Renderable>())
         .iter(&mut world) {
-            assert_eq!(colour.left_top, 1.0);
-            assert_eq!(colour.right_top, 0.9);
-            assert_eq!(colour.right_bottom, 0.8);
-            assert_eq!(colour.left_bottom, 0.7);
+            assert_eq!(colour.left_top, 100);
+            assert_eq!(colour.right_top, 90);
+            assert_eq!(colour.right_bottom, 80);
+            assert_eq!(colour.left_bottom, 70);
             entity_count += 1;
         }
 

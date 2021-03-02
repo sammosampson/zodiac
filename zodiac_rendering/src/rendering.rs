@@ -23,7 +23,7 @@ pub trait Renderer {
         inner_colour: [f32; 4],
         outer_colour: [f32; 4],
         stroke_width: f32,
-        corner_radii: [f32; 4]);
+        corner_radii: [u16; 4]);
 
     fn queue_circle_for_render(
         &mut self,

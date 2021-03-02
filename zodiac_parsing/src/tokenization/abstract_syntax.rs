@@ -1,6 +1,6 @@
 
 use crate::tokenization::source::{SourceTokenResult, SourceTokenError, SourceToken, SourceTokenPropertyValue};
-use crate::tokenization::tuple::{TupleTokenizer, TupleTokenFloatIterator};
+use crate::tokenization::tuple::{TupleTokenizer, TupleTokenFloatIterator, TupleTokenUnsignedShortIterator};
 
 #[derive(PartialEq, PartialOrd, Debug)]
 pub enum AbstractSyntaxToken {
@@ -18,7 +18,7 @@ pub enum AbstractSyntaxToken {
     GlyphIndex(u16),
     StrokeColour((f32, f32, f32, f32)),
     Colour((f32, f32, f32, f32)),
-    CornerRadii((f32, f32, f32, f32)),
+    CornerRadii((u16, u16, u16, u16)),
     StrokeWidth(u16),
     CompleteControl,
 }
@@ -119,7 +119,7 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
                                 }
                             },
                             "corner-radii" => {
-                                match TupleTokenFloatIterator::from_iterator(tuple_tokenizer).collect_specific_amount(4) {
+                                match TupleTokenUnsignedShortIterator::from_iterator(tuple_tokenizer).collect_specific_amount(4) {
                                     Ok(values) => Some(Ok(AbstractSyntaxToken::CornerRadii((values[0], values[1], values[2], values[3])))),
                                     Err(_) => Some(Err(AbstractSyntaxTokenError::BadCornerRadiiValue))
                                 }

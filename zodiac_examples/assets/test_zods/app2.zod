@@ -2,21 +2,21 @@
     <horizontal-layout-content>
         <rect
             colour=(0.4, 0.4, 0.4, 1.0)
-            stroke-colour=(0.0, 0.0, 0.0, 1.0)
-            stroke-width=0
-            corner-radii=(0.2, 0.0, 0.2, 0.0)
+            stroke-colour=(1.0, 1.0, 1.0, 1.0)
+            stroke-width=20
+            corner-radii=(50, 0, 50, 0)
         />
         <rect
             colour=(1.0, 1.0, 1.0, 1.0)
-            stroke-colour=(0.0, 0.0, 0.0, 1.0)
+            stroke-colour=(1.0, 1.0, 1.0, 1.0)
             stroke-width=0
-            corner-radii=(0.0, 0.0, 0.0, 0.0)
+            corner-radii=(0, 0, 0, 0)
         />
         <rect
             colour=(0.8, 0.8, 0.8, 1.0)
-            stroke-colour=(0.0, 0.0, 0.0, 1.0)
+            stroke-colour=(0.8, 0.8, 0.8, 1.0)
             stroke-width=0
-            corner-radii=(0.0, 0.0, 0.0, 0.0)
+            corner-radii=(0, 0, 0, 0)
         />
     </horizontal-layout-content>
 </canvas-layout-content>

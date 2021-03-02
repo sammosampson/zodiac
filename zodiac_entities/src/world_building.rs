@@ -93,7 +93,7 @@ impl<'a> WorldEntityBuilder<'a> {
         self.add_component_to_current_entity(StrokeColour { r, g, b ,a });
     }
 
-    pub fn add_corner_radii_component(&mut self, left_top: f32, right_top: f32, right_bottom: f32, left_bottom: f32) {
+    pub fn add_corner_radii_component(&mut self, left_top: u16, right_top: u16, right_bottom: u16, left_bottom: u16) {
         self.add_component_to_current_entity(CornerRadii { left_top, right_top, right_bottom, left_bottom });
     }
 

@@ -184,8 +184,8 @@ pub struct StrokeColour {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct CornerRadii {
-    pub left_top: f32,
-    pub right_top: f32,
-    pub right_bottom: f32,
-    pub left_bottom: f32,
+    pub left_top: u16,
+    pub right_top: u16,
+    pub right_bottom: u16,
+    pub left_bottom: u16,
 }
