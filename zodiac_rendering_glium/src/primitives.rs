@@ -77,7 +77,7 @@ impl RenderPrimitive {
         ) 
     }
 
-    pub fn text(
+    pub fn glyph(
         position: [u16; 2],
         dimensions: [u16; 2],
         colour: [f32; 4],

@@ -90,10 +90,10 @@ fn parse_radius_produces_radius_node() {
 }
 
 #[test]
-fn glyph_index_produces_glyph_index_node() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text glyph-index=1 />"));
+fn text_content_produces_content_node() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text content=\"test\" />"));
     assert_eq!(AbstractSyntaxToken::Text, tokenizer.next().unwrap().unwrap());
-    assert_eq!(AbstractSyntaxToken::GlyphIndex(1), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::Content("test"), tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }

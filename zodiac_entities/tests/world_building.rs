@@ -85,10 +85,10 @@ fn builder_creates_circle_entity() {
 }
 
 #[test]
-fn builder_creates_text_entity() {
+fn builder_creates_glyph_entity() {
     let mut world = World::default();
     let mut builder = WorldEntityBuilder::for_world(&mut world);
-    builder.create_text_entity();
+    builder.create_glyph_entity();
 
     let entity_count = <&Renderable>::query().iter(&mut world).count();
     assert_eq!(entity_count, 1);
@@ -289,30 +289,11 @@ fn builder_creates_entity_with_stroke_width() {
 }
 
 #[test]
-fn builder_creates_entity_with_glyph_index() {
-    let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
-    let mut entity_count = 0;
-    builder.create_text_entity();
-    builder.add_glyph_index_component(1);
-    builder.complete_entity();
-
-    for glyph_index in <&GlyphIndex>::query()
-        .filter(component::<Renderable>())
-        .iter(&mut world) {
-            assert_eq!(glyph_index.index, 1);
-            entity_count += 1;
-        }
-
-    assert_eq!(entity_count, 1);
-}
-
-#[test]
 fn builder_creates_entity_with_colour() {
     let mut world = World::default();
     let mut builder = WorldEntityBuilder::for_world(&mut world);
     let mut entity_count = 0;
-    builder.create_text_entity();
+    builder.create_rectangle_entity();
     builder.add_colour_component(1.0, 0.9, 0.8, 0.7);
     builder.complete_entity();
 

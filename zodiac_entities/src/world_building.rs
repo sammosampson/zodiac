@@ -52,9 +52,13 @@ impl<'a> WorldEntityBuilder<'a> {
     pub fn create_circle_entity(&mut self) {
         self.create_entity_with_component(Renderable { render_type: RenderType::Circle });
     }
-    
-    pub fn create_text_entity(&mut self) {
-        self.create_entity_with_component(Renderable { render_type: RenderType::Text });
+
+    pub fn create_glyph_entity(&mut self) {
+        self.create_entity_with_component(Renderable { render_type: RenderType::Glyph });
+    }
+
+    pub fn add_character_component(&mut self, character: char, position: usize) {
+        self.add_component_to_current_entity(Character { character, position });
     }
     
     pub fn add_left_component(&mut self, left: u16) {

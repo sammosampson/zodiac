@@ -6,3 +6,5 @@ mod measurement;
 mod resizing;
 #[cfg(test)]
 mod positioning;
+#[cfg(test)]
+mod text;

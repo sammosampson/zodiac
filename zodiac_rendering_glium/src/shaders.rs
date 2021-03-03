@@ -196,6 +196,7 @@ pub fn create_shader_program(display: &Display) -> Result<Program, ProgramCreati
             }
         
             Color = vec4(current_colour, alpha);
+            //Color = vec4(inner_colour, 1.0);
         }
     "#;
 

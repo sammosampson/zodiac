@@ -3,7 +3,7 @@ use crate::tokenization::source::{SourceTokenResult, SourceTokenError, SourceTok
 use crate::tokenization::tuple::{TupleTokenizer, TupleTokenFloatIterator, TupleTokenUnsignedShortIterator};
 
 #[derive(PartialEq, PartialOrd, Debug)]
-pub enum AbstractSyntaxToken {
+pub enum AbstractSyntaxToken<'a> {
     Circle,
     Rectangle,
     Text,
@@ -15,7 +15,7 @@ pub enum AbstractSyntaxToken {
     Width(u16),
     Height(u16),
     Radius(u16),
-    GlyphIndex(u16),
+    Content(&'a str),
     StrokeColour((f32, f32, f32, f32)),
     Colour((f32, f32, f32, f32)),
     CornerRadii((u16, u16, u16, u16)),
@@ -40,8 +40,8 @@ impl<'a> From<SourceTokenError> for AbstractSyntaxTokenError {
     }
 }
 
-pub type AbstractSyntaxTokenResult = Result<AbstractSyntaxToken, AbstractSyntaxTokenError>;
-pub type AbstractSyntaxTokenOption = Option<AbstractSyntaxTokenResult>;
+pub type AbstractSyntaxTokenResult<'a> = Result<AbstractSyntaxToken<'a>, AbstractSyntaxTokenError>;
+pub type AbstractSyntaxTokenOption<'a> = Option<AbstractSyntaxTokenResult<'a>>;
 
 pub struct AbstractSyntaxTokenizer<'a, I> where I : Iterator<Item=SourceTokenResult<'a>> {
     source_token_iterator: I,
@@ -49,8 +49,8 @@ pub struct AbstractSyntaxTokenizer<'a, I> where I : Iterator<Item=SourceTokenRes
 }
 
 impl <'a, I> Iterator for AbstractSyntaxTokenizer<'a, I> where I : Iterator<Item=SourceTokenResult<'a>> {
-    type Item = AbstractSyntaxTokenResult;
-    fn next(&mut self) -> AbstractSyntaxTokenOption {
+    type Item = AbstractSyntaxTokenResult<'a>;
+    fn next(&mut self) -> AbstractSyntaxTokenOption<'a> {
         loop {
             return match self.source_token_iterator.next() {
                 Some(result) => match result {
@@ -76,7 +76,7 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
         }
     }
     
-    fn transition(&mut self, token: SourceToken<'a>) -> AbstractSyntaxTokenOption {
+    fn transition(&mut self, token: SourceToken<'a>) -> AbstractSyntaxTokenOption<'a> {
         match token {
             SourceToken::Control("canvas") => Some(Ok(AbstractSyntaxToken::CanvasLayoutContent)),
             SourceToken::Control("horizontal-stack") => Some(Ok(AbstractSyntaxToken::HorizontalLayoutContent)),
@@ -91,6 +91,12 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
             },
             SourceToken::PropertyValue(value) => {
                 match value {
+                    SourceTokenPropertyValue::String(value) => {
+                        match self.current_property {
+                            "content" => Some(Ok(AbstractSyntaxToken::Content(value))),
+                            _ => Some(Err(AbstractSyntaxTokenError::UnknownProperty))
+                        }
+                    },
                     SourceTokenPropertyValue::UnsignedInt(value) => {
                         match self.current_property {
                             "left" => Some(Ok(AbstractSyntaxToken::Left(value as u16))),
@@ -99,7 +105,6 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
                             "height" => Some(Ok(AbstractSyntaxToken::Height(value as u16))),
                             "stroke-width" => Some(Ok(AbstractSyntaxToken::StrokeWidth(value as u16))),
                             "radius" => Some(Ok(AbstractSyntaxToken::Radius(value as u16))),
-                            "glyph-index" => Some(Ok(AbstractSyntaxToken::GlyphIndex(value as u16))),
                             _ => Some(Err(AbstractSyntaxTokenError::UnknownProperty))
                         }
                     },

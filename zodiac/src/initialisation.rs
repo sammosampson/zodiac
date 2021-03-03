@@ -9,6 +9,7 @@ use zodiac_parsing::tokenization::source::*;
 use zodiac_parsing::tokenization::abstract_syntax::*;
 use zodiac_parsing::tokenization::world_building::*;
 use zodiac_layout::relationships::*;
+use zodiac_layout::text::*;
 use zodiac_layout::positioning::*;
 use zodiac_layout::measurement::*;
 use zodiac_layout::resizing::*;
@@ -54,6 +55,10 @@ impl Application {
         let resources = Resources::default();
         let schedule = Schedule::builder()
             .add_system(build_relationship_map_system())
+            .add_system(build_text_colour_map_system())
+            .flush()
+            .add_system(format_glyphs_system())
+            .flush()
             .add_system(build_left_offset_map_system())
             .add_system(build_top_offset_map_system())
             .add_system(build_width_map_system())
@@ -100,6 +105,7 @@ impl Application {
         let event_loop: EventLoop<()> = EventLoop::new();
 
         &mut self.resources.insert(GliumRenderer::new(&event_loop)?);
+        &mut self.resources.insert(create_text_colour_map());
         &mut self.resources.insert(create_relationship_map());
         &mut self.resources.insert(create_layout_type_map());
         &mut self.resources.insert(create_left_offset_map());

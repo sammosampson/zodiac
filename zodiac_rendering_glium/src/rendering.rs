@@ -78,7 +78,7 @@ impl Renderer for GliumRenderer {
                 stroke_width));
     }
     
-    fn queue_text_for_render(
+    fn queue_glyph_for_render(
         &mut self,
         index: usize,
         position: [u16; 2],
@@ -87,7 +87,7 @@ impl Renderer for GliumRenderer {
         glyph_index: u16) {
         self.queue_primitive_for_render(
             index,
-            RenderPrimitive::text(
+            RenderPrimitive::glyph(
                 position,
                 dimensions,
                 colour,

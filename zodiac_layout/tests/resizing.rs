@@ -62,7 +62,7 @@ fn resize_system_performs_absolute_positioning_on_screen() {
     builder.add_height_component(14);
     builder.complete_entity();
 
-    builder.create_text_entity();
+    builder.create_rectangle_entity();
     builder.add_left_component(12);
     builder.add_top_component(13);
     builder.add_width_component(14);

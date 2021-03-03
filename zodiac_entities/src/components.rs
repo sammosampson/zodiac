@@ -63,12 +63,18 @@ pub struct LayoutContent {
 pub enum RenderType {
     Circle,
     Rectangle,
-    Text
+    Glyph
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Renderable { 
     pub render_type: RenderType 
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Character { 
+    pub character: char,
+    pub position: usize
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

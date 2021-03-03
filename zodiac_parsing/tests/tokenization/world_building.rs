@@ -112,26 +112,36 @@ fn parse_text_produces_text_components_on_entity() {
         top=100
         height=200
         width=300
-        glyph-index=32
         colour=(1.0, 2.0, 3.0, 4.0)
+        content=\"test\"
     />").unwrap();
     let mut entities = 0;
-    let mut query = <(&Left, &Top, &Height, &Width, &GlyphIndex, &Colour)>::query()
-        .filter(component::<Renderable>());
+    let mut query = <(&LayoutContent, &Left, &Top, &Height, &Width, &Colour)>::query();
 
-    for (left, top, height, width, glyph_index, colour) in query.iter(&mut world) {
+    for (layout, left, top, height, width, colour) in query.iter(&mut world) {
         entities += 1;
+        assert_eq!(layout.layout_type, LayoutType::Canvas);
         assert_eq!(left.left, 200);
         assert_eq!(top.top, 100);
         assert_eq!(height.height, 200);
         assert_eq!(width.width, 300);
-        assert_eq!(glyph_index.index, 32);
         assert_eq!(colour.r, 1.0);
         assert_eq!(colour.g, 2.0);
         assert_eq!(colour.b, 3.0);
         assert_eq!(colour.a, 4.0);
     }
     assert_eq!(entities, 1);
+
+    let mut characters = 0;
+    let mut query = <(&Renderable, &Character)>::query();
+
+    for (renderable, character) in query.iter(&mut world) {
+        assert_eq!(renderable.render_type, RenderType::Glyph);
+        assert_eq!(character.character, "test".chars().nth(characters).unwrap());
+        assert_eq!(character.position, characters);
+        characters += 1;
+    }
+    assert_eq!(characters, 4);
 }
 
 #[test]

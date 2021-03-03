@@ -176,7 +176,7 @@ fn measurement_system_measures_fixed_width_children_to_one_level() {
     builder.add_width_component(20);
     builder.complete_entity();
 
-    builder.create_text_entity();
+    builder.create_rectangle_entity();
     builder.complete_entity();
 
     resources.insert(create_relationship_map()); 
@@ -214,7 +214,7 @@ fn measurement_system_measures_fixed_width_children_to_multiple_levels() {
     builder.add_width_component(20);
     builder.complete_entity();
 
-    builder.create_text_entity();
+    builder.create_rectangle_entity();
     builder.add_width_component(5);
     builder.complete_entity();
 
@@ -251,7 +251,7 @@ fn measurement_system_measures_ignores_fixed_width_children_for_fixed_width_pare
     builder.add_width_component(20);
     builder.complete_entity();
 
-    builder.create_text_entity();
+    builder.create_rectangle_entity();
     builder.add_width_component(5);
     builder.complete_entity();
 
@@ -288,7 +288,7 @@ fn measurement_system_measures_fixed_height_children_to_one_level() {
     builder.add_height_component(20);
     builder.complete_entity();
 
-    builder.create_text_entity();
+    builder.create_rectangle_entity();
     builder.complete_entity();
 
     resources.insert(create_relationship_map()); 
@@ -326,7 +326,7 @@ fn measurement_system_measures_fixed_height_children_to_multiple_levels() {
     builder.add_height_component(20);
     builder.complete_entity();
 
-    builder.create_text_entity();
+    builder.create_rectangle_entity();
     builder.add_height_component(5);
     builder.complete_entity();
 
@@ -363,7 +363,7 @@ fn measurement_system_measures_ignores_fixed_height_children_for_fixed_height_pa
     builder.add_height_component(20);
     builder.complete_entity();
 
-    builder.create_text_entity();
+    builder.create_rectangle_entity();
     builder.add_height_component(5);
     builder.complete_entity();
 

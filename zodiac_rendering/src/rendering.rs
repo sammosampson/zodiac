@@ -34,7 +34,7 @@ pub trait Renderer {
         outer_colour: [f32; 4],
         stroke_width: f32);
 
-    fn queue_text_for_render(
+    fn queue_glyph_for_render(
         &mut self,
         index: usize,
         position: [u16; 2],
@@ -84,9 +84,9 @@ pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource]
                     [stroke_colour.r, stroke_colour.g, stroke_colour.b, stroke_colour.a], 
                     stroke_width.width as f32);
             },
-            RenderType::Text => {
+            RenderType::Glyph => {
                 let glyph_index = glyph_index_option.unwrap();
-                renderer.queue_text_for_render(
+                renderer.queue_glyph_for_render(
                     index,
                     [layout_change.left, layout_change.top],
                     [layout_change.width, layout_change.height],
