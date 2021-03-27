@@ -1,7 +1,29 @@
 use std::{
+    env,
     fs,
     path::{Path, PathBuf}
 };
+
+pub fn create_file_paths(relative_folder_path: &'static str) -> FilePaths {
+    FilePaths::new(relative_folder_path)
+}
+
+pub struct FilePaths {
+    relative_folder_path: &'static str
+}
+
+impl FilePaths {
+    pub fn new(relative_folder_path: &'static str) -> Self {
+        FilePaths {
+            relative_folder_path
+        }
+    }
+
+    pub fn get_absolute_path(&self) -> PathBuf {
+        let path = PathBuf::from("C:\\work\\other\\zodiac\\zodiac_examples");//env::current_dir().unwrap();
+        path.join(self.relative_folder_path)
+    }
+}
 
 #[derive(Debug)]
 pub enum Error {

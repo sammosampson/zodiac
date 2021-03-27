@@ -3,7 +3,8 @@ use legion::*;
 use glium::*;
 use glium::glutin::event_loop::*;
 use glutin::event::*;
-use zodiac_resources::file_system;
+use zodiac_resources::*;
+use zodiac_resources::monitoring::*;
 use zodiac_entities::components::*;
 use zodiac_parsing::tokenization::source::*;
 use zodiac_parsing::tokenization::abstract_syntax::*;
@@ -22,7 +23,8 @@ use zodiac_rendering_glium::rendering::*;
 pub enum ZodiacError {
     FailedToLoadZodFile(file_system::Error),
     FailedParse(AbstractSyntaxTokenError),
-    FailedToRender(RendererError)
+    FailedToRender(RendererError),
+    FailedToFileMonitorFiles(FileMonitorError)
 }
 
 impl From<AbstractSyntaxTokenError> for ZodiacError {
@@ -43,10 +45,17 @@ impl From<RendererError> for ZodiacError {
     }
 }
 
+impl From<FileMonitorError> for ZodiacError {
+    fn from(error: FileMonitorError) -> Self {
+        ZodiacError::FailedToFileMonitorFiles(error)
+    }
+}
+
 pub struct Application {
     pub world: World, 
     pub resources: Resources,
-    schedule: Schedule
+    schedule: Schedule,
+    zod_relative_folder_path: &'static str
 }
 
 impl Application {
@@ -54,6 +63,7 @@ impl Application {
         let world = World::default();
         let resources = Resources::default();
         let schedule = Schedule::builder()
+            .add_thread_local(source_file_monitoring_system())
             .add_system(build_relationship_map_system())
             .add_system(build_text_colour_map_system())
             .flush()
@@ -76,17 +86,22 @@ impl Application {
             .flush()
             .add_thread_local(remove_layout_change_system())
             .add_thread_local(remove_resized_system())
+            .add_thread_local(remove_source_file_changed_system())
+            .add_thread_local(remove_source_file_deleted_system())
+            .add_thread_local(process_fatal_error_system())
             .flush()
             .build();
             
         Self {
             world,
             resources,
-            schedule
+            schedule,
+            zod_relative_folder_path: ""
         }
     }
 
-    pub fn initialise(mut self, zod_relative_folder_path: &str) -> Result<Application, ZodiacError>  {
+    pub fn initialise(mut self, zod_relative_folder_path: &'static str) -> Result<Application, ZodiacError>  {
+        self.zod_relative_folder_path = zod_relative_folder_path;
         self.parse_to_world(self.load_app_zod_file_from_relative_path(zod_relative_folder_path)?.as_str())?;
         Ok(self)
     }
@@ -105,6 +120,7 @@ impl Application {
         let event_loop: EventLoop<()> = EventLoop::new();
 
         &mut self.resources.insert(GliumRenderer::new(&event_loop)?);
+        &mut self.resources.insert(monitor_files(self.zod_relative_folder_path, Duration::from_secs(2))?);
         &mut self.resources.insert(create_text_colour_map());
         &mut self.resources.insert(create_relationship_map());
         &mut self.resources.insert(create_layout_type_map());

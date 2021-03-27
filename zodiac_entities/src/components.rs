@@ -2,6 +2,26 @@ use std::ops::Add;
 use legion::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+pub enum FatalErrorReason {
+    FileMonitoringFailed
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct FatalError {
+    pub error: FatalErrorReason
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct SourceFileChange {
+    pub file_hash: u64
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct SourceFileRemoval {
+    pub file_hash: u64
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Relationship {
     pub parent: Option<Entity>,
     pub next_sibling: Option<Entity>,
