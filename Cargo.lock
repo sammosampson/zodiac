@@ -1760,7 +1760,6 @@ dependencies = [
  "zodiac_rendering",
  "zodiac_rendering_glium",
  "zodiac_resources",
- "zodiac_resources_build",
 ]
 
 [[package]]
@@ -1813,11 +1812,4 @@ dependencies = [
  "legion",
  "notify",
  "zodiac_entities",
-]
-
-[[package]]
-name = "zodiac_resources_build"
-version = "0.1.0"
-dependencies = [
- "walkdir",
 ]
