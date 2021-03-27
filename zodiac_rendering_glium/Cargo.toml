@@ -12,3 +12,7 @@ glium = "*"
 image = "*"
 zodiac_entities = {path = "../zodiac_entities", version = "0.1.0"}
 zodiac_rendering = {path = "../zodiac_rendering", version = "0.1.0"}
+
+[features]
+default = []
+render-quads_only = []
