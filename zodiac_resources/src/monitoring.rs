@@ -10,8 +10,8 @@ use legion::systems::*;
 use zodiac_entities::components::*;
 use crate::file_system::*; 
 
-pub fn monitor_files(relative_folder_path: &'static str, watch_check: Duration) -> Result<FileMonitor, FileMonitorError> {
-    FileMonitor::watch(FilePaths::new(relative_folder_path), watch_check)
+pub fn monitor_files(paths: FilePaths, watch_check: Duration) -> Result<FileMonitor, FileMonitorError> {
+    FileMonitor::watch(paths, watch_check)
 }
 
 pub enum FileMonitorWatchError {
@@ -45,7 +45,7 @@ impl FileMonitor {
     pub fn watch(paths: FilePaths, watch_check: Duration) -> Result<Self, FileMonitorError> {
         let (tx, rx) = channel();
         let mut watcher: RecommendedWatcher = Watcher::new(tx, watch_check)?;
-        let path = paths.get_absolute_path();        
+        let path = paths.get_zod_folder();        
         watcher.watch(path, RecursiveMode::Recursive)?;
 
         let monitor = Self {

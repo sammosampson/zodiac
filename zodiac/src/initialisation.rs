@@ -5,6 +5,7 @@ use glium::glutin::event_loop::*;
 use glutin::event::*;
 use zodiac_resources::*;
 use zodiac_resources::monitoring::*;
+use zodiac_resources::file_system::*;
 use zodiac_entities::components::*;
 use zodiac_parsing::tokenization::source::*;
 use zodiac_parsing::tokenization::abstract_syntax::*;
@@ -55,7 +56,7 @@ pub struct Application {
     pub world: World, 
     pub resources: Resources,
     schedule: Schedule,
-    zod_relative_folder_path: &'static str
+    file_paths: FilePaths
 }
 
 impl Application {
@@ -96,13 +97,13 @@ impl Application {
             world,
             resources,
             schedule,
-            zod_relative_folder_path: ""
+            file_paths: FilePaths::default()
         }
     }
 
-    pub fn initialise(mut self, zod_relative_folder_path: &'static str) -> Result<Application, ZodiacError>  {
-        self.zod_relative_folder_path = zod_relative_folder_path;
-        self.parse_to_world(self.load_app_zod_file_from_relative_path(zod_relative_folder_path)?.as_str())?;
+    pub fn initialise(mut self, zod_folder_path: &'static str) -> Result<Application, ZodiacError>  {
+        self.file_paths = FilePaths::new(zod_folder_path);
+        self.parse_to_world(self.load_app_zod_file()?.as_str())?;
         Ok(self)
     }
     
@@ -112,15 +113,15 @@ impl Application {
         Ok(())
     }
     
-    fn load_app_zod_file_from_relative_path(&self, zod_relative_folder_path: &str) -> Result<String, ZodiacError> {
-        Ok(file_system::load_app_zod_file_from_relative_path(zod_relative_folder_path)?)
+    fn load_app_zod_file(&self) -> Result<String, ZodiacError> {
+        Ok(file_system::load_app_zod_file(self.file_paths)?)
     }
     
     pub fn run(mut self) -> Result<(), ZodiacError> {
         let event_loop: EventLoop<()> = EventLoop::new();
 
         &mut self.resources.insert(GliumRenderer::new(&event_loop)?);
-        &mut self.resources.insert(monitor_files(self.zod_relative_folder_path, Duration::from_secs(2))?);
+        &mut self.resources.insert(monitor_files(self.file_paths, Duration::from_secs(2))?);
         &mut self.resources.insert(create_text_colour_map());
         &mut self.resources.insert(create_relationship_map());
         &mut self.resources.insert(create_layout_type_map());
