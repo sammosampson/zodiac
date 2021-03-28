@@ -13,12 +13,12 @@ pub struct FatalError {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SourceFileChange {
-    pub file_hash: u64
+    pub file_id: u64
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SourceFileRemoval {
-    pub file_hash: u64
+    pub file_id: u64
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

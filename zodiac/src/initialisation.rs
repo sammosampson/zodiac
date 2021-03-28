@@ -7,6 +7,7 @@ use zodiac_resources::*;
 use zodiac_resources::monitoring::*;
 use zodiac_resources::file_system::*;
 use zodiac_entities::components::*;
+use zodiac_parsing::*;
 use zodiac_parsing::tokenization::source::*;
 use zodiac_parsing::tokenization::abstract_syntax::*;
 use zodiac_parsing::tokenization::world_building::*;
@@ -56,7 +57,8 @@ pub struct Application {
     pub world: World, 
     pub resources: Resources,
     schedule: Schedule,
-    file_paths: FilePaths
+    file_paths: FilePaths,
+    file_monitor_poll: Duration
 }
 
 impl Application {
@@ -65,6 +67,9 @@ impl Application {
         let resources = Resources::default();
         let schedule = Schedule::builder()
             .add_thread_local(source_file_monitoring_system())
+            .flush()
+            .add_system(create_abstract_syntax_system())
+            .flush()
             .add_system(build_relationship_map_system())
             .add_system(build_text_colour_map_system())
             .flush()
@@ -97,7 +102,8 @@ impl Application {
             world,
             resources,
             schedule,
-            file_paths: FilePaths::default()
+            file_paths: FilePaths::default(),
+            file_monitor_poll: Duration::from_secs(1)
         }
     }
 
@@ -114,14 +120,16 @@ impl Application {
     }
     
     fn load_app_zod_file(&self) -> Result<String, ZodiacError> {
-        Ok(file_system::load_app_zod_file(self.file_paths)?)
+        Ok(file_system::load_zod_file("app", self.file_paths)?)
     }
     
     pub fn run(mut self) -> Result<(), ZodiacError> {
         let event_loop: EventLoop<()> = EventLoop::new();
 
         &mut self.resources.insert(GliumRenderer::new(&event_loop)?);
-        &mut self.resources.insert(monitor_files(self.file_paths, Duration::from_secs(2))?);
+        &mut self.resources.insert(create_source_file_id_lookup());
+        &mut self.resources.insert(create_source_file_path_lookup());
+        &mut self.resources.insert(monitor_files(self.file_paths, self.file_monitor_poll)?);
         &mut self.resources.insert(create_text_colour_map());
         &mut self.resources.insert(create_relationship_map());
         &mut self.resources.insert(create_layout_type_map());

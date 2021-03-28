@@ -11,32 +11,11 @@
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=zodiac",
-                    "--package=zodiac"
-                ],
-                "filter": {
-                    "name": "zodiac",
-                    "kind": "bin"
-                }
+                    "--example=first"
+                ]
             },
-            "args": [],
-            "cwd": "${workspaceFolder}"
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug unit tests in executable 'zodiac'",
-            "cargo": {
-                "args": [
-                    "test",
-                    "--no-run",
-                    "--bin=zodiac",
-                    "--package=zodiac"
-                ],
-                "filter": {
-                    "name": "zodiac",
-                    "kind": "bin"
-                }
+            "env": {
+                "CARGO_MANIFEST_DIR": "/Users/Papa/work/zodiac/zodiac"
             },
             "args": [],
             "cwd": "${workspaceFolder}"
