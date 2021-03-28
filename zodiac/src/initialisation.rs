@@ -101,8 +101,8 @@ impl Application {
         }
     }
 
-    pub fn initialise(mut self, zod_folder_path: &'static str) -> Result<Application, ZodiacError>  {
-        self.file_paths = FilePaths::new(zod_folder_path);
+    pub fn initialise(mut self, relative_zod_folder_path: &'static str) -> Result<Application, ZodiacError>  {
+        self.file_paths = FilePaths::new(relative_zod_folder_path);
         self.parse_to_world(self.load_app_zod_file()?.as_str())?;
         Ok(self)
     }

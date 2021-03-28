@@ -31,6 +31,7 @@ pub enum FileMonitorFileChange {
 }
 
 pub struct FileMonitor {
+    #[allow(dead_code)]
     watcher: RecommendedWatcher,
     rx: Receiver<DebouncedEvent>
 }
@@ -45,7 +46,7 @@ impl FileMonitor {
     pub fn watch(paths: FilePaths, watch_check: Duration) -> Result<Self, FileMonitorError> {
         let (tx, rx) = channel();
         let mut watcher: RecommendedWatcher = Watcher::new(tx, watch_check)?;
-        let path = paths.get_zod_folder();        
+        let path = paths.get_absolute_folder_path();        
         watcher.watch(path, RecursiveMode::Recursive)?;
 
         let monitor = Self {
