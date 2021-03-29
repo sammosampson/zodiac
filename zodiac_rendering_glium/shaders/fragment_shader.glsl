@@ -1,4 +1,5 @@
 #version 330 core
+precision mediump float;
 
 uniform vec2 uResolution;
 uniform sampler2DArray font_buffer;
@@ -75,11 +76,8 @@ void main()
 
     if(fs_in.identification.r == 2) 
     {
-        vec3 sample = texture(font_buffer, vec3(fs_in.texture_coord, fs_in.identification.g)).rgb;
-        float dist = median(sample.r, sample.g, sample.b);
-        float width = fwidth(dist);
-        alpha = smoothstep(0.5 - width, 0.5 + width, dist);
-        current_colour = outer_colour;
+        current_colour = vec3(1.0, 1.0, 1.0);
+        alpha = 1.0;
     }
 
     Color = vec4(current_colour, alpha);

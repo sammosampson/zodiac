@@ -3,7 +3,6 @@ use legion::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum FatalErrorReason {
-    FileMonitoringFailed
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -12,13 +11,22 @@ pub struct FatalError {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct SourceFileChange {
-    pub file_id: u64
+pub struct SourceFile {
+}
+
+impl Default for SourceFile {
+    fn default() -> Self {
+        Self {
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct SourceFileParsed {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SourceFileRemoval {
-    pub file_id: u64
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -29,8 +37,37 @@ pub struct Relationship {
     pub last_child: Option<Entity>
 }
 
+impl Default for Relationship {
+    fn default() -> Self {
+        Self {
+            parent: None,
+            next_sibling: None,
+            first_child: None,
+            last_child: None
+        }
+    }
+}
+
+impl Relationship {
+    pub fn for_parent_only(parent: Entity) -> Self {
+        Self {
+            parent: Some(parent),
+            next_sibling: None,
+            first_child: None,
+            last_child: None 
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Root {
+}
+
+impl Default for Root {
+    fn default() -> Self {
+        Self {
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -77,6 +114,20 @@ pub enum LayoutType {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct LayoutContent {
     pub layout_type: LayoutType
+}
+
+impl LayoutContent {
+    pub fn canvas() -> Self {
+        Self { layout_type: LayoutType::Canvas }
+    }
+
+    pub fn horizontal() -> Self {
+        Self { layout_type: LayoutType::Horizontal }
+    }
+
+    pub fn vertical() -> Self {
+        Self { layout_type: LayoutType::Vertical }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

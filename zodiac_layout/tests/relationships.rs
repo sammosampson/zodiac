@@ -1,7 +1,6 @@
 use legion::*;
-use zodiac_entities::world_building::*;
-use zodiac_entities::components::*;
-use zodiac_layout::relationships::*;
+use zodiac_entities::*;
+use zodiac_layout::*;
 
 #[test]
 fn system_builds_relationship_map() {
@@ -11,7 +10,7 @@ fn system_builds_relationship_map() {
         .add_system(build_relationship_map_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
     
     builder.create_rectangle_entity();
@@ -54,7 +53,7 @@ fn system_does_not_add_relationships_already_mapped() {
         .add_system(build_relationship_map_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
     builder.add_component_to_current_entity(Mapped {});
 
@@ -73,7 +72,7 @@ fn system_marks_as_mapped() {
         .add_system(mark_as_mapped_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.create_rectangle_entity();
     builder.complete_entity();
     

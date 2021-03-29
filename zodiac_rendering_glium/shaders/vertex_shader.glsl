@@ -1,4 +1,5 @@
 #version 330 core
+precision mediump float;
 
 uniform vec2 uResolution;
 

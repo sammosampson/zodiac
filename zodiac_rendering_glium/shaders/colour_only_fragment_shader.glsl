@@ -1,4 +1,5 @@
 #version 330 core
+precision mediump float;
 
 in GM_OUT 
 {

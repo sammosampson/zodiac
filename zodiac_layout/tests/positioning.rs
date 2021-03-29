@@ -1,7 +1,6 @@
 use legion::*;
-use zodiac_entities::world_building::*;
-use zodiac_entities::components::*;
-use zodiac_layout::positioning::*;
+use zodiac_entities::*;
+use zodiac_layout::*;
 
 #[test]
 fn system_builds_left_offset_map() {
@@ -11,7 +10,7 @@ fn system_builds_left_offset_map() {
         .add_system(build_left_offset_map_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
     builder.add_left_component(10);
     
@@ -39,7 +38,7 @@ fn system_does_not_add_left_offsets_already_mapped() {
         .add_system(build_left_offset_map_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
     builder.add_left_component(12);
     builder.add_component_to_current_entity(Mapped {});
@@ -58,7 +57,7 @@ fn system_builds_top_offset_map() {
         .add_system(build_top_offset_map_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
     builder.add_top_component(10);
     
@@ -86,7 +85,7 @@ fn system_does_not_add_top_offsets_already_mapped() {
         .add_system(build_top_offset_map_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
     builder.add_top_component(12);
     builder.add_component_to_current_entity(Mapped {});

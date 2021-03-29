@@ -1,7 +1,6 @@
 use legion::*;
-use zodiac_entities::world_building::*;
-use zodiac_entities::components::*;
-use zodiac_layout::text::*;
+use zodiac_entities::*;
+use zodiac_layout::*;
 
 #[test]
 fn format_glyphs_system_format_glyphs() {
@@ -12,7 +11,7 @@ fn format_glyphs_system_format_glyphs() {
         .add_system(format_glyphs_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     
     builder.create_canvas_layout_content_entity();
     builder.add_colour_component(1.0, 2.0, 3.0, 4.0);

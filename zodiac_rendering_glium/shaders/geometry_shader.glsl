@@ -1,4 +1,5 @@
 #version 330 core
+precision mediump float;
 
 layout(points) in;
 layout(triangle_strip, max_vertices = 4) out;

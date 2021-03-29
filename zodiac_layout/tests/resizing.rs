@@ -1,10 +1,6 @@
 use legion::*;
-use zodiac_entities::world_building::*;
-use zodiac_entities::components::*;
-use zodiac_layout::relationships::*;
-use zodiac_layout::positioning::*;
-use zodiac_layout::measurement::*;
-use zodiac_layout::resizing::*;
+use zodiac_entities::*;
+use zodiac_layout::*;
 
 #[test]
 fn screen_resize_system_resizes_root() {
@@ -14,7 +10,7 @@ fn screen_resize_system_resizes_root() {
         .add_system(resize_screen_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.create_entity_with_component(RootWindowResized { width: 10, height: 20 });
 
     schedule.execute(&mut world, &mut resources);
@@ -46,7 +42,7 @@ fn resize_system_performs_absolute_positioning_on_screen() {
         .add_thread_local(resize_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.add_component_to_current_entity(ResizeRequest { left: 0, top: 0, width: 100, height: 100});
     builder.create_rectangle_entity();
     builder.add_left_component(10);
@@ -114,7 +110,7 @@ fn resize_system_performs_absolute_positioning_on_canvas_offset_from_screen() {
         .add_thread_local(resize_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.add_component_to_current_entity(ResizeRequest { left: 10, top: 11, width: 100, height: 110});
 
     builder.create_canvas_layout_content_entity();
@@ -165,7 +161,7 @@ fn resize_system_makes_dimensions_fit_parent_when_not_specified() {
         .add_thread_local(resize_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.add_component_to_current_entity(ResizeRequest { left: 10, top: 11, width: 100, height: 110});
     
     builder.create_rectangle_entity();
@@ -210,7 +206,7 @@ fn resize_system_performs_horizontal_layout_for_none_sized_children() {
         .add_thread_local(resize_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.add_component_to_current_entity(ResizeRequest { left: 0, top: 0, width: 100, height: 100});
 
     builder.create_horizontal_layout_content_entity();
@@ -267,7 +263,7 @@ fn resize_system_performs_horizontal_layout_for_sized_children() {
         .add_thread_local(resize_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.add_component_to_current_entity(ResizeRequest { left: 0, top: 0, width: 100, height: 100});
 
     builder.create_horizontal_layout_content_entity();
@@ -335,7 +331,7 @@ fn resize_system_performs_vertical_layout_for_none_sized_children() {
         .add_thread_local(resize_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.add_component_to_current_entity(ResizeRequest { left: 0, top: 0, width: 100, height: 100});
 
     builder.create_vertical_layout_content_entity();
@@ -392,7 +388,7 @@ fn resize_system_performs_vertical_layout_for_sized_children() {
         .add_thread_local(resize_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.add_component_to_current_entity(ResizeRequest { left: 0, top: 0, width: 100, height: 100});
 
     builder.create_vertical_layout_content_entity();

@@ -1,7 +1,6 @@
 use std::collections::{ HashMap };
 use legion::*;
-use legion::systems::*;
-use zodiac_entities::components::*;
+use zodiac_entities::*;
 
 pub type RelationshipMap = HashMap<Entity, Relationship>;
 
@@ -61,19 +60,4 @@ impl <'a> Iterator for ChildrenRelationshipIterator<'a> {
         }
         None
     }
-}
-
-#[system(for_each)]
-#[filter(!component::<Mapped>())]
-pub fn build_relationship_map(
-    #[resource] relationship_map: &mut RelationshipMap,
-    entity: &Entity,
-    relationship: &Relationship) {
-        relationship_map.insert(*entity, *relationship);
-}
-
-#[system(for_each)]
-#[filter(!component::<Mapped>())]
-pub fn mark_as_mapped(command_buffer: &mut CommandBuffer, entity: &Entity) {
-    command_buffer.add_component(*entity, Mapped {});
 }

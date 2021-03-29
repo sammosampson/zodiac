@@ -1,28 +1,10 @@
 use legion::*;
-use zodiac_entities::world_building::*;
-use zodiac_entities::components::*;
-
-#[test]
-fn builder_creates_root_entity() {
-    let mut world = World::default();
-    WorldEntityBuilder::for_world(&mut world);
-    
-    let relationships: Vec::<&Relationship> = <&Relationship>::query()
-        .filter(component::<Root>() & component::<LayoutContent>())
-        .iter(&mut world)
-        .collect();
-
-    assert_eq!(relationships[0].parent, None);
-    assert_eq!(relationships[0].next_sibling, None);
-    assert_eq!(relationships[0].first_child, None);
-    assert_eq!(relationships[0].last_child, None);
-    assert_eq!(relationships.len(), 1);
-}
+use zodiac_entities::*;
 
 #[test]
 fn builder_creates_canvas_layout_content_entity() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.create_canvas_layout_content_entity();
 
     let entities:Vec::<&LayoutContent> = <&LayoutContent>::query()
@@ -37,7 +19,7 @@ fn builder_creates_canvas_layout_content_entity() {
 #[test]
 fn builder_creates_horizontal_layout_content_entity() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.create_horizontal_layout_content_entity();
 
     let entities:Vec::<&LayoutContent> = <&LayoutContent>::query()
@@ -52,7 +34,7 @@ fn builder_creates_horizontal_layout_content_entity() {
 #[test]
 fn builder_creates_vertical_layout_content_entity() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.create_vertical_layout_content_entity();
 
     let entities:Vec::<&LayoutContent> = <&LayoutContent>::query()
@@ -67,7 +49,7 @@ fn builder_creates_vertical_layout_content_entity() {
 #[test]
 fn builder_creates_rectangle_entity() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.create_rectangle_entity();
 
     let entity_count = <&Renderable>::query().iter(&mut world).count();
@@ -77,7 +59,7 @@ fn builder_creates_rectangle_entity() {
 #[test]
 fn builder_creates_circle_entity() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.create_circle_entity();
 
     let entity_count = <&Renderable>::query().iter(&mut world).count();
@@ -87,7 +69,7 @@ fn builder_creates_circle_entity() {
 #[test]
 fn builder_creates_glyph_entity() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.create_glyph_entity();
 
     let entity_count = <&Renderable>::query().iter(&mut world).count();
@@ -97,7 +79,7 @@ fn builder_creates_glyph_entity() {
 #[test]
 fn builder_closes_entities() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     
     let screen = builder.get_current_entity();
     builder.create_rectangle_entity();
@@ -113,7 +95,7 @@ fn builder_closes_entities() {
 #[test]
 fn builder_creates_hierarchical_relationships_to_one_level() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
     
     builder.create_horizontal_layout_content_entity();
@@ -142,7 +124,7 @@ fn builder_creates_hierarchical_relationships_to_one_level() {
 #[test]
 fn builder_creates_hierarchical_relationships_to_two_levels() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
     
     builder.create_horizontal_layout_content_entity();
@@ -178,7 +160,7 @@ fn builder_creates_hierarchical_relationships_to_two_levels() {
 #[test]
 fn builder_creates_entity_with_left() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let mut entity_count = 0;
     builder.create_rectangle_entity();
     builder.add_left_component(1);
@@ -196,7 +178,7 @@ fn builder_creates_entity_with_left() {
 #[test]
 fn builder_creates_entity_with_top() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let mut entity_count = 0;
     builder.create_rectangle_entity();
     builder.add_top_component(2);
@@ -215,7 +197,7 @@ fn builder_creates_entity_with_top() {
 #[test]
 fn builder_creates_entity_with_width() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let mut entity_count = 0;
     builder.create_rectangle_entity();
     builder.add_width_component(2);
@@ -234,7 +216,7 @@ fn builder_creates_entity_with_width() {
 #[test]
 fn builder_creates_entity_with_height() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let mut entity_count = 0;
     builder.create_rectangle_entity();
     builder.add_height_component(2);
@@ -253,7 +235,7 @@ fn builder_creates_entity_with_height() {
 #[test]
 fn builder_creates_entity_with_radius() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let mut entity_count = 0;
     builder.create_circle_entity();
     builder.add_radius_component(1);
@@ -272,7 +254,7 @@ fn builder_creates_entity_with_radius() {
 #[test]
 fn builder_creates_entity_with_stroke_width() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let mut entity_count = 0;
     builder.create_circle_entity();
     builder.add_stroke_width_component(1);
@@ -291,7 +273,7 @@ fn builder_creates_entity_with_stroke_width() {
 #[test]
 fn builder_creates_entity_with_colour() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let mut entity_count = 0;
     builder.create_rectangle_entity();
     builder.add_colour_component(1.0, 0.9, 0.8, 0.7);
@@ -313,7 +295,7 @@ fn builder_creates_entity_with_colour() {
 #[test]
 fn builder_creates_entity_with_stroke_colour() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let mut entity_count = 0;
     builder.create_circle_entity();
     builder.add_stroke_colour_component(1.0, 0.9, 0.8, 0.7);
@@ -335,7 +317,7 @@ fn builder_creates_entity_with_stroke_colour() {
 #[test]
 fn builder_creates_entity_with_corner_radii() {
     let mut world = World::default();
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let mut entity_count = 0;
     builder.create_rectangle_entity();
     builder.add_corner_radii_component(100, 90, 80, 70);

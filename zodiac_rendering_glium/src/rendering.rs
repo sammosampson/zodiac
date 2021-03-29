@@ -1,40 +1,43 @@
 use glium::*;
 
-use glium::texture::Texture2dArray;
-use glium::uniforms::*;
 use glium::index::*;
 use glium::glutin::event_loop::*;
 
-use zodiac_rendering::rendering::*;
+use zodiac_rendering::*;
 
 use crate::primitives::*;
 use crate::shaders::*;
 use crate::display::*;
-use crate::fonts::*;
 
 pub struct GliumRenderer {
     display: Display,
     shader_program: Program,
-    font_array: Texture2dArray,
     vertex_buffer: VertexBuffer::<RenderPrimitive>
+}
+
+fn get_shader_error_message(from: ProgramCreationError) -> String {
+    match from {
+        ProgramCreationError::CompilationError(message, _) => message,
+        ProgramCreationError::LinkingError(message) => message,
+        _ => String::from("Unknown shader program error")
+    }
 }
 
 impl GliumRenderer {
     pub fn new(event_loop: &EventLoop<()>) -> Result<Self, RendererError> {
         let display = create_display(event_loop).map_err(|_|RendererError::FailedToDisplayWindow)?;
-        let shader_program = create_shader_program(&display).map_err(|_|RendererError::FailedToCreateShaders)?;
-        let font_array = create_font_array(&display).map_err(|_|RendererError::FailedToLoadFont)?;
+        let shader_program = create_shader_program(&display).map_err(|e|RendererError::FailedToCreateShaders(get_shader_error_message(e)))?;
         let vertex_buffer = VertexBuffer::<RenderPrimitive>::empty_dynamic(&display, 16384).map_err(|_|RendererError::BufferCreationError)?;
         
         Ok(Self {
             display,
             shader_program,
-            font_array,
             vertex_buffer
         })
     }
       
     fn queue_primitive_for_render(&mut self, index: usize, to_queue: RenderPrimitive) {
+        println!("Rendering: {:?}", to_queue);
         self.vertex_buffer.map_write().set(index, to_queue)
     }
 }
@@ -108,8 +111,7 @@ impl Renderer for GliumRenderer {
         println!("width: {}, height: {}", width, height);
 
         let uniforms = uniform! {
-            uResolution: [width as f32, height as f32],
-            font_buffer: self.font_array.sampled().magnify_filter(MagnifySamplerFilter::Linear)
+            uResolution: [width as f32, height as f32]
         };
 
         target.clear_color(0.3, 0.3, 0.5, 1.0);

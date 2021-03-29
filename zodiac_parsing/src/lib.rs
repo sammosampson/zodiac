@@ -1,12 +1,6 @@
 pub mod tokenization;
+pub mod source_reading;
+pub mod systems;
 
-use legion::*;
-use legion::world::*;
-use legion::systems::*;
-use zodiac_entities::components::*;
-
-#[system(simple)]
-#[read_component(SourceFileChange)]
-#[read_component(SourceFileRemoval)]
-pub fn create_abstract_syntax(world: &mut SubWorld, command_buffer: &mut CommandBuffer) {
-}
+pub use systems::source_file_parsing::*;
+pub use source_reading::*;

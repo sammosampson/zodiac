@@ -1,8 +1,6 @@
 use legion::*;
-use zodiac_entities::components::*;
-use zodiac_entities::world_building::*;
-use zodiac_layout::measurement::*;
-use zodiac_layout::relationships::*;
+use zodiac_entities::*;
+use zodiac_layout::*;
 
 #[test]
 fn system_builds_width_map() {
@@ -12,7 +10,7 @@ fn system_builds_width_map() {
         .add_system(build_width_map_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
     builder.add_width_component(10);
     
@@ -40,7 +38,7 @@ fn system_does_not_add_widths_already_mapped() {
         .add_system(build_width_map_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder =world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
     builder.add_width_component(12);
     builder.add_component_to_current_entity(Mapped {});
@@ -59,7 +57,7 @@ fn system_builds_height_map() {
         .add_system(build_height_map_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder =world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
     builder.add_height_component(10);
     
@@ -87,7 +85,7 @@ fn system_does_not_add_heights_already_mapped() {
         .add_system(build_height_map_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
     builder.add_height_component(12);
     builder.add_component_to_current_entity(Mapped {});
@@ -106,7 +104,7 @@ fn system_builds_width_and_height_maps_from_radius() {
         .add_system(build_width_and_height_maps_from_radius_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder =world_entity_builder_for_world_with_root(&mut world);
     
     builder.create_circle_entity();
     let circle1 = builder.get_current_entity();
@@ -139,7 +137,7 @@ fn system_does_not_add_widths_and_heights_already_mapped_from_radius() {
         .add_system(build_width_and_height_maps_from_radius_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder =world_entity_builder_for_world_with_root(&mut world);
 
     builder.create_circle_entity();
     builder.add_radius_component(12);
@@ -166,7 +164,7 @@ fn measurement_system_measures_fixed_width_children_to_one_level() {
         .add_thread_local(measure_fixed_width_constraints_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
     builder.create_rectangle_entity();
     builder.add_width_component(10);
@@ -200,7 +198,7 @@ fn measurement_system_measures_fixed_width_children_to_multiple_levels() {
         .add_thread_local(measure_fixed_width_constraints_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder =world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
 
     builder.create_rectangle_entity();
@@ -243,10 +241,10 @@ fn measurement_system_measures_ignores_fixed_width_children_for_fixed_width_pare
         .add_thread_local(measure_fixed_width_constraints_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder = world_entity_builder_for_world_with_root(&mut world);
     builder.add_width_component(10);
     let screen = builder.get_current_entity();
-
+    
     builder.create_circle_entity();
     builder.add_width_component(20);
     builder.complete_entity();
@@ -278,7 +276,7 @@ fn measurement_system_measures_fixed_height_children_to_one_level() {
         .add_thread_local(measure_fixed_height_constraints_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder =world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
     builder.create_rectangle_entity();
     builder.add_height_component(10);
@@ -312,7 +310,7 @@ fn measurement_system_measures_fixed_height_children_to_multiple_levels() {
         .add_thread_local(measure_fixed_height_constraints_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder =world_entity_builder_for_world_with_root(&mut world);
     let screen = builder.get_current_entity();
 
     builder.create_rectangle_entity();
@@ -355,7 +353,7 @@ fn measurement_system_measures_ignores_fixed_height_children_for_fixed_height_pa
         .add_thread_local(measure_fixed_height_constraints_system())
         .build();
 
-    let mut builder = WorldEntityBuilder::for_world(&mut world);
+    let mut builder =world_entity_builder_for_world_with_root(&mut world);
     builder.add_height_component(10);
     let screen = builder.get_current_entity();
 

@@ -1,24 +1,74 @@
+use std::collections::{ HashMap };
 use legion::*;
 use legion::storage::*;
+use legion::systems::*;
 use crate::components::*;
 
-pub struct WorldEntityBuilder<'a> {
-    world: &'a mut World,
-    current_entity: Entity,
+pub trait EntityBuilder {
+    fn add_entity_with_component<T:Component>(&mut self, component: T) -> Entity;
+    fn add_component_to_entity<T:Component>(&mut self, entity: Entity, component: T);
 }
 
-impl<'a> WorldEntityBuilder<'a> {
-    pub fn for_world(world: &'a mut World) -> Self {
-        let screen_entity = world.push((
-            Root {},
-            LayoutContent { layout_type: LayoutType::Canvas }, 
-            Relationship { parent: None, next_sibling: None, first_child: None, last_child: None }
-        ));
-        
-        Self {
-            world,
-            current_entity: screen_entity
+impl EntityBuilder for CommandBuffer {
+    fn add_entity_with_component<T:Component>(&mut self, component: T) -> Entity {
+        self.push((component, ))
+    }
+
+    fn add_component_to_entity<T:Component>(&mut self, entity: Entity, component: T)  {
+        self.add_component(entity, component);
+    }
+}
+
+impl EntityBuilder for World {
+    fn add_entity_with_component<T:Component>(&mut self, component: T) -> Entity {
+        self.push((component, ))
+    }
+    
+    fn add_component_to_entity<T:Component>(&mut self, entity: Entity, component: T)  {
+        if let Some(mut entry) = self.entry(entity) {
+            entry.add_component(component);
         }
+    }
+}
+
+pub type WorldWorldEntityBuilder<'a> = WorldEntityBuilder<'a, World>;
+
+pub fn world_entity_builder_for_world_with_root<'a>(world: &'a mut World) -> WorldWorldEntityBuilder<'a> {
+    let root = Root::default();
+    let root_relationship = Relationship::default();
+    let canvas = LayoutContent::canvas();
+    let root_entity = world.push((root, root_relationship, canvas));
+
+    world_entity_builder_for_world(world, root_entity, root_relationship)
+}
+
+pub fn world_entity_builder_for_world<'a>(world: &'a mut World, root: Entity, root_relationship: Relationship) -> WorldWorldEntityBuilder<'a> {
+    WorldWorldEntityBuilder::<'a>::new(world, root, root_relationship)
+}
+
+pub type CommandBufferWorldEntityBuilder<'a> = WorldEntityBuilder<'a, CommandBuffer>;
+
+pub fn world_entity_builder_for_command_buffer<'a>(command_buffer: &'a mut CommandBuffer, root: Entity, root_relationship: Relationship) -> CommandBufferWorldEntityBuilder {
+    CommandBufferWorldEntityBuilder::<'a>::new(command_buffer, root, root_relationship)
+}
+
+pub struct WorldEntityBuilder<'a, TEntityBuilder: EntityBuilder> {
+    entity_builder: &'a mut TEntityBuilder,
+    current_entity: Entity,
+    relationship_map: HashMap<Entity, Relationship>
+}
+
+impl<'a, TEntityBuilder: EntityBuilder> WorldEntityBuilder<'a, TEntityBuilder> {
+    pub fn new(entity_builder: &'a mut TEntityBuilder, root: Entity, root_relationship: Relationship) -> Self {   
+        let mut builder = Self {
+            entity_builder,
+            current_entity: root,
+            relationship_map: HashMap::<Entity, Relationship>::new()
+        };
+
+        builder.update_relationship_map(builder.current_entity, root_relationship);
+        
+        builder
     }
 
     pub fn get_current_entity(&self) -> Entity {
@@ -36,7 +86,7 @@ impl<'a> WorldEntityBuilder<'a> {
     pub fn create_canvas_layout_content_entity(&mut self) {
         self.create_entity_with_component(LayoutContent { layout_type: LayoutType::Canvas });
     }
-    
+
     pub fn create_horizontal_layout_content_entity(&mut self) {
         self.create_entity_with_component(LayoutContent { layout_type: LayoutType::Horizontal });
     }
@@ -103,7 +153,7 @@ impl<'a> WorldEntityBuilder<'a> {
 
     pub fn create_entity_with_component<T:Component>(&mut self, component: T) {
         let parent = self.current_entity;
-        self.current_entity = self.world.push((component,));
+        self.current_entity = self.entity_builder.add_entity_with_component(component);
         self.setup_current_entity_relationships(parent);
     }
 
@@ -118,32 +168,36 @@ impl<'a> WorldEntityBuilder<'a> {
                 parent_relationship.first_child = Some(self.current_entity);
             }
             parent_relationship.last_child = Some(self.current_entity);
-            self.add_component(parent, parent_relationship);
+            self.set_relationship_component(parent, parent_relationship);
         }
 
-        self.add_relationship_component(Some(parent), None, None, None)
+        self.add_parent_only_relationship_component(parent)
     }
 
-    fn add_relationship_component(
-        &mut self,
-        parent: Option<Entity>, 
-        next_sibling: Option<Entity>, 
-        first_child: Option<Entity>, 
-        last_child: Option<Entity>) {
-        self.add_component_to_current_entity(Relationship { parent, next_sibling, first_child, last_child });
+    fn add_parent_only_relationship_component(&mut self, parent: Entity) {
+        self.set_relationship_component(
+            self.current_entity, 
+            Relationship::for_parent_only(parent));
+    }
+
+    fn set_relationship_component(&mut self, entity: Entity, relationship: Relationship) {
+        self.add_component(entity, relationship);
+        self.update_relationship_map(entity, relationship);
+    }
+
+    fn update_relationship_map(&mut self, entity: Entity, relationship: Relationship) {
+        self.relationship_map.insert(entity, relationship);
     }
 
     fn get_relationship(&mut self, entity: Entity) -> Option<Relationship> {
-        if let Some(entry) = self.world.entry(entity) {
-            return Some(*entry.get_component::<Relationship>().unwrap());
+        if let Some(relationship) = self.relationship_map.get(&entity) {
+            return Some(*relationship);
         }
         None
     }
 
     fn add_component<T:Component>(&mut self, entity: Entity, component: T) {
-        if let Some(mut entry) = self.world.entry(entity) {
-            entry.add_component(component);
-        }
+        self.entity_builder.add_component_to_entity(entity, component);
     }
     
     pub fn add_component_to_current_entity<T:Component>(&mut self, component: T) {

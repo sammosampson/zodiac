@@ -1,6 +1,6 @@
 use std::ops::Add;
 use legion::*;
-use zodiac_entities::components::*;
+use zodiac_entities::*;
 use crate::measurement::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]

@@ -1,71 +1,24 @@
 use legion::*;
 use legion::world::*;
 use legion::systems::*;
-use zodiac_entities::components::*;
+use zodiac_entities::*;
 use crate::relationships::*;
 use crate::constraints::*;
 use crate::positioning::*;
 use crate::measurement::*;
 
-struct LayoutMaps<'a> {
-    relationship_map: &'a RelationshipMap,
-    layout_map: &'a LayoutTypeMap,
-    left_map: &'a LeftOffsetMap,
-    top_map: &'a TopOffsetMap,
-    width_map: &'a WidthMap,
-    minimum_width_map: &'a MinimumWidthMap,
-    height_map: &'a HeightMap,
-    minimum_height_map: &'a MinimumHeightMap
+pub struct LayoutMaps<'a> {
+    pub relationship_map: &'a RelationshipMap,
+    pub layout_map: &'a LayoutTypeMap,
+    pub left_map: &'a LeftOffsetMap,
+    pub top_map: &'a TopOffsetMap,
+    pub width_map: &'a WidthMap,
+    pub minimum_width_map: &'a MinimumWidthMap,
+    pub height_map: &'a HeightMap,
+    pub minimum_height_map: &'a MinimumHeightMap
 }
 
-#[system(simple)]
-#[read_component(RootWindowResized)]
-#[read_component(Root)]
-#[write_component(ResizeRequest)]
-pub fn resize_screen(world: &mut SubWorld, command_buffer: &mut CommandBuffer) {
-    for (entity, window_resized) in <(Entity, &RootWindowResized)>::query()
-        .iter(world) {
-            for root in <Entity>::query()
-                .filter(component::<Root>())
-                .iter(world) {
-                    command_buffer.add_component(*root, ResizeRequest::from(window_resized));
-            }
-            command_buffer.remove(*entity);
-    } 
-}
-
-#[system(for_each)]
-pub fn resize(
-    #[resource] relationship_map: &RelationshipMap,
-    #[resource] layout_map: &LayoutTypeMap,
-    #[resource] left_map: &LeftOffsetMap,
-    #[resource] top_map: &TopOffsetMap,
-    #[resource] width_map: &WidthMap,
-    #[resource] minimum_width_map: &MinimumWidthMap,
-    #[resource] height_map: &HeightMap,
-    #[resource] minimum_height_map: &MinimumHeightMap,
-    world: &mut SubWorld,
-    command_buffer: &mut CommandBuffer,
-    entity: &Entity,
-    resize_request: &ResizeRequest) {
-        perform_resize(
-            &LayoutMaps {
-                relationship_map, 
-                layout_map, 
-                left_map,
-                top_map,
-                width_map, 
-                minimum_width_map,
-                height_map,
-                minimum_height_map,
-            },
-            world,
-            command_buffer,
-            entity,
-            &LayoutConstraints::from(resize_request));
-}
-
-fn perform_resize(
+pub fn perform_resize(
     maps: &LayoutMaps,
     world: &mut SubWorld,
     command_buffer: &mut CommandBuffer,
@@ -78,7 +31,7 @@ fn perform_resize(
         perform_layout(maps, world, command_buffer, entity, constraints);
 }
 
-fn perform_layout(
+pub fn perform_layout(
     maps: &LayoutMaps,
     world: &mut SubWorld,
     command_buffer: &mut CommandBuffer,
@@ -95,7 +48,7 @@ fn perform_layout(
         }
 }
 
-fn layout_canvas(
+pub fn layout_canvas(
     maps: &LayoutMaps,
     world: &mut SubWorld,
     command_buffer: &mut CommandBuffer,
