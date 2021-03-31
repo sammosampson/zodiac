@@ -10,6 +10,8 @@ pub enum RendererError {
 }
 
 pub trait Renderer {
+    fn get_window_dimensions(&self) -> (u32, u32);
+
     fn queue_rectangle_for_render(
         &mut self,
         index: usize,

@@ -18,7 +18,6 @@ pub fn build_layout_type_map(
 #[system(for_each)]
 #[filter(component::<Root>() & !component::<LayoutContent>())]
 pub fn set_root_layout(entity: &Entity, command_buffer: &mut CommandBuffer) {
-    command_buffer.add_component(*entity, Relationship::default());
     command_buffer.add_component(*entity, LayoutContent::canvas());
 }
 

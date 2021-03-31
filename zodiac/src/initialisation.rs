@@ -45,9 +45,11 @@ impl Application {
             .flush()
             .add_thread_local(source_file_monitoring_system())
             .flush()
-            .add_system(set_root_layout_system())
+            .add_system(remove_parsed_source_from_world_system())
             .flush()
             .add_system(source_file_parse_system::<FileSourceReader>())
+            .flush()
+            .add_system(set_root_layout_system())
             .flush()
             .add_system(build_relationship_map_system())
             .add_system(build_text_colour_map_system())
@@ -92,7 +94,10 @@ impl Application {
         let event_loop: EventLoop<()> = EventLoop::new();
 
         let file_paths = FilePaths::new(self.relative_zod_folder_path);
-        
+        let renderer = GliumRenderer::new(&event_loop)?;
+        let dimensions = renderer.get_window_dimensions();
+        self.world.push((RootWindowResized { width: dimensions.0 as u16, height: dimensions.1 as u16},));
+
         &mut self.resources.insert(file_paths);
         &mut self.resources.insert(create_source_file_reader());
         &mut self.resources.insert(create_source_file_entity_lookup());
@@ -107,7 +112,9 @@ impl Application {
         &mut self.resources.insert(create_height_map());
         &mut self.resources.insert(create_minimum_width_map());
         &mut self.resources.insert(create_minimum_height_map());
-        &mut self.resources.insert(GliumRenderer::new(&event_loop)?);
+        &mut self.resources.insert(renderer);
+
+
 
         event_loop.run(move |ev, _, control_flow| {
             &mut self.schedule.execute(&mut self.world, &mut self.resources);
@@ -122,13 +129,9 @@ impl Application {
                         *control_flow = ControlFlow::Exit;
                         return;
                     },
-                    WindowEvent::Moved(position) => {
-                        println!("root window positioned {:?}", position);
-
+                    WindowEvent::Moved(_) => {
                     },
-                    WindowEvent::Focused(is_focused) => {
-                        println!("root window focused {:?}", is_focused);
-
+                    WindowEvent::Focused(_) => {
                     },
                     WindowEvent::Resized(size) =>  
                     {

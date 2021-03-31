@@ -1,7 +1,6 @@
 
 use legion::*;
-use zodiac_entities::*;
-
+use crate::*;
 use crate::relationships::*;
 
 #[system(for_each)]

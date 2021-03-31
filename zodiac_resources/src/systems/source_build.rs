@@ -10,9 +10,8 @@ use crate::file_system::*;
 use crate::source_files::*; 
 
 #[system(simple)]
-#[read_component(SourceFile)]
-#[write_component(SourceFileRemoval)]
-#[write_component(SourceFileParsed)]
+#[write_component(SourceFile)]
+#[write_component(Root)]
 pub fn recurisve_source_location_build(
     command_buffer: &mut CommandBuffer,
     world: &mut SubWorld,
@@ -35,11 +34,11 @@ pub fn recurisve_source_location_build(
                         continue;
                     }
                     
-                    let entity = command_buffer.push((SourceFile {},));
+                    let entity = command_buffer.push((SourceFile::default(),));
 
                     if let Some(file_stem) = path.file_stem() {
                         if file_stem == "app" {
-                            command_buffer.add_component(entity, Root {});
+                            command_buffer.add_component(entity, Root::default());
                         }
                     }
 

@@ -4,7 +4,6 @@ use legion::systems::*;
 use legion::world::*;
 use zodiac_entities::*;
 
-use crate::relationships::*;
 use crate::measurement::*;
 use crate::positioning::*;
 use crate::resizing::*;
@@ -13,18 +12,19 @@ use crate::constraints::*;
 #[system(simple)]
 #[read_component(RootWindowResized)]
 #[read_component(Root)]
-#[write_component(ResizeRequest)]
+#[write_component(LayoutRequest)]
 pub fn resize_screen(world: &mut SubWorld, command_buffer: &mut CommandBuffer) {
     for (entity, window_resized) in <(Entity, &RootWindowResized)>::query()
         .iter(world) {
             for root in <Entity>::query()
                 .filter(component::<Root>())
                 .iter(world) {
-                    command_buffer.add_component(*root, ResizeRequest::from(window_resized));
+                    command_buffer.add_component(*root, LayoutRequest::from(window_resized));
             }
             command_buffer.remove(*entity);
     } 
 }
+
 
 #[system(for_each)]
 pub fn resize(
@@ -39,7 +39,7 @@ pub fn resize(
     world: &mut SubWorld,
     command_buffer: &mut CommandBuffer,
     entity: &Entity,
-    resize_request: &ResizeRequest) {
+    resize_request: &LayoutRequest) {
         perform_resize(
             &LayoutMaps {
                 relationship_map, 

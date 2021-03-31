@@ -1,7 +1,7 @@
 
 use legion::*;
 use legion::systems::*;
-use zodiac_entities::*;
+use crate::*;
 
 #[system(for_each)]
 #[filter(!component::<Mapped>())]

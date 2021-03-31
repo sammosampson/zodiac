@@ -10,42 +10,24 @@ pub struct FatalError {
     pub error: FatalErrorReason
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct SourceFile {
 }
 
-impl Default for SourceFile {
-    fn default() -> Self {
-        Self {
-        }
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct SourceFileParsed {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct SourceFileRemoval {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct Relationship {
     pub parent: Option<Entity>,
     pub next_sibling: Option<Entity>,
     pub first_child: Option<Entity>,
     pub last_child: Option<Entity>
-}
-
-impl Default for Relationship {
-    fn default() -> Self {
-        Self {
-            parent: None,
-            next_sibling: None,
-            first_child: None,
-            last_child: None
-        }
-    }
 }
 
 impl Relationship {
@@ -59,34 +41,27 @@ impl Relationship {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct Root {
 }
 
-impl Default for Root {
-    fn default() -> Self {
-        Self {
-        }
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct RootWindowResized {
     pub width: u16,
     pub height: u16
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct ResizeRequest {
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
+pub struct LayoutRequest {
     pub left: u16,
     pub top: u16,
     pub width: u16,
     pub height: u16
 }
 
-impl From<&RootWindowResized> for ResizeRequest {
+impl From<&RootWindowResized> for LayoutRequest {
     fn from(window_resized: &RootWindowResized) -> Self {
-        ResizeRequest {
+        LayoutRequest {
             left: 0, 
             top: 0, 
             width: 
@@ -96,11 +71,11 @@ impl From<&RootWindowResized> for ResizeRequest {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct Resized {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct Mapped {
 }
 
@@ -142,38 +117,32 @@ pub struct Renderable {
     pub render_type: RenderType 
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct Character { 
     pub character: char,
     pub position: usize
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct Left {
     pub left: u16
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct Top {
     pub top: u16
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct OffsetsMapped {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct LayoutChange {
     pub left: u16,
     pub top: u16,
     pub width: u16,
     pub height: u16
-}
-
-impl Default for LayoutChange {
-    fn default() -> Self { 
-        Self { left: 0, top: 0, width: 0, height: 0 }
-    }
 }
 
 impl Add<Left> for LayoutChange {

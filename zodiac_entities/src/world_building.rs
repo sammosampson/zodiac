@@ -1,8 +1,8 @@
-use std::collections::{ HashMap };
 use legion::*;
 use legion::storage::*;
 use legion::systems::*;
 use crate::components::*;
+use crate::relationships::*;
 
 pub trait EntityBuilder {
     fn add_entity_with_component<T:Component>(&mut self, component: T) -> Entity;
@@ -55,7 +55,7 @@ pub fn world_entity_builder_for_command_buffer<'a>(command_buffer: &'a mut Comma
 pub struct WorldEntityBuilder<'a, TEntityBuilder: EntityBuilder> {
     entity_builder: &'a mut TEntityBuilder,
     current_entity: Entity,
-    relationship_map: HashMap<Entity, Relationship>
+    relationship_map: RelationshipMap
 }
 
 impl<'a, TEntityBuilder: EntityBuilder> WorldEntityBuilder<'a, TEntityBuilder> {
@@ -63,7 +63,7 @@ impl<'a, TEntityBuilder: EntityBuilder> WorldEntityBuilder<'a, TEntityBuilder> {
         let mut builder = Self {
             entity_builder,
             current_entity: root,
-            relationship_map: HashMap::<Entity, Relationship>::new()
+            relationship_map: RelationshipMap::new()
         };
 
         builder.update_relationship_map(builder.current_entity, root_relationship);

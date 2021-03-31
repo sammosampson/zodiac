@@ -15,7 +15,7 @@ fn screen_resize_system_resizes_root() {
 
     schedule.execute(&mut world, &mut resources);
 
-    let root_resizes: Vec::<&ResizeRequest> = <&ResizeRequest>::query()
+    let root_resizes: Vec::<&LayoutRequest> = <&LayoutRequest>::query()
         .filter(component::<Root>())
         .iter(&mut world)
         .collect();
@@ -43,7 +43,7 @@ fn resize_system_performs_absolute_positioning_on_screen() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    builder.add_component_to_current_entity(ResizeRequest { left: 0, top: 0, width: 100, height: 100});
+    builder.add_component_to_current_entity(LayoutRequest { left: 0, top: 0, width: 100, height: 100});
     builder.create_rectangle_entity();
     builder.add_left_component(10);
     builder.add_top_component(11);
@@ -111,7 +111,7 @@ fn resize_system_performs_absolute_positioning_on_canvas_offset_from_screen() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    builder.add_component_to_current_entity(ResizeRequest { left: 10, top: 11, width: 100, height: 110});
+    builder.add_component_to_current_entity(LayoutRequest { left: 10, top: 11, width: 100, height: 110});
 
     builder.create_canvas_layout_content_entity();
     builder.add_left_component(10);
@@ -162,7 +162,7 @@ fn resize_system_makes_dimensions_fit_parent_when_not_specified() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    builder.add_component_to_current_entity(ResizeRequest { left: 10, top: 11, width: 100, height: 110});
+    builder.add_component_to_current_entity(LayoutRequest { left: 10, top: 11, width: 100, height: 110});
     
     builder.create_rectangle_entity();
     builder.complete_entity();
@@ -207,7 +207,7 @@ fn resize_system_performs_horizontal_layout_for_none_sized_children() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    builder.add_component_to_current_entity(ResizeRequest { left: 0, top: 0, width: 100, height: 100});
+    builder.add_component_to_current_entity(LayoutRequest { left: 0, top: 0, width: 100, height: 100});
 
     builder.create_horizontal_layout_content_entity();
     
@@ -264,7 +264,7 @@ fn resize_system_performs_horizontal_layout_for_sized_children() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    builder.add_component_to_current_entity(ResizeRequest { left: 0, top: 0, width: 100, height: 100});
+    builder.add_component_to_current_entity(LayoutRequest { left: 0, top: 0, width: 100, height: 100});
 
     builder.create_horizontal_layout_content_entity();
     
@@ -332,7 +332,7 @@ fn resize_system_performs_vertical_layout_for_none_sized_children() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    builder.add_component_to_current_entity(ResizeRequest { left: 0, top: 0, width: 100, height: 100});
+    builder.add_component_to_current_entity(LayoutRequest { left: 0, top: 0, width: 100, height: 100});
 
     builder.create_vertical_layout_content_entity();
     
@@ -389,7 +389,7 @@ fn resize_system_performs_vertical_layout_for_sized_children() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    builder.add_component_to_current_entity(ResizeRequest { left: 0, top: 0, width: 100, height: 100});
+    builder.add_component_to_current_entity(LayoutRequest { left: 0, top: 0, width: 100, height: 100});
 
     builder.create_vertical_layout_content_entity();
     

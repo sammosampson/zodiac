@@ -28,7 +28,6 @@ impl GliumRenderer {
         let display = create_display(event_loop).map_err(|_|RendererError::FailedToDisplayWindow)?;
         let shader_program = create_shader_program(&display).map_err(|e|RendererError::FailedToCreateShaders(get_shader_error_message(e)))?;
         let vertex_buffer = VertexBuffer::<RenderPrimitive>::empty_dynamic(&display, 16384).map_err(|_|RendererError::BufferCreationError)?;
-        
         Ok(Self {
             display,
             shader_program,
@@ -43,6 +42,10 @@ impl GliumRenderer {
 }
 
 impl Renderer for GliumRenderer {
+    fn get_window_dimensions(&self) -> (u32, u32) {
+        self.display.get_framebuffer_dimensions()
+    }
+
     fn queue_rectangle_for_render(
         &mut self,
         index: usize,
@@ -102,6 +105,11 @@ impl Renderer for GliumRenderer {
 
         let params = glium::DrawParameters {
             blend: glium::Blend::alpha_blending(),
+            depth: glium::Depth {
+                test: glium::draw_parameters::DepthTest::IfLess,
+                write: true,
+                ..Default::default()
+            },
             .. Default::default()
         };
 
@@ -114,7 +122,7 @@ impl Renderer for GliumRenderer {
             uResolution: [width as f32, height as f32]
         };
 
-        target.clear_color(0.3, 0.3, 0.5, 1.0);
+        target.clear_color_and_depth((0.0, 0.0, 0.0, 1.0), 1.0);
         target.draw(&self.vertex_buffer, &indices, &self.shader_program, &uniforms, &params).map_err(|_|RendererError::DrawError)?;
         target.finish().map_err(|_|RendererError::BufferSwapError)?;
         Ok(())

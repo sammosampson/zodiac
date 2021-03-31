@@ -1,6 +1,6 @@
 use std::collections::{ HashMap };
 use legion::*;
-use zodiac_entities::*;
+use crate::*;
 
 pub type RelationshipMap = HashMap<Entity, Relationship>;
 

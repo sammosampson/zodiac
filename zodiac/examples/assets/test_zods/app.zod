@@ -13,11 +13,6 @@
                 stroke-colour=(0.4, 0.4, 0.4, 1.0)
                 stroke-width=2
             />
-            <text
-                top=400
-                colour=(0.0, 0.0, 0.0, 1.0)
-                content="testing"
-            />
         </vertical-stack>
     </horizontal-stack>
 </canvas>

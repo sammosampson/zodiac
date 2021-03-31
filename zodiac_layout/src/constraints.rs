@@ -46,8 +46,8 @@ impl Add<Top> for LayoutConstraints {
     }
 }
 
-impl From<&ResizeRequest> for LayoutConstraints {
-    fn from(request: &ResizeRequest) -> Self {
+impl From<&LayoutRequest> for LayoutConstraints {
+    fn from(request: &LayoutRequest) -> Self {
         LayoutConstraints {
             left: request.left,
             top: request.top,

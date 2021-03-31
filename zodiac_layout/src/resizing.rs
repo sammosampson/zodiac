@@ -2,7 +2,6 @@ use legion::*;
 use legion::world::*;
 use legion::systems::*;
 use zodiac_entities::*;
-use crate::relationships::*;
 use crate::constraints::*;
 use crate::positioning::*;
 use crate::measurement::*;
@@ -27,7 +26,7 @@ pub fn perform_resize(
         command_buffer.add_component(*entity, Width { width: constraints.width });
         command_buffer.add_component(*entity, Height { height: constraints.height });
         command_buffer.add_component(*entity, Resized {});
-        command_buffer.remove_component::<ResizeRequest>(*entity);
+        command_buffer.remove_component::<LayoutRequest>(*entity);
         perform_layout(maps, world, command_buffer, entity, constraints);
 }
 

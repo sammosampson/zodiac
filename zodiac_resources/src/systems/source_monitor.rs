@@ -29,7 +29,7 @@ pub fn source_file_monitoring(
             FileMonitorFileChange::Delete(path) => {
                 if let Some(entity) = file_entity_lookup.remove_entity(&path) {
                     source_location_lookup.remove(&entity);
-                    command_buffer.add_component(entity, SourceFileRemoval {});
+                    command_buffer.add_component(entity, SourceFileRemoval::default());
                 }
             },
             FileMonitorFileChange::Create(_) => {},

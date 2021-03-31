@@ -6,6 +6,31 @@ use crate::tokenization::world_building::*;
 use crate::tokenization::source::*;
 use crate::source_reading::*;
 
+fn remove_children(
+    command_buffer: &mut CommandBuffer,
+    relationship_map: &mut RelationshipMap,
+    entity: &Entity) {
+    for child in relationship_map.get_children(entity) {
+        command_buffer.remove(child);
+    }
+}
+
+fn reset_relationship(command_buffer: &mut CommandBuffer, entity: Entity) {
+    command_buffer.add_component(entity, Relationship::default());
+}
+
+#[system(for_each)]
+#[filter(component::<SourceFile>())]
+#[filter(!component::<SourceFileParsed>())]
+pub fn remove_parsed_source_from_world (
+    entity: &Entity,
+    command_buffer: &mut CommandBuffer,
+    #[resource] relationship_map: &mut RelationshipMap) {
+    
+    remove_children(command_buffer, relationship_map, entity);
+    reset_relationship(command_buffer, *entity)
+}
+
 #[system(for_each)]
 #[filter(component::<SourceFile>())]
 #[filter(!component::<SourceFileParsed>())]
@@ -16,6 +41,7 @@ pub fn source_file_parse<T:SourceReader + 'static> (
     #[resource] source_file_location_lookup: &mut SourceLocationLookup,
     #[resource] source_file_reader: &mut T
 ) {
+    
     // TODO : reduce nesting
     if let Some(location) = source_file_location_lookup.get(entity) {
         if let Ok(source_text) = source_file_reader.read_source_at_location(location) {
@@ -26,7 +52,7 @@ pub fn source_file_parse<T:SourceReader + 'static> (
                         // TODO: source parse error
                 } 
             
-            command_buffer.add_component(*entity, SourceFileParsed {});
+            command_buffer.add_component(*entity, SourceFileParsed::default());
         }
         else {
             // TODO: error source cannot be read
