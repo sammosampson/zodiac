@@ -47,32 +47,47 @@ impl Application {
             .flush()
             .add_system(remove_parsed_source_from_world_system())
             .flush()
+            .add_system(set_root_layout_system())
+            .add_system(resize_screen_system())
+            .add_system(resize_after_source_file_change_system())
+            .flush()
             .add_system(source_file_parse_system::<FileSourceReader>())
             .flush()
-            .add_system(set_root_layout_system())
-            .flush()
+            .add_system(remove_from_relationship_map_system())
             .add_system(build_relationship_map_system())
+            .add_system(remove_from_text_colour_map_system())
             .add_system(build_text_colour_map_system())
             .flush()
             .add_system(format_glyphs_system())
             .flush()
+            .add_system(remove_from_left_offset_map_system())
             .add_system(build_left_offset_map_system())
+            .add_system(remove_from_top_offset_map_system())
             .add_system(build_top_offset_map_system())
+            .add_system(remove_from_minimum_width_map_system())
+            .add_system(remove_from_width_map_system())
             .add_system(build_width_map_system())
+            .add_system(remove_from_minimum_height_map_system())
+            .add_system(remove_from_height_map_system())
             .add_system(build_height_map_system())
             .add_system(build_width_and_height_maps_from_radius_system())
+            .add_system(remove_from_layout_type_map_system())
             .add_system(build_layout_type_map_system())
-            .add_system(resize_screen_system())
+            .flush()
+            .add_system(remove_entity_system())
             .flush()
             .add_system(mark_as_mapped_system())
             .add_system(measure_fixed_width_constraints_system())
             .flush()
             .add_system(resize_system())
             .flush()
-            .add_thread_local(render_primitives_system::<GliumRenderer>())
+            .add_thread_local(queue_render_primitives_system::<GliumRenderQueue>())
+            .flush()
+            .add_thread_local(render_primitives_system())
             .flush()
             .add_thread_local(remove_layout_change_system())
             .add_thread_local(remove_resized_system())
+            .add_thread_local(remove_source_file_change_system())
             .flush()
             .build();
             
@@ -94,9 +109,9 @@ impl Application {
         let event_loop: EventLoop<()> = EventLoop::new();
 
         let file_paths = FilePaths::new(self.relative_zod_folder_path);
+
         let renderer = GliumRenderer::new(&event_loop)?;
-        let dimensions = renderer.get_window_dimensions();
-        self.world.push((RootWindowResized { width: dimensions.0 as u16, height: dimensions.1 as u16},));
+        self.notify_resize_root_window(renderer.get_window_dimensions());
 
         &mut self.resources.insert(file_paths);
         &mut self.resources.insert(create_source_file_reader());
@@ -112,9 +127,8 @@ impl Application {
         &mut self.resources.insert(create_height_map());
         &mut self.resources.insert(create_minimum_width_map());
         &mut self.resources.insert(create_minimum_height_map());
+        &mut self.resources.insert(create_glium_render_queue());
         &mut self.resources.insert(renderer);
-
-
 
         event_loop.run(move |ev, _, control_flow| {
             &mut self.schedule.execute(&mut self.world, &mut self.resources);
@@ -129,19 +143,19 @@ impl Application {
                         *control_flow = ControlFlow::Exit;
                         return;
                     },
-                    WindowEvent::Moved(_) => {
-                    },
-                    WindowEvent::Focused(_) => {
-                    },
-                    WindowEvent::Resized(size) =>  
-                    {
-                        println!("root window resize {:?}", size);
-                        self.world.push((RootWindowResized { width: size.width as u16, height: size.height as u16},));
-                    },
+                    WindowEvent::Moved(_) => {},
+                    WindowEvent::Focused(_) => {},
+                    WindowEvent::Resized(size) => 
+                        self.notify_resize_root_window((size.width as u16, size.height as u16)),
                     _ => return,
                 },
                 _ => (),
             }
         });
+    }
+
+    fn notify_resize_root_window(&mut self, dimensions: (u16, u16)) {
+        println!("root window resize {:?}", dimensions);
+        self.world.push((RootWindowResized::from(dimensions), ));
     }
 }

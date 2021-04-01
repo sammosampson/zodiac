@@ -1,5 +1,5 @@
 pub mod systems;
-pub mod renderer;
+pub mod render_queue;
 pub use systems::rendering::*;
-pub use renderer::*;
+pub use render_queue::*;
 

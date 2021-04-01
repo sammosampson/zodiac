@@ -1,5 +1,5 @@
 use walkdir::WalkDir;
-
+use std::path::*;
 use legion::*;
 use legion::systems::*;
 use legion::world::*;
@@ -28,7 +28,7 @@ pub fn recurisve_source_location_build(
     if let Ok(root_path) = file_paths.get_absolute_folder_path() {
         for entry in WalkDir::new(root_path) {
             if let Ok(entry) = entry { 
-                let path = std::path::PathBuf::from(entry.path());
+                let path = PathBuf::from(entry.path());
                 if let Some(extension) = path.extension() {
                     if extension != "zod" {
                         continue;

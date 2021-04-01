@@ -18,8 +18,17 @@ pub struct SourceFile {
 pub struct SourceFileParsed {
 }
 
+
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
+pub struct SourceFileChange {
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct SourceFileRemoval {
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
+pub struct Removed {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
@@ -51,6 +60,23 @@ pub struct RootWindowResized {
     pub height: u16
 }
 
+impl From<(u16, u16)> for RootWindowResized {
+    fn from(dimensions: (u16, u16)) -> Self {
+        Self {
+            width: dimensions.0,
+            height: dimensions.1,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct CurrentLayoutConstraints {
+    pub left: u16,
+    pub top: u16,
+    pub width: u16,
+    pub height: u16
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct LayoutRequest {
     pub left: u16,
@@ -67,6 +93,17 @@ impl From<&RootWindowResized> for LayoutRequest {
             width: 
             window_resized.width, 
             height: window_resized.height
+        }
+    }
+}
+
+impl From<&CurrentLayoutConstraints> for LayoutRequest {
+    fn from(current_layout_constraints: &CurrentLayoutConstraints) -> Self {
+        LayoutRequest {
+            left: current_layout_constraints.left, 
+            top: current_layout_constraints.top, 
+            width: current_layout_constraints.width,
+            height: current_layout_constraints.height,
         }
     }
 }

@@ -2,17 +2,48 @@
 <canvas>
     <horizontal-stack>
         <rect
-            colour=(0.4, 0.4, 0.4, 0.1)
-            stroke-colour=(1.0, 1.0, 1.0, 1.0)
-            stroke-width=20
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.4, 0.3, 1.0, 1.0)
+            stroke-width=12
+            corner-radii=(50, 0, 0, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=10
+            corner-radii=(50, 0, 0, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=5
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
             corner-radii=(50, 0, 50, 50)
         />
         <vertical-stack>
-            <circle
-                colour=(1.0, 1.0, 1.0, 1.0)
-                stroke-colour=(0.4, 0.4, 0.4, 1.0)
-                stroke-width=2
-            />
+        <circle
+            colour=(0.4, 0.4, 0.4, 0.1)
+            stroke-colour=(1.0, 1.0, 1.0, 1.0)
+            stroke-width=7
+            radius=70
+        />
+        <circle
+            colour=(0.4, 0.4, 0.4, 0.1)
+            stroke-colour=(1.0, 1.0, 1.0, 1.0)
+            stroke-width=2
+            radius=70
+        />
+        <circle
+            colour=(0.4, 0.4, 0.4, 0.1)
+            stroke-colour=(1.0, 1.0, 1.0, 1.0)
+            stroke-width=10
+            radius=70
+        />
         </vertical-stack>
     </horizontal-stack>
 </canvas>

@@ -25,7 +25,8 @@ pub fn perform_resize(
     constraints: &LayoutConstraints) {
         command_buffer.add_component(*entity, Width { width: constraints.width });
         command_buffer.add_component(*entity, Height { height: constraints.height });
-        command_buffer.add_component(*entity, Resized {});
+        command_buffer.add_component(*entity, Resized::default());
+        command_buffer.add_component(*entity, CurrentLayoutConstraints::from(constraints));
         command_buffer.remove_component::<LayoutRequest>(*entity);
         perform_layout(maps, world, command_buffer, entity, constraints);
 }
@@ -118,6 +119,6 @@ fn layout_renderable(
         if let Some(height) = maps.height_map.get(entity) {
             layout_change.height = height.height;
         }
-        println!("{:?}", layout_change);
+        println!("Layout change for {:?} {:?}", layout_change, entity);
         command_buffer.add_component(*entity, layout_change);
 }

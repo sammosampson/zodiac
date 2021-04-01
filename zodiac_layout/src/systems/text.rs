@@ -10,6 +10,13 @@ pub fn build_text_colour_map(#[resource] colour_map: &mut TextColourMap, entity:
 }
 
 #[system(for_each)]
+#[filter(component::<Removed>())]
+pub fn remove_from_text_colour_map(#[resource] colour_map: &mut TextColourMap, entity: &Entity) {
+    println!("removing from text colour map {:?}", entity);
+    colour_map.remove(entity);
+}
+
+#[system(for_each)]
 #[filter(!component::<GlyphIndex>())]
 pub fn format_glyphs(
     #[resource] colour_map: &TextColourMap,

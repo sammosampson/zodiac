@@ -9,3 +9,4 @@ pub use world_building::*;
 pub use relationships::*;
 pub use systems::mapping::*;
 pub use systems::relationships::*;
+pub use systems::remove_entities::*;

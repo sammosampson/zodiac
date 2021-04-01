@@ -1,20 +1,11 @@
+use legion::*;
+use legion::systems::*;
 
-#[derive(Debug)]
-pub enum RendererError {
-    FailedToDisplayWindow,
-    FailedToCreateShaders(String),
-    FailedToLoadFont,
-    BufferSwapError,
-    BufferCreationError,
-    DrawError
-}
-
-pub trait Renderer {
-    fn get_window_dimensions(&self) -> (u32, u32);
-
+pub trait RenderQueue {
     fn queue_rectangle_for_render(
         &mut self,
-        index: usize,
+        command_buffer: &mut CommandBuffer,
+        entity: &Entity,
         position: [u16; 2],
         dimensions: [u16; 2],
         inner_colour: [f32; 4],
@@ -24,7 +15,8 @@ pub trait Renderer {
 
     fn queue_circle_for_render(
         &mut self,
-        index: usize,
+        command_buffer: &mut CommandBuffer,
+        entity: &Entity,
         position: [u16; 2],
         radius: u16,
         inner_colour: [f32; 4],
@@ -33,11 +25,10 @@ pub trait Renderer {
 
     fn queue_glyph_for_render(
         &mut self,
-        index: usize,
+        command_buffer: &mut CommandBuffer,
+        entity: &Entity,
         position: [u16; 2],
         dimensions: [u16; 2],
         colour: [f32; 4],
         glyph_index: u16);
-
-    fn render(&mut self) -> Result<(), RendererError>;
 }

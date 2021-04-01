@@ -23,6 +23,7 @@ pub fn source_file_monitoring(
             FileMonitorFileChange::Modify(path) => {
                 if let Some(entity) = file_entity_lookup.lookup_entity(&path) {
                     source_location_lookup.insert(*entity, SourceLocation::from(&path));
+                    command_buffer.add_component(*entity, SourceFileChange::default());
                     command_buffer.remove_component::<SourceFileParsed>(*entity);
                 }
             },

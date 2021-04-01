@@ -1,7 +1,8 @@
 use legion::*;
 use legion::world::*;
+use legion::systems::*;
 use zodiac_entities::*;
-use crate::renderer::*;
+use crate::render_queue::*;
 
 #[system(simple)]
 #[read_component(Renderable)]
@@ -12,19 +13,17 @@ use crate::renderer::*;
 #[read_component(StrokeWidth)]
 #[read_component(CornerRadii)]
 #[read_component(GlyphIndex)]
-#[read_component(Entity)]
-pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource] renderer: &mut T) {
-    let mut index = 0;
-    let mut query = <(&Renderable, &LayoutChange, &Colour, TryRead<GlyphIndex>, TryRead<StrokeColour>, TryRead<StrokeWidth>, TryRead<CornerRadii>)>::query();
-    for (renderable, layout_change, colour, glyph_index_option, stroke_colour_option, stroke_width_option, corner_radii_option) in query.iter_mut(world) {
-        println!("Rendering {:?}", renderable);
+pub fn queue_render_primitives<T:RenderQueue + 'static>(world: &mut SubWorld, command_buffer: &mut CommandBuffer, #[resource] render_queue: &mut T) {
+    let mut query = <(Entity, &Renderable, &LayoutChange, &Colour, TryRead<GlyphIndex>, TryRead<StrokeColour>, TryRead<StrokeWidth>, TryRead<CornerRadii>)>::query();
+    for (entity, renderable, layout_change, colour, glyph_index_option, stroke_colour_option, stroke_width_option, corner_radii_option) in query.iter_mut(world) {
         match renderable.render_type {
             RenderType::Rectangle => {
                 let stroke_colour = stroke_colour_option.unwrap();
                 let stroke_width = stroke_width_option.unwrap();
                 let corner_radii = corner_radii_option.unwrap();
-                renderer.queue_rectangle_for_render(
-                    index,
+                render_queue.queue_rectangle_for_render(
+                    command_buffer,
+                    entity,
                     [layout_change.left, layout_change.top],
                     [layout_change.width, layout_change.height],
                     [colour.r, colour.g, colour.b, colour.a], 
@@ -35,8 +34,9 @@ pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource]
             RenderType::Circle => {
                 let stroke_colour = stroke_colour_option.unwrap();
                 let stroke_width = stroke_width_option.unwrap();
-                renderer.queue_circle_for_render(
-                    index,
+                render_queue.queue_circle_for_render(
+                    command_buffer,
+                    entity,
                     [layout_change.left, layout_change.top],
                     layout_change.width,
                     [colour.r, colour.g, colour.b, colour.a], 
@@ -45,24 +45,14 @@ pub fn render_primitives<T:Renderer + 'static>(world: &mut SubWorld, #[resource]
             },
             RenderType::Glyph => {
                 let glyph_index = glyph_index_option.unwrap();
-                renderer.queue_glyph_for_render(
-                    index,
+                render_queue.queue_glyph_for_render(
+                    command_buffer,
+                    entity,
                     [layout_change.left, layout_change.top],
                     [layout_change.width, layout_change.height],
                     [colour.r, colour.g, colour.b, colour.a],
                     glyph_index.index);
             }
         }
-
-        index += 1;
     }
-
-    if index == 0 {
-        return;
-    }
-
-    let draw_frame_start = std::time::Instant::now();
-    renderer.render().unwrap();
-    let draw_time = std::time::Instant::now() - draw_frame_start;
-    println!("frame draw time: {:?}", draw_time);
 }

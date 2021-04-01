@@ -22,10 +22,21 @@ impl LayoutConstraints {
     }
 }
 
+impl From<&LayoutConstraints> for CurrentLayoutConstraints {
+    fn from(constraints: &LayoutConstraints) -> Self {
+        Self {
+            left: constraints.left, 
+            top: constraints.top, 
+            width: constraints.width,
+            height: constraints.height,
+        }
+    }
+}
+
 impl Add<Left> for  LayoutConstraints {
     type Output = Self;
     fn add(self, other: Left) -> Self {
-        LayoutConstraints {
+        Self {
             left: self.left + other.left,
             top: self.top,
             width: self.width,
@@ -37,7 +48,7 @@ impl Add<Left> for  LayoutConstraints {
 impl Add<Top> for LayoutConstraints {
     type Output = Self;
     fn add(self, other: Top) -> Self {
-        LayoutConstraints {
+        Self {
             left: self.left,
             top: self.top + other.top,
             width: self.width,
