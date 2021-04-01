@@ -2,6 +2,14 @@ use zodiac_parsing::tokenization::abstract_syntax::*;
 use zodiac_parsing::tokenization::source::*;
 
 #[test]
+fn parse_root_layout_container_produces_container_node() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<root />"));
+    assert_eq!(AbstractSyntaxToken::Root, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
 fn parse_canvas_layout_container_produces_container_node() {
     let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<canvas />"));
     assert_eq!(AbstractSyntaxToken::CanvasLayoutContent, tokenizer.next().unwrap().unwrap());

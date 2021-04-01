@@ -42,7 +42,6 @@ pub fn remove_parsed_source_from_world (entity: &Entity, command_buffer: &mut Co
 #[filter(!component::<SourceFileParsed>())]
 pub fn source_file_parse<T:SourceReader + 'static> (
     entity: &Entity,
-    relationship: &Relationship,
     command_buffer: &mut CommandBuffer,
     #[resource] source_file_location_lookup: &mut SourceLocationLookup,
     #[resource] source_file_reader: &mut T
@@ -55,10 +54,9 @@ pub fn source_file_parse<T:SourceReader + 'static> (
             if let Err(_) =
                 AbstractSyntaxTokenizer
                     ::from_source(SourceTokenizer::from_string(&source_text))
-                    .build_world(command_buffer, *entity, *relationship) {
+                    .build_world(command_buffer, *entity) {
                         // TODO: source parse error
                 } 
-            
             command_buffer.add_component(*entity, SourceFileParsed::default());
         }
         else {

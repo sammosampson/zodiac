@@ -20,8 +20,7 @@ fn parse_horizontal_layout_container_produces_container_components_on_entity() {
 
 #[test]
 fn parse_canvas_layout_container_produces_container_components_on_entity() {
-
-    let source = "<canvas />";
+    let source = "<root><canvas /></root>";
     let mut world = World::default();
     
     run_source_file_parse_system(source, &mut world);
@@ -174,7 +173,7 @@ fn parse_multiple_controls_produces_entities() {
 
 #[test]
 fn parse_hierarchical_controls_produces_relationships() {
-    let source = "<horizontal-stack><rect top=200 /></horizontal-stack>";
+    let source = "<root><horizontal-stack><rect top=200 /></horizontal-stack></root>";
     let mut world = World::default();
     
     run_source_file_parse_system(source, &mut world);

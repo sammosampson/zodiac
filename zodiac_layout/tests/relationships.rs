@@ -10,7 +10,9 @@ fn system_builds_relationship_map() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
+    
+    let root = builder.get_current_entity();
+    builder.create_root_entity();
     
     builder.create_rectangle_entity();
     let rectangle = builder.get_current_entity();
@@ -24,7 +26,7 @@ fn system_builds_relationship_map() {
     schedule.execute(&mut world, &mut resources);
 
     let relationship_map = resources.get::<RelationshipMap>().unwrap();
-    let screen_relations = relationship_map.get(&screen).unwrap();
+    let screen_relations = relationship_map.get(&root).unwrap();
     let rectangle_relations = relationship_map.get(&rectangle).unwrap();
     let circle_relations = relationship_map.get(&circle).unwrap();
 
@@ -33,12 +35,12 @@ fn system_builds_relationship_map() {
     assert_eq!(screen_relations.first_child, Some(rectangle));
     assert_eq!(screen_relations.last_child, Some(circle));
 
-    assert_eq!(rectangle_relations.parent, Some(screen));
+    assert_eq!(rectangle_relations.parent, Some(root));
     assert_eq!(rectangle_relations.next_sibling, Some(circle));
     assert_eq!(rectangle_relations.first_child, None);
     assert_eq!(rectangle_relations.last_child, None);
 
-    assert_eq!(circle_relations.parent, Some(screen));
+    assert_eq!(circle_relations.parent, Some(root));
     assert_eq!(circle_relations.next_sibling, None);
     assert_eq!(circle_relations.first_child, None);
     assert_eq!(circle_relations.last_child, None);
@@ -53,13 +55,13 @@ fn system_does_not_add_relationships_already_mapped() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
+    let root = builder.get_current_entity();
     builder.add_component_to_current_entity(Mapped {});
 
     resources.insert(create_relationship_map()); 
     schedule.execute(&mut world, &mut resources);
     
-    assert_eq!(resources.get::<RelationshipMap>().unwrap().get(&screen), None);
+    assert_eq!(resources.get::<RelationshipMap>().unwrap().get(&root), None);
 }
 
 
@@ -72,6 +74,8 @@ fn system_marks_as_mapped() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
+    builder.create_root_entity();
+    
     builder.create_rectangle_entity();
     builder.complete_entity();
     

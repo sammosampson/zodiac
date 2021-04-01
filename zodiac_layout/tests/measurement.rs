@@ -11,7 +11,9 @@ fn system_builds_width_map() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
+    let root = builder.get_current_entity();
+    builder.create_root_entity();
+    
     builder.add_width_component(10);
     
     builder.create_rectangle_entity();
@@ -23,7 +25,7 @@ fn system_builds_width_map() {
     schedule.execute(&mut world, &mut resources);
 
     let width_map = resources.get::<WidthMap>().unwrap();
-    let screen_width = width_map.get(&screen).unwrap();
+    let screen_width = width_map.get(&root).unwrap();
     let rectangle_width = width_map.get(&rectangle).unwrap();
 
     assert_eq!(screen_width.width, 10);
@@ -39,14 +41,14 @@ fn system_does_not_add_widths_already_mapped() {
         .build();
 
     let mut builder =world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
+    let root = builder.get_current_entity();
     builder.add_width_component(12);
     builder.add_component_to_current_entity(Mapped {});
 
     resources.insert(create_width_map()); 
     schedule.execute(&mut world, &mut resources);
     
-    assert_eq!(resources.get::<WidthMap>().unwrap().get(&screen), None);
+    assert_eq!(resources.get::<WidthMap>().unwrap().get(&root), None);
 }
 
 #[test]
@@ -58,7 +60,10 @@ fn system_builds_height_map() {
         .build();
 
     let mut builder =world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
+    
+    let root = builder.get_current_entity();
+    builder.create_root_entity();
+    
     builder.add_height_component(10);
     
     builder.create_rectangle_entity();
@@ -70,7 +75,7 @@ fn system_builds_height_map() {
     schedule.execute(&mut world, &mut resources);
 
     let height_map = resources.get::<HeightMap>().unwrap();
-    let screen_height = height_map.get(&screen).unwrap();
+    let screen_height = height_map.get(&root).unwrap();
     let rectangle_height = height_map.get(&rectangle).unwrap();
 
     assert_eq!(screen_height.height, 10);
@@ -86,14 +91,14 @@ fn system_does_not_add_heights_already_mapped() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
+    let root = builder.get_current_entity();
     builder.add_height_component(12);
     builder.add_component_to_current_entity(Mapped {});
 
     resources.insert(create_height_map()); 
     schedule.execute(&mut world, &mut resources);
     
-    assert_eq!(resources.get::<HeightMap>().unwrap().get(&screen), None);
+    assert_eq!(resources.get::<HeightMap>().unwrap().get(&root), None);
 }
 
 #[test]
@@ -165,7 +170,10 @@ fn measurement_system_measures_fixed_width_children_to_one_level() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
+
+    let root = builder.get_current_entity();
+    builder.create_root_entity();
+    
     builder.create_rectangle_entity();
     builder.add_width_component(10);
     builder.complete_entity();
@@ -183,8 +191,8 @@ fn measurement_system_measures_fixed_width_children_to_one_level() {
     schedule.execute(&mut world, &mut resources);
     
     let width_map = resources.get::<MinimumWidthMap>().unwrap();
-    assert_ne!(width_map.get(&screen), None);
-    assert_eq!(width_map.get(&screen).unwrap().width, 30);
+    assert_ne!(width_map.get(&root), None);
+    assert_eq!(width_map.get(&root).unwrap().width, 30);
 }
 
 #[test]
@@ -199,8 +207,10 @@ fn measurement_system_measures_fixed_width_children_to_multiple_levels() {
         .build();
 
     let mut builder =world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
 
+    let root = builder.get_current_entity();
+    builder.create_root_entity();
+    
     builder.create_rectangle_entity();
     builder.add_width_component(10);
     builder.complete_entity();
@@ -224,8 +234,8 @@ fn measurement_system_measures_fixed_width_children_to_multiple_levels() {
     schedule.execute(&mut world, &mut resources);
     
     let width_map = resources.get::<MinimumWidthMap>().unwrap();
-    assert_ne!(width_map.get(&screen), None);
-    assert_eq!(width_map.get(&screen).unwrap().width, 35);
+    assert_ne!(width_map.get(&root), None);
+    assert_eq!(width_map.get(&root).unwrap().width, 35);
     assert_ne!(width_map.get(&layout), None);
     assert_eq!(width_map.get(&layout).unwrap().width, 25);
 }
@@ -242,8 +252,11 @@ fn measurement_system_measures_ignores_fixed_width_children_for_fixed_width_pare
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
+    
+    let root = builder.get_current_entity();
+    builder.create_root_entity();
+    
     builder.add_width_component(10);
-    let screen = builder.get_current_entity();
     
     builder.create_circle_entity();
     builder.add_width_component(20);
@@ -261,8 +274,8 @@ fn measurement_system_measures_ignores_fixed_width_children_for_fixed_width_pare
     schedule.execute(&mut world, &mut resources);
     
     let width_map = resources.get::<MinimumWidthMap>().unwrap();
-    assert_ne!(width_map.get(&screen), None);
-    assert_eq!(width_map.get(&screen).unwrap().width, 10);
+    assert_ne!(width_map.get(&root), None);
+    assert_eq!(width_map.get(&root).unwrap().width, 10);
 }
 
 #[test]
@@ -277,7 +290,10 @@ fn measurement_system_measures_fixed_height_children_to_one_level() {
         .build();
 
     let mut builder =world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
+
+    let root = builder.get_current_entity();
+    builder.create_root_entity();
+    
     builder.create_rectangle_entity();
     builder.add_height_component(10);
     builder.complete_entity();
@@ -295,8 +311,8 @@ fn measurement_system_measures_fixed_height_children_to_one_level() {
     schedule.execute(&mut world, &mut resources);
     
     let height_map = resources.get::<MinimumHeightMap>().unwrap();
-    assert_ne!(height_map.get(&screen), None);
-    assert_eq!(height_map.get(&screen).unwrap().height, 30);
+    assert_ne!(height_map.get(&root), None);
+    assert_eq!(height_map.get(&root).unwrap().height, 30);
 }
 
 #[test]
@@ -311,8 +327,9 @@ fn measurement_system_measures_fixed_height_children_to_multiple_levels() {
         .build();
 
     let mut builder =world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
-
+    let root = builder.get_current_entity();
+    builder.create_root_entity();
+    
     builder.create_rectangle_entity();
     builder.add_height_component(10);
     builder.complete_entity();
@@ -336,8 +353,8 @@ fn measurement_system_measures_fixed_height_children_to_multiple_levels() {
     schedule.execute(&mut world, &mut resources);
     
     let height_map = resources.get::<MinimumHeightMap>().unwrap();
-    assert_ne!(height_map.get(&screen), None);
-    assert_eq!(height_map.get(&screen).unwrap().height, 35);
+    assert_ne!(height_map.get(&root), None);
+    assert_eq!(height_map.get(&root).unwrap().height, 35);
     assert_ne!(height_map.get(&layout), None);
     assert_eq!(height_map.get(&layout).unwrap().height, 25);
 }
@@ -355,8 +372,10 @@ fn measurement_system_measures_ignores_fixed_height_children_for_fixed_height_pa
 
     let mut builder =world_entity_builder_for_world_with_root(&mut world);
     builder.add_height_component(10);
-    let screen = builder.get_current_entity();
-
+    
+    let root = builder.get_current_entity();
+    builder.create_root_entity();
+    
     builder.create_circle_entity();
     builder.add_height_component(20);
     builder.complete_entity();
@@ -373,6 +392,6 @@ fn measurement_system_measures_ignores_fixed_height_children_for_fixed_height_pa
     schedule.execute(&mut world, &mut resources);
     
     let height_map = resources.get::<MinimumHeightMap>().unwrap();
-    assert_ne!(height_map.get(&screen), None);
-    assert_eq!(height_map.get(&screen).unwrap().height, 10);
+    assert_ne!(height_map.get(&root), None);
+    assert_eq!(height_map.get(&root).unwrap().height, 10);
 }

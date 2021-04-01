@@ -11,7 +11,9 @@ fn system_builds_left_offset_map() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
+    let root = builder.get_current_entity();
+    builder.create_root_entity();
+    
     builder.add_left_component(10);
     
     builder.create_rectangle_entity();
@@ -23,7 +25,7 @@ fn system_builds_left_offset_map() {
     schedule.execute(&mut world, &mut resources);
 
     let offset_map = resources.get::<LeftOffsetMap>().unwrap();
-    let screen_offset = offset_map.get(&screen).unwrap();
+    let screen_offset = offset_map.get(&root).unwrap();
     let rectangle_offset = offset_map.get(&rectangle).unwrap();
 
     assert_eq!(screen_offset.left, 10);
@@ -39,14 +41,16 @@ fn system_does_not_add_left_offsets_already_mapped() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
+    let root = builder.get_current_entity();
+    builder.create_root_entity();
+    
     builder.add_left_component(12);
     builder.add_component_to_current_entity(Mapped {});
 
     resources.insert(create_left_offset_map());  
     schedule.execute(&mut world, &mut resources);
     
-    assert_eq!(resources.get::<LeftOffsetMap>().unwrap().get(&screen), None);
+    assert_eq!(resources.get::<LeftOffsetMap>().unwrap().get(&root), None);
 }
 
 #[test]
@@ -58,7 +62,10 @@ fn system_builds_top_offset_map() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
+    
+    let root = builder.get_current_entity();
+    builder.create_root_entity();
+    
     builder.add_top_component(10);
     
     builder.create_rectangle_entity();
@@ -70,7 +77,7 @@ fn system_builds_top_offset_map() {
     schedule.execute(&mut world, &mut resources);
 
     let offset_map = resources.get::<TopOffsetMap>().unwrap();
-    let screen_offset = offset_map.get(&screen).unwrap();
+    let screen_offset = offset_map.get(&root).unwrap();
     let rectangle_offset = offset_map.get(&rectangle).unwrap();
 
     assert_eq!(screen_offset.top, 10);
@@ -86,12 +93,12 @@ fn system_does_not_add_top_offsets_already_mapped() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
+    let root = builder.get_current_entity();
     builder.add_top_component(12);
     builder.add_component_to_current_entity(Mapped {});
 
     resources.insert(create_top_offset_map());  
     schedule.execute(&mut world, &mut resources);
     
-    assert_eq!(resources.get::<TopOffsetMap>().unwrap().get(&screen), None);
+    assert_eq!(resources.get::<TopOffsetMap>().unwrap().get(&root), None);
 }

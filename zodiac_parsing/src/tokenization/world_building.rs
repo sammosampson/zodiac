@@ -4,16 +4,17 @@ use zodiac_entities::*;
 use crate::tokenization::abstract_syntax::*;
 
 pub trait WorldBuilder {
-    fn build_world(&mut self, command_buffer: &mut CommandBuffer, root: Entity, root_relationship: Relationship) -> Result<(), AbstractSyntaxTokenError>;
+    fn build_world(&mut self, command_buffer: &mut CommandBuffer, root: Entity) -> Result<(), AbstractSyntaxTokenError>;
 }
 
 impl<'a, I: Iterator<Item=AbstractSyntaxTokenResult<'a>>> WorldBuilder for I {
-    fn build_world(&mut self, command_buffer: &mut CommandBuffer, root: Entity, root_relationship: Relationship) -> Result<(), AbstractSyntaxTokenError> { 
-        let mut entity_builder = world_entity_builder_for_command_buffer(command_buffer, root, root_relationship);
+    fn build_world(&mut self, command_buffer: &mut CommandBuffer, root: Entity) -> Result<(), AbstractSyntaxTokenError> { 
+        let mut entity_builder = world_entity_builder_for_command_buffer(command_buffer, root);
         for token_result in self {
             match token_result {
                 Ok(value) => {
                     match value {
+                        AbstractSyntaxToken::Root => entity_builder.create_root_entity(),
                         AbstractSyntaxToken::Circle => entity_builder.create_circle_entity(),
                         AbstractSyntaxToken::Rectangle => entity_builder.create_rectangle_entity(),
                         AbstractSyntaxToken::Text => entity_builder.create_canvas_layout_content_entity(),

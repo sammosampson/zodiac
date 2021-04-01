@@ -34,39 +34,37 @@ impl EntityBuilder for World {
 pub type WorldWorldEntityBuilder<'a> = WorldEntityBuilder<'a, World>;
 
 pub fn world_entity_builder_for_world_with_root<'a>(world: &'a mut World) -> WorldWorldEntityBuilder<'a> {
-    let root = Root::default();
-    let root_relationship = Relationship::default();
-    let canvas = LayoutContent::canvas();
-    let root_entity = world.push((root, root_relationship, canvas));
-
-    world_entity_builder_for_world(world, root_entity, root_relationship)
+    let root_entity = world.push((SourceFile::default(), ));
+    world_entity_builder_for_world(world, root_entity)
 }
 
-pub fn world_entity_builder_for_world<'a>(world: &'a mut World, root: Entity, root_relationship: Relationship) -> WorldWorldEntityBuilder<'a> {
-    WorldWorldEntityBuilder::<'a>::new(world, root, root_relationship)
+pub fn world_entity_builder_for_world<'a>(world: &'a mut World, root: Entity) -> WorldWorldEntityBuilder<'a> {
+    WorldWorldEntityBuilder::<'a>::new(world, root)
 }
 
 pub type CommandBufferWorldEntityBuilder<'a> = WorldEntityBuilder<'a, CommandBuffer>;
 
-pub fn world_entity_builder_for_command_buffer<'a>(command_buffer: &'a mut CommandBuffer, root: Entity, root_relationship: Relationship) -> CommandBufferWorldEntityBuilder {
-    CommandBufferWorldEntityBuilder::<'a>::new(command_buffer, root, root_relationship)
+pub fn world_entity_builder_for_command_buffer<'a>(command_buffer: &'a mut CommandBuffer, root: Entity) -> CommandBufferWorldEntityBuilder {
+    CommandBufferWorldEntityBuilder::<'a>::new(command_buffer, root)
 }
 
 pub struct WorldEntityBuilder<'a, TEntityBuilder: EntityBuilder> {
     entity_builder: &'a mut TEntityBuilder,
+    root_used_for_initial_entity: bool,
     current_entity: Entity,
     relationship_map: RelationshipMap
 }
 
 impl<'a, TEntityBuilder: EntityBuilder> WorldEntityBuilder<'a, TEntityBuilder> {
-    pub fn new(entity_builder: &'a mut TEntityBuilder, root: Entity, root_relationship: Relationship) -> Self {   
+    pub fn new(entity_builder: &'a mut TEntityBuilder, root: Entity) -> Self {   
         let mut builder = Self {
             entity_builder,
+            root_used_for_initial_entity: false,
             current_entity: root,
             relationship_map: RelationshipMap::new()
         };
 
-        builder.update_relationship_map(builder.current_entity, root_relationship);
+        builder.set_relationship_component(builder.current_entity, Relationship::default());
         
         builder
     }
@@ -81,30 +79,35 @@ impl<'a, TEntityBuilder: EntityBuilder> WorldEntityBuilder<'a, TEntityBuilder> {
                 self.current_entity = parent;
             }
         }
+    } 
+    
+    pub fn create_root_entity(&mut self) {
+        self.create_entity_with_component(Root::default());
+        self.add_component_to_current_entity(LayoutContent::canvas());
     }
     
     pub fn create_canvas_layout_content_entity(&mut self) {
-        self.create_entity_with_component(LayoutContent { layout_type: LayoutType::Canvas });
+        self.create_entity_with_component(LayoutContent::canvas());
     }
 
     pub fn create_horizontal_layout_content_entity(&mut self) {
-        self.create_entity_with_component(LayoutContent { layout_type: LayoutType::Horizontal });
+        self.create_entity_with_component(LayoutContent::horizontal());
     }
 
     pub fn create_vertical_layout_content_entity(&mut self) {
-        self.create_entity_with_component(LayoutContent { layout_type: LayoutType::Vertical });
+        self.create_entity_with_component(LayoutContent::vertical());
     }
 
     pub fn create_rectangle_entity(&mut self) {
-        self.create_entity_with_component(Renderable { render_type: RenderType::Rectangle });
+        self.create_entity_with_component(Renderable::rectangle());
     }
     
     pub fn create_circle_entity(&mut self) {
-        self.create_entity_with_component(Renderable { render_type: RenderType::Circle });
+        self.create_entity_with_component(Renderable::circle());
     }
 
     pub fn create_glyph_entity(&mut self) {
-        self.create_entity_with_component(Renderable { render_type: RenderType::Glyph });
+        self.create_entity_with_component(Renderable::glyph());
     }
 
     pub fn add_character_component(&mut self, character: char, position: usize) {
@@ -152,6 +155,11 @@ impl<'a, TEntityBuilder: EntityBuilder> WorldEntityBuilder<'a, TEntityBuilder> {
     }
 
     pub fn create_entity_with_component<T:Component>(&mut self, component: T) {
+        if !self.root_used_for_initial_entity {
+            self.add_component_to_current_entity(component);
+            self.root_used_for_initial_entity = true;
+            return;
+        }
         let parent = self.current_entity;
         self.current_entity = self.entity_builder.add_entity_with_component(component);
         self.setup_current_entity_relationships(parent);

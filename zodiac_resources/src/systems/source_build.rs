@@ -11,7 +11,6 @@ use crate::source_files::*;
 
 #[system(simple)]
 #[write_component(SourceFile)]
-#[write_component(Root)]
 pub fn recurisve_source_location_build(
     command_buffer: &mut CommandBuffer,
     world: &mut SubWorld,
@@ -35,12 +34,6 @@ pub fn recurisve_source_location_build(
                     }
                     
                     let entity = command_buffer.push((SourceFile::default(),));
-
-                    if let Some(file_stem) = path.file_stem() {
-                        if file_stem == "app" {
-                            command_buffer.add_component(entity, Root::default());
-                        }
-                    }
 
                     let location = SourceLocation::from(&path);
                     source_location_lookup.insert(entity, location);

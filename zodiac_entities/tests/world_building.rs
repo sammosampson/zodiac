@@ -5,6 +5,7 @@ use zodiac_entities::*;
 fn builder_creates_canvas_layout_content_entity() {
     let mut world = World::default();
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
+    builder.create_root_entity();
     builder.create_canvas_layout_content_entity();
 
     let entities:Vec::<&LayoutContent> = <&LayoutContent>::query()
@@ -20,6 +21,7 @@ fn builder_creates_canvas_layout_content_entity() {
 fn builder_creates_horizontal_layout_content_entity() {
     let mut world = World::default();
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
+    builder.create_root_entity();
     builder.create_horizontal_layout_content_entity();
 
     let entities:Vec::<&LayoutContent> = <&LayoutContent>::query()
@@ -35,6 +37,7 @@ fn builder_creates_horizontal_layout_content_entity() {
 fn builder_creates_vertical_layout_content_entity() {
     let mut world = World::default();
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
+    builder.create_root_entity();
     builder.create_vertical_layout_content_entity();
 
     let entities:Vec::<&LayoutContent> = <&LayoutContent>::query()
@@ -81,14 +84,15 @@ fn builder_closes_entities() {
     let mut world = World::default();
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
     
-    let screen = builder.get_current_entity();
+    let root = builder.get_current_entity();
+    builder.create_root_entity();
     builder.create_rectangle_entity();
     
-    assert_ne!(builder.get_current_entity(), screen);
+    assert_ne!(builder.get_current_entity(), root);
 
     builder.complete_entity();
 
-    assert_eq!(builder.get_current_entity(), screen);
+    assert_eq!(builder.get_current_entity(), root);
 }
 
 
@@ -96,8 +100,9 @@ fn builder_closes_entities() {
 fn builder_creates_hierarchical_relationships_to_one_level() {
     let mut world = World::default();
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
+    let root = builder.get_current_entity();
     
+    builder.create_root_entity();
     builder.create_horizontal_layout_content_entity();
     let layout = builder.get_current_entity();
     builder.complete_entity();
@@ -113,7 +118,7 @@ fn builder_creates_hierarchical_relationships_to_one_level() {
     assert_eq!(relationships[index].last_child, Some(layout));
     
     index += 1;
-    assert_eq!(relationships[index].parent, Some(screen));
+    assert_eq!(relationships[index].parent, Some(root));
     assert_eq!(relationships[index].next_sibling, None);
     assert_eq!(relationships[index].first_child, None);
     assert_eq!(relationships[index].last_child, None);
@@ -125,8 +130,9 @@ fn builder_creates_hierarchical_relationships_to_one_level() {
 fn builder_creates_hierarchical_relationships_to_two_levels() {
     let mut world = World::default();
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
-    let screen = builder.get_current_entity();
+    let root = builder.get_current_entity();
     
+    builder.create_root_entity();
     builder.create_horizontal_layout_content_entity();
     let content = builder.get_current_entity();
     builder.create_rectangle_entity();
@@ -144,7 +150,7 @@ fn builder_creates_hierarchical_relationships_to_two_levels() {
     assert_eq!(relationships[0].first_child, Some(content));
     assert_eq!(relationships[0].last_child, Some(content));
 
-    assert_eq!(relationships[1].parent, Some(screen));
+    assert_eq!(relationships[1].parent, Some(root));
     assert_eq!(relationships[1].next_sibling, None);
     assert_eq!(relationships[1].first_child, Some(rectangle));
     assert_eq!(relationships[1].last_child, Some(rectangle));

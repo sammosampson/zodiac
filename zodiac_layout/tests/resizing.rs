@@ -11,6 +11,8 @@ fn screen_resize_system_resizes_root() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
+    builder.create_root_entity();
+    
     builder.create_entity_with_component(RootWindowResized { width: 10, height: 20 });
 
     schedule.execute(&mut world, &mut resources);
@@ -43,6 +45,8 @@ fn resize_system_performs_absolute_positioning_on_screen() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
+    builder.create_root_entity();
+    
     builder.add_component_to_current_entity(LayoutRequest { left: 0, top: 0, width: 100, height: 100});
     builder.create_rectangle_entity();
     builder.add_left_component(10);
@@ -264,6 +268,9 @@ fn resize_system_performs_horizontal_layout_for_sized_children() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
+    
+    builder.create_root_entity();
+    
     builder.add_component_to_current_entity(LayoutRequest { left: 0, top: 0, width: 100, height: 100});
 
     builder.create_horizontal_layout_content_entity();
@@ -389,6 +396,9 @@ fn resize_system_performs_vertical_layout_for_sized_children() {
         .build();
 
     let mut builder = world_entity_builder_for_world_with_root(&mut world);
+    builder.create_root_entity();
+    
+
     builder.add_component_to_current_entity(LayoutRequest { left: 0, top: 0, width: 100, height: 100});
 
     builder.create_vertical_layout_content_entity();

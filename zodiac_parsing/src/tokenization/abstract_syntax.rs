@@ -4,6 +4,7 @@ use crate::tokenization::tuple::{TupleTokenizer, TupleTokenFloatIterator, TupleT
 
 #[derive(PartialEq, PartialOrd, Debug)]
 pub enum AbstractSyntaxToken<'a> {
+    Root,
     Circle,
     Rectangle,
     Text,
@@ -78,6 +79,7 @@ impl <'a, I> AbstractSyntaxTokenizer<'a, I>  where I : Iterator<Item=SourceToken
     
     fn transition(&mut self, token: SourceToken<'a>) -> AbstractSyntaxTokenOption<'a> {
         match token {
+            SourceToken::Control("root") => Some(Ok(AbstractSyntaxToken::Root)),
             SourceToken::Control("canvas") => Some(Ok(AbstractSyntaxToken::CanvasLayoutContent)),
             SourceToken::Control("horizontal-stack") => Some(Ok(AbstractSyntaxToken::HorizontalLayoutContent)),
             SourceToken::Control("vertical-stack") => Some(Ok(AbstractSyntaxToken::VerticalLayoutContent)),

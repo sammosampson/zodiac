@@ -154,6 +154,21 @@ pub struct Renderable {
     pub render_type: RenderType 
 }
 
+impl Renderable {
+    pub fn circle() -> Self {
+        Self { render_type: RenderType::Circle }
+    }
+
+    pub fn rectangle() -> Self {
+        Self { render_type: RenderType::Rectangle }
+    }
+
+    pub fn glyph() -> Self {
+        Self { render_type: RenderType::Glyph }
+    }
+}
+
+
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct Character { 
     pub character: char,

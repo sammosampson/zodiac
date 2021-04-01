@@ -1,5 +1,5 @@
 
-<canvas>
+<root>
     <horizontal-stack>
         <rect
             colour=(1.0, 1.0, 1.0, 0.1)
@@ -17,6 +17,102 @@
             colour=(1.0, 1.0, 1.0, 0.1)
             stroke-colour=(0.2, 0.3, 1.0, 1.0)
             stroke-width=5
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
+            corner-radii=(50, 0, 50, 50)
+        />
+        <rect
+            colour=(1.0, 1.0, 1.0, 0.1)
+            stroke-colour=(0.2, 0.3, 1.0, 1.0)
+            stroke-width=2
             corner-radii=(50, 0, 50, 50)
         />
         <rect
@@ -46,4 +142,4 @@
         />
         </vertical-stack>
     </horizontal-stack>
-</canvas>
+</root>
