@@ -1,26 +1,105 @@
 use std::ops::Add;
 use legion::*;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum FatalErrorReason {
-}
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct FatalError {
-    pub error: FatalErrorReason
+pub enum AbstractSyntaxNodeType {
+    Root,
+    Import,
+    Circle,
+    Rectangle,
+    Text,
+    CanvasLayoutContent,
+    HorizontalLayoutContent,
+    VerticalLayoutContent,
+    Left,
+    Top,
+    Width,
+    Height,
+    Radius,
+    StrokeWidth,
+    Content,
+    Path,
+    Name,
+    Colour,
+    StrokeColour,
+    CornerRadii,
+    Unknown
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum BuildErrorReason {
+    UnexpectedToken(AbstractSyntaxNodeType),
+    MissingRequiredTokens(Vec<AbstractSyntaxNodeType>),
+    SourceLocationDoesNotExist(String),
+    ControlDoesNotExist(String),
+    ControlSourceDoesNotExist(String)
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct BuildError {
+    pub entity: Entity,
+    reason: BuildErrorReason
+}
+
+impl BuildError {
+    pub fn new(entity: Entity, reason: BuildErrorReason) -> Self {
+        Self {
+            entity,
+            reason
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct BuildErrorOccurrence {
+    pub error: BuildError
+}
+
+impl From<BuildError> for BuildErrorOccurrence {
+    fn from(error: BuildError) -> Self {
+        Self {
+            error
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct SourceFile {
 }
 
+
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
+pub struct SourceFileRoot {
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct SourceImplementation {
+    pub source_file_entity: Entity
+}
+
+impl SourceImplementation {
+    pub fn from_source_entity(source_file_entity: Entity) -> Self {
+        Self {
+            source_file_entity
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct SourceFileParsed {
 }
 
-
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct SourceFileChange {
+}
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
+pub struct SourceFileCreation {
+}
+
+
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
+pub struct SourceFileInitialRead {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
@@ -48,10 +127,28 @@ impl Relationship {
             last_child: None 
         }
     }
+    
+    pub fn without_children(&self) -> Self {
+        Self {
+            parent: self.parent,
+            next_sibling: self.next_sibling,
+            first_child: None,
+            last_child: None 
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct Root {
+}
+
+
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
+pub struct Control {
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
+pub struct Rebuild {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
@@ -116,6 +213,10 @@ pub struct Resized {
 pub struct Mapped {
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
+pub struct Import {
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum LayoutType {
     Horizontal,
@@ -169,10 +270,45 @@ impl Renderable {
 }
 
 
+#[derive(Clone, Debug, PartialEq, Default)]
+pub struct Name { 
+    pub name: String
+}
+
+impl From<&str> for Name {
+    fn from(name: &str) -> Self {
+        Self {
+            name: name.to_string()
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Default)]
+pub struct Path { 
+    pub path: String
+}
+
+impl From<&str> for Path {
+    fn from(path: &str) -> Self {
+        Self {
+            path: path.to_string()
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct Character { 
     pub character: char,
     pub position: usize
+}
+
+impl Character {
+    pub fn new(character: char, position: usize) -> Self {
+        Self {
+            character,
+            position
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
@@ -180,9 +316,25 @@ pub struct Left {
     pub left: u16
 }
 
+impl From<u16> for Left {
+    fn from(left: u16) -> Self {
+        Self {
+            left
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct Top {
     pub top: u16
+}
+
+impl From<u16> for Top {
+    fn from(top: u16) -> Self {
+        Self {
+            top
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Default)]
@@ -218,6 +370,14 @@ pub struct Width {
     pub width: u16
 }
 
+impl From<u16> for Width {
+    fn from(width: u16) -> Self {
+        Self {
+            width
+        }
+    }
+}
+
 impl From<&Radius> for Width {
     fn from(radius: &Radius) -> Self {
         Width {
@@ -234,6 +394,15 @@ pub struct MinimumWidth {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Height {
     pub height: u16
+}
+
+
+impl From<u16> for Height {
+    fn from(height: u16) -> Self {
+        Self {
+            height
+        }
+    }
 }
 
 impl From<&Radius> for Height {
@@ -254,9 +423,25 @@ pub struct Radius {
     pub radius: u16
 }
 
+impl From<u16> for Radius {
+    fn from(radius: u16) -> Self {
+        Self {
+            radius
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct GlyphIndex {
     pub index: u16
+}
+
+impl From<u16> for GlyphIndex {
+    fn from(index: u16) -> Self {
+        Self {
+            index
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -267,9 +452,28 @@ pub struct Colour {
     pub a: f32,
 }
 
+impl From<(f32, f32, f32, f32)> for Colour {
+    fn from(colour: (f32, f32, f32, f32)) -> Self {
+        Self {
+            r: colour.0,
+            g: colour.1,
+            b: colour.2,
+            a: colour.3,
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct StrokeWidth {
     pub width: u16
+}
+
+impl From<u16> for StrokeWidth {
+    fn from(width: u16) -> Self {
+        Self {
+            width
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -280,10 +484,33 @@ pub struct StrokeColour {
     pub a: f32,
 }
 
+impl From<(f32, f32, f32, f32)> for StrokeColour {
+    fn from(colour: (f32, f32, f32, f32)) -> Self {
+        Self {
+            r: colour.0,
+            g: colour.1,
+            b: colour.2,
+            a: colour.3,
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct CornerRadii {
     pub left_top: u16,
     pub right_top: u16,
     pub right_bottom: u16,
     pub left_bottom: u16,
+}
+
+
+impl From<(u16, u16, u16, u16)> for CornerRadii {
+    fn from(radii: (u16, u16, u16, u16)) -> Self {
+        Self {
+            left_top: radii.0,
+            right_top: radii.1,
+            right_bottom: radii.2,
+            left_bottom: radii.3,
+        }
+    }
 }

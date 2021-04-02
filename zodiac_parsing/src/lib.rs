@@ -1,6 +1,10 @@
 pub mod tokenization;
-pub mod source_reading;
-pub mod systems;
+pub mod source;
+mod systems;
+mod building;
 
-pub use systems::source_file_parsing::*;
-pub use source_reading::*;
+pub use systems::parsing::*;
+pub use systems::building::*;
+pub use systems::linking::*;
+pub use source::*;
+pub use building::*;

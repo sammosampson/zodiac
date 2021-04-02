@@ -9,3 +9,4 @@ pub mod systems;
 pub use rendering::*;
 pub use render_queue::*;
 pub use systems::render_primitives::*;
+pub use primitives::RenderPrimitive;

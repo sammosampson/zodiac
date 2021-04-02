@@ -45,12 +45,18 @@ impl Application {
             .flush()
             .add_thread_local(source_file_monitoring_system())
             .flush()
-            .add_system(remove_parsed_source_from_world_system())
+            .add_system(source_token_removal_system())
+            .add_system(source_parse_system::<FileSourceReader>())
             .flush()
-            .add_system(source_file_parse_system::<FileSourceReader>())
+            .add_system(apply_initially_read_root_source_to_world_system())
+            .add_system(apply_created_source_to_world_system())
+            .add_system(apply_removed_source_to_world_system())
+            .add_system(apply_changed_source_to_world_system())
+            .flush()
+            .add_system(world_build_system::<FileSourceReader>())
             .flush()
             .add_system(resize_screen_system())
-            .add_system(resize_after_source_file_change_system())
+            .add_system(resize_after_rebuild_system())
             .flush()
             .add_system(remove_from_relationship_map_system())
             .add_system(build_relationship_map_system())
@@ -77,6 +83,7 @@ impl Application {
             .flush()
             .add_system(mark_as_mapped_system())
             .add_system(measure_fixed_width_constraints_system())
+            .add_system(measure_fixed_height_constraints_system())
             .flush()
             .add_system(resize_system())
             .flush()
@@ -86,7 +93,11 @@ impl Application {
             .flush()
             .add_thread_local(remove_layout_change_system())
             .add_thread_local(remove_resized_system())
+            .add_thread_local(remove_source_file_initial_read_system())
             .add_thread_local(remove_source_file_change_system())
+            .add_thread_local(remove_source_file_creation_system())
+            .add_thread_local(remove_source_file_removal_system())
+            .add_thread_local(remove_rebuild_system())
             .flush()
             .build();
             
@@ -95,7 +106,7 @@ impl Application {
             resources,
             schedule,
             relative_zod_folder_path: "",
-            file_monitor_poll: Duration::from_secs(1)
+            file_monitor_poll: Duration::from_millis(50)
         }
     }
 
@@ -105,16 +116,11 @@ impl Application {
     }
     
     pub fn run(mut self) -> Result<(), ZodiacError> {
-        let event_loop: EventLoop<()> = EventLoop::new();
-
         let file_paths = FilePaths::new(self.relative_zod_folder_path);
-
-        let renderer = GliumRenderer::new(&event_loop)?;
-        self.notify_resize_root_window(renderer.get_window_dimensions());
-
         &mut self.resources.insert(file_paths);
         &mut self.resources.insert(create_source_file_reader());
-        &mut self.resources.insert(create_source_file_entity_lookup());
+        &mut self.resources.insert(create_source_entity_lookup());
+        &mut self.resources.insert(create_source_tokens_lookup());
         &mut self.resources.insert(create_source_location_lookup());
         &mut self.resources.insert(monitor_files(file_paths, self.file_monitor_poll)?);
         &mut self.resources.insert(create_text_colour_map());
@@ -127,6 +133,11 @@ impl Application {
         &mut self.resources.insert(create_minimum_width_map());
         &mut self.resources.insert(create_minimum_height_map());
         &mut self.resources.insert(create_glium_render_queue());
+
+        let event_loop: EventLoop<()> = EventLoop::new();
+        let renderer = GliumRenderer::new(&event_loop)?;
+        self.notify_resize_root_window(renderer.get_window_dimensions());
+        
         &mut self.resources.insert(renderer);
 
         event_loop.run(move |ev, _, control_flow| {

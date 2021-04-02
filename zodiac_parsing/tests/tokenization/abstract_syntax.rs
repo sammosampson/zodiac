@@ -3,15 +3,46 @@ use zodiac_parsing::tokenization::source::*;
 
 #[test]
 fn parse_root_layout_container_produces_container_node() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<root />"));
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(
+        SourceTokenizer::from_string("<root />"));
     assert_eq!(AbstractSyntaxToken::Root, tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
 
 #[test]
+fn parse_control_produces_control_nodes() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(
+        SourceTokenizer::from_string("<control />"));
+    assert_eq!(AbstractSyntaxToken::Control, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
+fn parse_import_produces_import_nodes() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(
+        SourceTokenizer::from_string("<import name=\"big-control\" path=\"..\\big-control\" />"));
+    assert_eq!(AbstractSyntaxToken::Import, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::Name(String::from("big-control")), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::Path(String::from("..\\big-control")), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
+fn parse_control_implementation_produces_control_implementation_nodes() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(
+        SourceTokenizer::from_string("<big-control />"));
+    assert_eq!(AbstractSyntaxToken::ControlImplementation(String::from("big-control")), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
 fn parse_canvas_layout_container_produces_container_node() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<canvas />"));
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(
+        SourceTokenizer::from_string("<canvas />"));
     assert_eq!(AbstractSyntaxToken::CanvasLayoutContent, tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
@@ -101,7 +132,7 @@ fn parse_radius_produces_radius_node() {
 fn text_content_produces_content_node() {
     let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text content=\"test\" />"));
     assert_eq!(AbstractSyntaxToken::Text, tokenizer.next().unwrap().unwrap());
-    assert_eq!(AbstractSyntaxToken::Content("test"), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::Content(String::from("test")), tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
@@ -202,14 +233,6 @@ fn parse_with_multiple_properties_produces_correct_nodes() {
     assert_eq!(AbstractSyntaxToken::Circle, tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::Radius(1), tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::StrokeWidth(2), tokenizer.next().unwrap().unwrap());
-    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
-    assert_eq!(None, tokenizer.next());
-}
-
-#[test]
-fn parse_with_unknown_control_produces_error() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<square />"));
-    assert_eq!(Some(Err(AbstractSyntaxTokenError::UnknownControl)), tokenizer.next());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }

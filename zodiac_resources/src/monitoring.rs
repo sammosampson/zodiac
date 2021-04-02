@@ -65,7 +65,7 @@ impl FileMonitor {
                 match event {
                     DebouncedEvent::Create(path) => Ok(FileMonitorFileChange::Create(path)),
                     DebouncedEvent::Write(path) => Ok(FileMonitorFileChange::Modify(path)),
-                    DebouncedEvent::Remove(path) => Ok(FileMonitorFileChange::Delete(path)),
+                    DebouncedEvent::NoticeRemove(path) => Ok(FileMonitorFileChange::Delete(path)),
                     _ => Err(FileMonitorWatchError::NoFileChanges)
                 }
             },

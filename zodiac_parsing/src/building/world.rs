@@ -1,64 +1,26 @@
+use std::fmt::Debug;
+
 use legion::*;
 use legion::storage::*;
 use legion::systems::*;
-use crate::components::*;
-use crate::relationships::*;
+use zodiac_entities::*;
 
-pub trait EntityBuilder {
-    fn add_entity_with_component<T:Component>(&mut self, component: T) -> Entity;
-    fn add_component_to_entity<T:Component>(&mut self, entity: Entity, component: T);
+pub fn create_world_builder<'a>(command_buffer: &'a mut CommandBuffer, root: Entity) -> WorldBuilder {
+    WorldBuilder::<'a>::new(command_buffer, root)
 }
 
-impl EntityBuilder for CommandBuffer {
-    fn add_entity_with_component<T:Component>(&mut self, component: T) -> Entity {
-        self.push((component, ))
-    }
 
-    fn add_component_to_entity<T:Component>(&mut self, entity: Entity, component: T)  {
-        self.add_component(entity, component);
-    }
-}
-
-impl EntityBuilder for World {
-    fn add_entity_with_component<T:Component>(&mut self, component: T) -> Entity {
-        self.push((component, ))
-    }
-    
-    fn add_component_to_entity<T:Component>(&mut self, entity: Entity, component: T)  {
-        if let Some(mut entry) = self.entry(entity) {
-            entry.add_component(component);
-        }
-    }
-}
-
-pub type WorldWorldEntityBuilder<'a> = WorldEntityBuilder<'a, World>;
-
-pub fn world_entity_builder_for_world_with_root<'a>(world: &'a mut World) -> WorldWorldEntityBuilder<'a> {
-    let root_entity = world.push((SourceFile::default(), ));
-    world_entity_builder_for_world(world, root_entity)
-}
-
-pub fn world_entity_builder_for_world<'a>(world: &'a mut World, root: Entity) -> WorldWorldEntityBuilder<'a> {
-    WorldWorldEntityBuilder::<'a>::new(world, root)
-}
-
-pub type CommandBufferWorldEntityBuilder<'a> = WorldEntityBuilder<'a, CommandBuffer>;
-
-pub fn world_entity_builder_for_command_buffer<'a>(command_buffer: &'a mut CommandBuffer, root: Entity) -> CommandBufferWorldEntityBuilder {
-    CommandBufferWorldEntityBuilder::<'a>::new(command_buffer, root)
-}
-
-pub struct WorldEntityBuilder<'a, TEntityBuilder: EntityBuilder> {
-    entity_builder: &'a mut TEntityBuilder,
+pub struct WorldBuilder<'a> {
+    command_buffer: &'a mut CommandBuffer,
     root_used_for_initial_entity: bool,
     current_entity: Entity,
     relationship_map: RelationshipMap
 }
 
-impl<'a, TEntityBuilder: EntityBuilder> WorldEntityBuilder<'a, TEntityBuilder> {
-    pub fn new(entity_builder: &'a mut TEntityBuilder, root: Entity) -> Self {   
+impl<'a> WorldBuilder<'a> {
+    pub fn new(command_buffer: &'a mut CommandBuffer, root: Entity) -> Self {   
         let mut builder = Self {
-            entity_builder,
+            command_buffer,
             root_used_for_initial_entity: false,
             current_entity: root,
             relationship_map: RelationshipMap::new()
@@ -74,94 +36,125 @@ impl<'a, TEntityBuilder: EntityBuilder> WorldEntityBuilder<'a, TEntityBuilder> {
     }
 
     pub fn complete_entity(&mut self) {
+        println!("completing entity {:?}", self.current_entity);
         if let Some(relationship) = self.get_relationship(self.current_entity) {
             if let Some(parent) = relationship.parent {
                 self.current_entity = parent;
             }
         }
-    } 
-    
-    pub fn create_root_entity(&mut self) {
+    }
+
+    pub fn create_root_entity(&mut self) -> Entity {
         self.create_entity_with_component(Root::default());
-        self.add_component_to_current_entity(LayoutContent::canvas());
+        self.current_entity
     }
-    
-    pub fn create_canvas_layout_content_entity(&mut self) {
+
+    pub fn create_control_entity(&mut self) -> Entity {
+        self.create_entity_with_component(Control::default());
+        self.current_entity
+    }
+
+    pub fn create_control_implementation(&mut self, source_entity: Entity) -> (Entity, SourceImplementation) {
+        let source_implementation = SourceImplementation::from_source_entity(source_entity);
+        self.create_entity_with_component(source_implementation);
+        self.root_used_for_initial_entity = false;
+        (self.current_entity, source_implementation)
+    }
+
+    pub fn create_canvas_layout_content_entity(&mut self) -> Entity {
         self.create_entity_with_component(LayoutContent::canvas());
+        self.current_entity
     }
 
-    pub fn create_horizontal_layout_content_entity(&mut self) {
+    pub fn create_horizontal_layout_content_entity(&mut self) -> Entity {
         self.create_entity_with_component(LayoutContent::horizontal());
+        self.current_entity
     }
 
-    pub fn create_vertical_layout_content_entity(&mut self) {
+    pub fn create_vertical_layout_content_entity(&mut self) -> Entity {
         self.create_entity_with_component(LayoutContent::vertical());
+        self.current_entity
     }
 
-    pub fn create_rectangle_entity(&mut self) {
+    pub fn create_rectangle_entity(&mut self) -> Entity {
         self.create_entity_with_component(Renderable::rectangle());
+        self.current_entity
     }
     
-    pub fn create_circle_entity(&mut self) {
+    pub fn create_circle_entity(&mut self) -> Entity {
         self.create_entity_with_component(Renderable::circle());
+        self.current_entity
     }
 
     pub fn create_glyph_entity(&mut self) {
         self.create_entity_with_component(Renderable::glyph());
     }
 
+    pub fn add_canvas_layout_content_component(&mut self) {
+        self.add_component_to_current_entity(LayoutContent::canvas());
+    }
+
+    pub fn add_text_content_components(&mut self, content: &str) { 
+        let mut position = 0;
+        for character in content.chars() {
+            self.create_glyph_entity();
+            self.add_character_component(character, position);
+            self.complete_entity();
+            position = position + 1;
+        }
+    }
+    
     pub fn add_character_component(&mut self, character: char, position: usize) {
-        self.add_component_to_current_entity(Character { character, position });
+        self.add_component_to_current_entity(Character::new(character, position));
     }
     
     pub fn add_left_component(&mut self, left: u16) {
-        self.add_component_to_current_entity(Left { left });
+        self.add_component_to_current_entity(Left::from(left));
     }
     
     pub fn add_top_component(&mut self, top: u16) {
-        self.add_component_to_current_entity(Top { top });
+        self.add_component_to_current_entity(Top::from(top));
     }
     
     pub fn add_width_component(&mut self, width: u16) {
-        self.add_component_to_current_entity(Width { width });
+        self.add_component_to_current_entity(Width::from(width));
     }
     
     pub fn add_height_component(&mut self, height: u16) {
-        self.add_component_to_current_entity(Height { height });
+        self.add_component_to_current_entity(Height::from(height));
     }
 
     pub fn add_radius_component(&mut self, radius: u16) {
-        self.add_component_to_current_entity(Radius { radius });
+        self.add_component_to_current_entity(Radius::from(radius));
     }
     
     pub fn add_stroke_width_component(&mut self, width: u16) {
-        self.add_component_to_current_entity(StrokeWidth { width });
-    }
-    
-    pub fn add_glyph_index_component(&mut self, index: u16) {
-        self.add_component_to_current_entity(GlyphIndex { index });
+        self.add_component_to_current_entity(StrokeWidth::from(width));
     }
     
     pub fn add_colour_component(&mut self, r: f32, g: f32, b: f32, a: f32) {
-         self.add_component_to_current_entity(Colour { r, g, b ,a });
+         self.add_component_to_current_entity(Colour::from((r, g, b, a)));
     }
 
     pub fn add_stroke_colour_component(&mut self, r: f32, g: f32, b: f32, a: f32) {
-        self.add_component_to_current_entity(StrokeColour { r, g, b ,a });
+        self.add_component_to_current_entity(StrokeColour::from((r, g, b ,a)));
     }
 
     pub fn add_corner_radii_component(&mut self, left_top: u16, right_top: u16, right_bottom: u16, left_bottom: u16) {
-        self.add_component_to_current_entity(CornerRadii { left_top, right_top, right_bottom, left_bottom });
+        self.add_component_to_current_entity(CornerRadii::from((left_top, right_top, right_bottom, left_bottom)));
     }
 
-    pub fn create_entity_with_component<T:Component>(&mut self, component: T) {
+    pub fn create_entity_with_component<T:Component + Debug>(&mut self, component: T) {
         if !self.root_used_for_initial_entity {
             self.add_component_to_current_entity(component);
             self.root_used_for_initial_entity = true;
             return;
         }
+
+        let component_desc = format!("{:?}", component);
         let parent = self.current_entity;
-        self.current_entity = self.entity_builder.add_entity_with_component(component);
+        self.current_entity = self.command_buffer.push((component, ));
+        println!("creating entity with component {:?}: {}", self.current_entity, component_desc);
         self.setup_current_entity_relationships(parent);
     }
 
@@ -189,6 +182,8 @@ impl<'a, TEntityBuilder: EntityBuilder> WorldEntityBuilder<'a, TEntityBuilder> {
     }
 
     fn set_relationship_component(&mut self, entity: Entity, relationship: Relationship) {
+        println!("setting relationship for entity {:?}: {:?}", entity, relationship);
+        
         self.add_component(entity, relationship);
         self.update_relationship_map(entity, relationship);
     }
@@ -205,10 +200,11 @@ impl<'a, TEntityBuilder: EntityBuilder> WorldEntityBuilder<'a, TEntityBuilder> {
     }
 
     fn add_component<T:Component>(&mut self, entity: Entity, component: T) {
-        self.entity_builder.add_component_to_entity(entity, component);
+        self.command_buffer.add_component(entity, component);
     }
     
-    pub fn add_component_to_current_entity<T:Component>(&mut self, component: T) {
+    pub fn add_component_to_current_entity<T:Component + Debug>(&mut self, component: T) {
+        println!("adding entity component {:?}: {:?}", self.current_entity, component);
         self.add_component(self.current_entity, component)
     }
 }

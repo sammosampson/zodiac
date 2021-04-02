@@ -15,7 +15,7 @@ pub fn recurisve_source_location_build(
     command_buffer: &mut CommandBuffer,
     world: &mut SubWorld,
     #[resource] file_paths: &FilePaths,
-    #[resource] file_entity_lookup: &mut SourceFileEntityLookup,
+    #[resource] source_entity_lookup: &mut SourceEntityLookup,
     #[resource] source_location_lookup: &mut SourceLocationLookup) {
     
     let source_files: Vec::<&SourceFile> = <&SourceFile>::query().iter(world).collect();
@@ -33,11 +33,8 @@ pub fn recurisve_source_location_build(
                         continue;
                     }
                     
-                    let entity = command_buffer.push((SourceFile::default(),));
-
-                    let location = SourceLocation::from(&path);
-                    source_location_lookup.insert(entity, location);
-                    file_entity_lookup.stash_entity(path, entity);                    
+                    let location = path.to_canonicalised_source_location().unwrap();
+                    read_source(location, command_buffer, source_entity_lookup, source_location_lookup);                   
                 }
             } else {
                 //TODO: handle file read error

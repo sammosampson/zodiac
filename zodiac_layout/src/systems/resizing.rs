@@ -26,9 +26,9 @@ pub fn resize_screen(world: &mut SubWorld, command_buffer: &mut CommandBuffer) {
 }
 
 #[system(for_each)]
-#[filter(component::<SourceFileChange>())]
+#[filter(component::<Rebuild>())]
 #[filter(!component::<LayoutRequest>())]
-pub fn resize_after_source_file_change(
+pub fn resize_after_rebuild(
     command_buffer: &mut CommandBuffer,
     entity: &Entity,
     current_layout_constraints: &CurrentLayoutConstraints

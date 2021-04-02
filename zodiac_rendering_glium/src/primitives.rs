@@ -1,6 +1,6 @@
 use glium::*;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct RenderPrimitive {
     pub position: [u16; 2],
     pub dimensions: [u16; 2],
