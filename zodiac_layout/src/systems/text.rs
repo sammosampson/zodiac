@@ -1,5 +1,5 @@
 use legion::*;
-use log::{info};
+use log::{debug};
 use legion::systems::*;
 use zodiac_entities::*;
 use crate::text::*;
@@ -13,7 +13,7 @@ pub fn build_text_colour_map(#[resource] colour_map: &mut TextColourMap, entity:
 #[system(for_each)]
 #[filter(component::<Removed>())]
 pub fn remove_from_text_colour_map(#[resource] colour_map: &mut TextColourMap, entity: &Entity) {
-    info!("removing from text colour map {:?}", entity);
+    debug!("removing from text colour map {:?}", entity);
     colour_map.remove(entity);
 }
 

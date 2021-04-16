@@ -9,9 +9,33 @@
         <big-control />
         <big-control />
         <big-control />
+        <big-control />
+        <big-control />
         <vertical-stack>
-            <small-control/>
-            <small-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+        <horizontal-stack>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+            <other-control/>
+        </horizontal-stack>
         </vertical-stack>
     </horizontal-stack>
 </root>

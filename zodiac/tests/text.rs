@@ -1,6 +1,10 @@
 use legion::*;
 use zodiac_rendering_glium::*;
-use zodiac::test_helpers::*;
+use zodiac::testing::*;
+use zodiac_entities::*;
+use zodiac::*;
+use zodiac_layout::*;
+//use zodiac::formatting::*;
 
 #[test]
 fn text_gets_output_as_glyphs() {
@@ -9,23 +13,26 @@ fn text_gets_output_as_glyphs() {
     <text content=\"abc\" colour=(1.0, 1.0, 1.0, 0.1) />
 </root>
 ";
-    let mut world = World::default();
-    let mut resources = build_zodiac_resources();
-    let mut schedule = build_zodiac_systems_schedule();
+    let mut runner = Application::new()
+        .with_builder(test_source_file_building())
+        .with_builder(test_source_building())
+        .with_builder(standard_layout())
+        .with_builder(standard_test_rendering())
+        .with_builder(test_renderer(Dimensions::new(100, 110)))
+        .build()
+        .unwrap();
 
-    apply_initial_source(&mut resources, ".\\root.zod", source);
-    
-    notify_resize_root_window(&mut world, (100, 100));
+    apply_initial_source(runner.resources_mut(), ".\\root.zod", source);
 
-    schedule.execute(&mut world, &mut resources);
+    runner.run_once();
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
-        .iter(&mut world)
+        .iter(runner.world_mut())
         .map(|change| *change)
-        .collect();   
+        .collect();  
     
+    assert_eq!(changes.len(), 3);
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::glyph([0, 0], [16, 16], [1.0, 1.0, 1.0, 0.1], 35)), true);
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::glyph([16, 0], [16, 16], [1.0, 1.0, 1.0, 0.1], 36)), true);
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::glyph([32, 0], [16, 16], [1.0, 1.0, 1.0, 0.1], 37)), true);
-    assert_eq!(changes.len(), 3);
 }

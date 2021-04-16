@@ -3,6 +3,57 @@ use std::error::*;
 use legion::*;
 use serde::*;
 
+#[derive(Debug)]
+pub enum ZodiacError {
+    FailedToRender(RendererError),
+    FailedToFileMonitorFiles(FileMonitorError)
+}
+
+impl From<RendererError> for ZodiacError {
+    fn from(error: RendererError) -> Self {
+        ZodiacError::FailedToRender(error)
+    }
+}
+
+#[derive(Debug)]
+pub enum RendererError {
+    FailedToDisplayWindow,
+    FailedToCreateShaders(String),
+    FailedToLoadFont,
+    BufferSwapError,
+    BufferCreationError,
+    DrawError
+}
+
+impl From<FileMonitorError> for ZodiacError {
+    fn from(error: FileMonitorError) -> Self {
+        ZodiacError::FailedToFileMonitorFiles(error)
+    }
+}
+
+#[derive(Debug)]
+pub enum FileMonitorError {
+    WatchError,
+    FilePathError(FilePathError)
+}
+
+#[derive(Debug)]
+pub enum FileMonitorWatchError {
+    NoLongerMonitoring,
+    NoFileChanges
+}
+
+#[derive(Debug)]
+pub enum FilePathError {
+    ManifestDirectoryEnvironmentVariableNotSet
+}
+
+impl From<FilePathError> for FileMonitorError {
+    fn from(error: FilePathError) -> FileMonitorError {
+        FileMonitorError::FilePathError(error)
+    }
+}
+
 #[derive(PartialEq, Eq, Debug, Copy, Clone, Serialize, Deserialize)]
 pub enum SourceTokenError {
     CouldNotFindStartTag(usize),
@@ -249,17 +300,29 @@ pub struct Rebuild {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct RootWindowResized {
+pub struct Dimensions {
     pub width: u16,
     pub height: u16
 }
 
-impl From<(u16, u16)> for RootWindowResized {
-    fn from(dimensions: (u16, u16)) -> Self {
+impl Dimensions {
+    pub fn new(width: u16, height: u16) -> Self {
         Self {
-            width: dimensions.0,
-            height: dimensions.1,
+            width,
+            height,
         }
+    }
+}
+
+impl From<(u16, u16)> for Dimensions {
+    fn from(dimensions: (u16, u16)) -> Self {
+        Self::new(dimensions.0, dimensions.1)
+    }
+}
+
+impl From<(u32, u32)> for Dimensions {
+    fn from(dimensions: (u32, u32)) -> Self {
+        Self::new(dimensions.0 as u16, dimensions.1 as u16)
     }
 }
 
@@ -279,14 +342,14 @@ pub struct LayoutRequest {
     pub height: u16
 }
 
-impl From<&RootWindowResized> for LayoutRequest {
-    fn from(window_resized: &RootWindowResized) -> Self {
+impl From<&Dimensions> for LayoutRequest {
+    fn from(dimensions: &Dimensions) -> Self {
         LayoutRequest {
             left: 0, 
             top: 0, 
             width: 
-            window_resized.width, 
-            height: window_resized.height
+            dimensions.width, 
+            height: dimensions.height
         }
     }
 }

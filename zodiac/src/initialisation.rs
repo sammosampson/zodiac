@@ -1,181 +1,129 @@
-use std::time::*;
-use log::{info};
+use log::info;
+use shrev::*;
 use legion::*;
-use glium::*;
-use glium::glutin::event_loop::*;
-use glutin::event::*;
-use crate::systems::error_reporting::*;
+use legion::systems::*;
 use zodiac_entities::*;
-use zodiac_source_filesystem::*;
-use zodiac_source::*;
-use zodiac_layout::*;
-use zodiac_rendering::*;
-use zodiac_rendering_glium::*;
 
-#[derive(Debug)]
-pub enum ZodiacError {
-    FailedToRender(RendererError),
-    FailedToFileMonitorFiles(FileMonitorError)
-}
-
-impl From<RendererError> for ZodiacError {
-    fn from(error: RendererError) -> Self {
-        ZodiacError::FailedToRender(error)
-    }
-}
-
-impl From<FileMonitorError> for ZodiacError {
-    fn from(error: FileMonitorError) -> Self {
-        ZodiacError::FailedToFileMonitorFiles(error)
-    }
-}
+use crate::systems::error_reporting::*;
 
 pub struct Application {
-    pub world: World, 
-    pub resources: Resources,
-    schedule: Schedule,
-    relative_zod_folder_path: &'static str,
-    file_monitor_poll: Duration
+    resources: Resources,
+    schedule_builder: Builder,
+    builders: Vec::<Box::<dyn ApplicationBundleBuilder>>
 }
 
 impl Application {
-    pub fn build() -> Self {
-        let world = World::default();
+    pub fn new() -> Self {
         let resources = Resources::default();
-        let schedule = Schedule::builder()
-            .add_thread_local(recurisve_source_location_build_system::<FileSystemSourceLocationWalker, FileSystemSourceLocationIterator>())
-            .flush()
-            .add_thread_local(source_file_monitoring_system::<FileSystemFileMonitor>())
-            .flush()
-            .add_system(source_token_removal_system())
-            .add_system(source_parse_system::<FileSourceReader>())
-            .flush()
-            .add_system(apply_initially_read_root_source_to_world_system())
-            .add_system(apply_created_source_to_world_system())
-            .add_system(apply_removed_source_to_world_system())
-            .add_system(apply_changed_source_to_world_system())
-            .flush()
-            .add_system(world_build_system::<FileSourceReader>())
-            .flush()
-            .add_system(error_control_for_renderable_system())
-            .add_system(error_control_for_non_renderable_system())
-            .flush()
-            .add_system(resize_screen_system())
-            .add_system(resize_after_rebuild_system())
-            .flush()
-            .add_system(remove_from_relationship_map_system())
-            .add_system(build_relationship_map_system())
-            .add_system(remove_from_text_colour_map_system())
-            .add_system(build_text_colour_map_system())
-            .flush()
-            .add_system(format_glyphs_system())
-            .flush()
-            .add_system(remove_from_left_offset_map_system())
-            .add_system(build_left_offset_map_system())
-            .add_system(remove_from_top_offset_map_system())
-            .add_system(build_top_offset_map_system())
-            .add_system(remove_from_minimum_width_map_system())
-            .add_system(remove_from_width_map_system())
-            .add_system(build_width_map_system())
-            .add_system(remove_from_minimum_height_map_system())
-            .add_system(remove_from_height_map_system())
-            .add_system(build_height_map_system())
-            .add_system(build_width_and_height_maps_from_radius_system())
-            .add_system(remove_from_layout_type_map_system())
-            .add_system(build_layout_type_map_system())
-            .flush()
-            .add_system(remove_entity_system())
-            .flush()
-            .add_system(mark_as_mapped_system())
-            .add_system(measure_fixed_width_constraints_system())
-            .add_system(measure_fixed_height_constraints_system())
-            .flush()
-            .add_system(resize_system())
-            .flush()
-            .add_thread_local(queue_render_primitives_system::<GliumRenderQueue>())
-            .flush()
-            .add_thread_local(render_primitives_system())
-            .add_thread_local(report_build_error_system())
-            .flush()
-            .add_thread_local(remove_layout_change_system())
-            .add_thread_local(remove_resized_system())
-            .add_thread_local(remove_source_file_initial_read_system())
-            .add_thread_local(remove_source_file_change_system())
-            .add_thread_local(remove_source_file_creation_system())
-            .add_thread_local(remove_source_file_removal_system())
-            .add_thread_local(remove_rebuild_system())
-            .add_thread_local(remove_build_error_system())
-            .flush()
-            .build();
+        let schedule_builder = Schedule::builder();
             
         Self {
-            world,
             resources,
-            schedule,
-            relative_zod_folder_path: "",
-            file_monitor_poll: Duration::from_millis(50)
+            schedule_builder,
+            builders: vec!()
         }
     }
 
-    pub fn initialise(mut self, relative_zod_folder_path: &'static str) -> Application  {
-        self.relative_zod_folder_path = relative_zod_folder_path;
+    pub fn with_builder<T>(mut self, builder: T) -> Self
+        where T: ApplicationBundleBuilder + 'static {
+        self.builders.push(Box::new(builder));
         self
     }
-    
-    pub fn run(mut self) -> Result<(), ZodiacError> {
-        pretty_env_logger::init();
+
+    pub fn build(mut self) -> Result<ApplicationRunner, ZodiacError> {
+        let mut event_channel = create_system_event_channel();
         
-        let file_paths = FilePaths::new(self.relative_zod_folder_path);
-        &mut self.resources.insert(file_paths);
-        &mut self.resources.insert(create_file_system_source_location_walker());
-        &mut self.resources.insert(monitor_files(file_paths, self.file_monitor_poll)?);
-        &mut self.resources.insert(create_source_file_reader());
-        &mut self.resources.insert(create_source_entity_lookup());
-        &mut self.resources.insert(create_source_tokens_lookup());
-        &mut self.resources.insert(create_source_location_lookup());
-        &mut self.resources.insert(create_text_colour_map());
+        for builder in &self.builders {
+            info!("setup_build_systems: {:?}", builder.description());
+            builder.setup_build_systems(&mut self.schedule_builder);
+            self.schedule_builder.flush();    
+        }
+
+        self.schedule_builder.add_system(remove_from_relationship_map_system());
+        self.schedule_builder.add_system(build_relationship_map_system());
+        self.schedule_builder.flush();  
+
+        for builder in &self.builders {
+            info!("setup_layout_systems: {:?}", builder.description());
+            builder.setup_layout_systems(&mut self.schedule_builder);
+            self.schedule_builder.flush();    
+        }
+
+        self.schedule_builder.add_system(remove_entity_system());
+        self.schedule_builder.flush();
+        self.schedule_builder.add_system(mark_as_mapped_system());
+        self.schedule_builder.flush();  
+
+        for builder in &self.builders {
+            info!("setup_rendering_systems: {:?}", builder.description());
+            builder.setup_rendering_systems(&mut self.schedule_builder);
+            self.schedule_builder.flush();    
+        }
+
+        self.schedule_builder.add_thread_local(report_build_error_system());
+        self.schedule_builder.flush(); 
+
+        for builder in &self.builders {
+            info!("setup_cleanup_systems: {:?}", builder.description());
+            builder.setup_cleanup_systems(&mut self.schedule_builder);
+            self.schedule_builder.flush();    
+        }
+        
+        for builder in &self.builders {
+            info!("setup_resources: {:?}", builder.description());
+            builder.setup_resources(&mut self.resources, &mut event_channel)?;
+        }
+
+        &mut self.resources.insert(event_channel);
         &mut self.resources.insert(create_relationship_map());
-        &mut self.resources.insert(create_layout_type_map());
-        &mut self.resources.insert(create_left_offset_map());
-        &mut self.resources.insert(create_top_offset_map());
-        &mut self.resources.insert(create_width_map());
-        &mut self.resources.insert(create_height_map());
-        &mut self.resources.insert(create_minimum_width_map());
-        &mut self.resources.insert(create_minimum_height_map());
-        &mut self.resources.insert(create_glium_render_queue());
+        &mut self.resources.insert(create_system_event_producer());        
 
-        let event_loop: EventLoop<()> = EventLoop::new();
-        let renderer = GliumRenderer::new(&event_loop)?;
-        self.notify_resize_root_window(renderer.get_window_dimensions());
-        
-        &mut self.resources.insert(renderer);
+        Ok(ApplicationRunner::new(self.schedule_builder.build(), self.resources))
+    }
+}
 
-        event_loop.run(move |ev, _, control_flow| {
-            &mut self.schedule.execute(&mut self.world, &mut self.resources);
-            
-            const SIXTY_FPS:u64 = 16_666_667;
-            let next_frame_time = Instant::now() + Duration::from_nanos(SIXTY_FPS);
-            *control_flow = ControlFlow::WaitUntil(next_frame_time);
-            
-            match ev {
-                Event::WindowEvent { event, .. } => match event {
-                    WindowEvent::CloseRequested => {
-                        *control_flow = ControlFlow::Exit;
-                        return;
-                    },
-                    WindowEvent::Moved(_) => {},
-                    WindowEvent::Focused(_) => {},
-                    WindowEvent::Resized(size) => 
-                        self.notify_resize_root_window((size.width as u16, size.height as u16)),
-                    _ => return,
-                },
-                _ => (),
-            }
-        });
+pub struct ApplicationRunner {
+    world: World, 
+    resources: Resources,
+    schedule: Schedule
+}
+
+impl ApplicationRunner {
+    fn new(schedule: Schedule, resources: Resources) -> Self {
+        Self {
+            world: World::default(),
+            schedule,
+            resources,
+        }
     }
 
-    fn notify_resize_root_window(&mut self, dimensions: (u16, u16)) {
-        info!("root window resize {:?}", dimensions);
-        self.world.push((RootWindowResized::from(dimensions), ));
+    pub fn run_until_closed(&mut self) {
+        let mut main_reader_id = &mut self.resources
+            .get_mut::<EventChannel<SystemEvent>>()
+            .unwrap()
+            .register_reader();
+            
+        loop {
+            &mut self.schedule.execute(&mut self.world, &mut self.resources);
+            let event_channel = self.resources.get::<EventChannel<SystemEvent>>().unwrap();
+            for event in event_channel.read(&mut main_reader_id) {
+                match event {
+                    SystemEvent::Window(SystemWindowEventType::CloseRequested) => return,
+                    _ => {}
+                }
+            }
+        }
+    }
+
+    pub fn resources_mut(&mut self) -> &mut Resources {
+        &mut self.resources
+    }
+
+    pub fn world_mut(&mut self) -> &mut World {
+        &mut self.world
+    }
+
+    pub fn run_once(&mut self) {
+        &mut self.schedule.execute(&mut self.world, &mut self.resources);
     }
 }

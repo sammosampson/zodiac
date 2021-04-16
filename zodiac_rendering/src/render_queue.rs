@@ -1,6 +1,5 @@
 use legion::*;
 use legion::systems::*;
-
 pub trait RenderQueue {
     fn queue_rectangle_for_render(
         &mut self,

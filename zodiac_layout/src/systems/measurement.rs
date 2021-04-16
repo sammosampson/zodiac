@@ -1,6 +1,6 @@
 
 use legion::*;
-use log::{info};
+use log::{debug};
 use zodiac_entities::*;
 use crate::measurement::*;
 
@@ -13,14 +13,14 @@ pub fn build_width_map(#[resource] width_map: &mut WidthMap, entity: &Entity, wi
 #[system(for_each)]
 #[filter(component::<Removed>())]
 pub fn remove_from_minimum_width_map(#[resource] width_map: &mut MinimumWidthMap, entity: &Entity) {
-    info!("removing from min width map {:?}", entity);
+    debug!("removing from min width map {:?}", entity);
     width_map.remove(entity);
 }
 
 #[system(for_each)]
 #[filter(component::<Removed>())]
 pub fn remove_from_width_map(#[resource] width_map: &mut WidthMap, entity: &Entity) {
-    info!("removing from width map {:?}", entity);
+    debug!("removing from width map {:?}", entity);
     width_map.remove(entity);
 }
 
@@ -33,14 +33,14 @@ pub fn build_height_map(#[resource] height_map: &mut HeightMap, entity: &Entity,
 #[system(for_each)]
 #[filter(component::<Removed>())]
 pub fn remove_from_minimum_height_map(#[resource] height_map: &mut MinimumHeightMap, entity: &Entity) {
-    info!("removing from min height map {:?}", entity);
+    debug!("removing from min height map {:?}", entity);
     height_map.remove(entity);
 }
 
 #[system(for_each)]
 #[filter(component::<Removed>())]
 pub fn remove_from_height_map(#[resource] height_map: &mut HeightMap, entity: &Entity) {
-    info!("removing from height map {:?}", entity);
+    debug!("removing from height map {:?}", entity);
     height_map.remove(entity);
 }
 

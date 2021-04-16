@@ -1,17 +1,12 @@
 use std::{fs, path::*};
 use log::{info};
+use zodiac_entities::*;
 use zodiac_source::*;
 use crate::source_files::*;
 
 pub fn create_file_paths(relative_folder_path: &'static str) -> FilePaths {
     FilePaths::new(relative_folder_path)
 }
-
-#[derive(Debug)]
-pub enum FilePathError {
-    ManifestDirectoryEnvironmentVariableNotSet
-}
-
 #[derive(Clone, Copy)]
 pub struct FilePaths {
     relative_folder_path: &'static str
@@ -26,7 +21,7 @@ impl FilePaths {
 
     pub fn get_absolute_folder_path(&self) -> Result<PathBuf, FilePathError> {
         let path = std::env::var("CARGO_MANIFEST_DIR").map_err(|_|FilePathError::ManifestDirectoryEnvironmentVariableNotSet)?;
-        info!("manifest path {:?}", path);
+        info!("manifest path is {:?}", path);
         Ok(PathBuf::from(path).join(self.relative_folder_path))
     }
 }

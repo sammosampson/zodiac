@@ -1,6 +1,6 @@
 
 use std::path::*;
-use log::{info};
+use log::{debug};
 use walkdir::WalkDir;
 use zodiac_source::*;
 use crate::*;
@@ -23,7 +23,7 @@ pub enum SourceLocationWalkerError {
 
 impl SourceLocationWalker<FileSystemSourceLocationIterator> for FileSystemSourceLocationWalker {
     fn walk(&self, paths: &FilePaths) -> Result<FileSystemSourceLocationIterator, SourceLocationWalkerError> {
-        info!("walking tree");
+        debug!("walking tree");
         if let Ok(root_path) = paths.get_absolute_folder_path() {
             return Ok(
                 FileSystemSourceLocationIterator {

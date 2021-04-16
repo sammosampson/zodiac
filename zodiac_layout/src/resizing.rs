@@ -1,5 +1,5 @@
 use legion::*;
-use log::{info};
+use log::{debug};
 use legion::world::*;
 use legion::systems::*;
 use zodiac_entities::*;
@@ -120,6 +120,6 @@ fn layout_renderable(
         if let Some(height) = maps.height_map.get(entity) {
             layout_change.height = height.height;
         }
-        info!("Layout change for {:?} {:?}", entity, layout_change);
+        debug!("Layout change for {:?} {:?}", entity, layout_change);
         command_buffer.add_component(*entity, layout_change);
 }

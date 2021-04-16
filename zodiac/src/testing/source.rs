@@ -1,104 +1,58 @@
 use std::collections::HashMap;
 use legion::*;
+use legion::systems::*;
+use shrev::EventChannel;
 use zodiac_entities::*;
 use zodiac_source::*;
 use zodiac_source_filesystem::*;
-use zodiac_layout::*;
-use zodiac_rendering::*;
-use zodiac_rendering_glium::*;
 
-pub fn build_zodiac_systems_schedule() -> Schedule {
-    Schedule::builder()
-        .add_thread_local(recurisve_source_location_build_system::<TestSourceLocationWalker, TestSourceLocationIterator>())
-        .flush()
-        .add_thread_local(source_file_monitoring_system::<TestFileMonitor>())
-        .flush()
-        .add_system(source_token_removal_system())
-        .add_system(source_parse_system::<TestSourceReader>())
-        .flush()
-        .add_system(apply_initially_read_root_source_to_world_system())
-        .add_system(apply_created_source_to_world_system())
-        .add_system(apply_removed_source_to_world_system())
-        .add_system(apply_changed_source_to_world_system())
-        .flush()
-        .add_system(world_build_system::<TestSourceReader>())
-        .flush()
-        .add_system(error_control_for_renderable_system())
-        .add_system(error_control_for_non_renderable_system())
-        .flush()
-        .add_system(resize_screen_system())
-        .add_system(resize_after_rebuild_system())
-        .flush()
-        .add_system(remove_from_relationship_map_system())
-        .add_system(build_relationship_map_system())
-        .add_system(remove_from_text_colour_map_system())
-        .add_system(build_text_colour_map_system())
-        .flush()
-        .add_system(format_glyphs_system())
-        .flush()
-        .add_system(remove_from_left_offset_map_system())
-        .add_system(build_left_offset_map_system())
-        .add_system(remove_from_top_offset_map_system())
-        .add_system(build_top_offset_map_system())
-        .add_system(remove_from_minimum_width_map_system())
-        .add_system(remove_from_width_map_system())
-        .add_system(build_width_map_system())
-        .add_system(remove_from_minimum_height_map_system())
-        .add_system(remove_from_height_map_system())
-        .add_system(build_height_map_system())
-        .add_system(build_width_and_height_maps_from_radius_system())
-        .add_system(remove_from_layout_type_map_system())
-        .add_system(build_layout_type_map_system())
-        .flush()
-        .add_system(remove_entity_system())
-        .flush()
-        .add_system(mark_as_mapped_system())
-        .add_system(measure_fixed_width_constraints_system())
-        .add_system(measure_fixed_height_constraints_system())
-        .flush()
-        .add_system(resize_system())
-        .flush()
-        .add_thread_local(queue_render_primitives_system::<GliumRenderQueue>())
-        .flush()
-        .add_thread_local(remove_layout_change_system())
-        .add_thread_local(remove_resized_system())
-        .add_thread_local(remove_source_file_initial_read_system())    
-        .add_thread_local(remove_source_file_change_system())
-        .add_thread_local(remove_source_file_creation_system())
-        .add_thread_local(remove_source_file_removal_system())
-        .add_thread_local(remove_rebuild_system())
-        .add_thread_local(remove_build_error_system())
-        .flush()
-        .build()
+pub fn test_source_file_building() -> TestSourceFileBundleBuilder {
+    TestSourceFileBundleBuilder::default()
 }
 
-pub fn build_zodiac_resources() -> Resources {
-    let mut resources=  Resources::default();
-
-    let file_paths = FilePaths::new("");
-    resources.insert(file_paths);
-    resources.insert(create_test_source_location_walker()); 
-    resources.insert(create_test_monitor());   
-    resources.insert(create_test_source_reader());    
-    resources.insert(create_source_entity_lookup());
-    resources.insert(create_source_tokens_lookup());
-    resources.insert(create_source_location_lookup());
-    resources.insert(create_text_colour_map());
-    resources.insert(create_relationship_map());
-    resources.insert(create_layout_type_map());
-    resources.insert(create_left_offset_map());
-    resources.insert(create_top_offset_map());
-    resources.insert(create_width_map());
-    resources.insert(create_height_map());
-    resources.insert(create_minimum_width_map());
-    resources.insert(create_minimum_height_map());
-    resources.insert(create_glium_render_queue());
-
-    resources
+pub fn test_source_building() -> SourceBuildBundleBuilder<TestSourceReader> {
+    SourceBuildBundleBuilder::<TestSourceReader>::new()
 }
 
-pub fn notify_resize_root_window(world: &mut World, dimensions: (u16, u16)) {
-    world.push((RootWindowResized::from(dimensions), ));
+#[derive(Default, Debug)]
+pub struct TestSourceFileBundleBuilder;
+
+impl ApplicationBundleBuilder for TestSourceFileBundleBuilder {
+    fn description(&self) -> String {
+        "test file system source build".to_string()
+    }
+
+    fn setup_build_systems(&self, builder: &mut Builder) {
+        builder
+            .add_thread_local(recurisve_source_location_build_system::<TestSourceLocationWalker, TestSourceLocationIterator>())
+            .flush()
+            .add_thread_local(source_file_monitoring_system::<TestFileMonitor>());
+    }
+
+    fn setup_layout_systems(&self, _: &mut Builder) {
+    }
+
+    fn setup_rendering_systems(&self, _: &mut Builder) {
+    }
+
+    fn setup_cleanup_systems(&self, builder: &mut Builder) {            
+        builder
+            .add_thread_local(remove_source_file_initial_read_system())
+            .add_thread_local(remove_source_file_change_system())
+            .add_thread_local(remove_source_file_creation_system())
+            .add_thread_local(remove_source_file_removal_system())
+            .add_thread_local(remove_rebuild_system())
+            .add_thread_local(remove_build_error_system());
+    }
+
+    fn setup_resources(&self, resources: &mut Resources, _: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
+        resources.insert(FilePaths::new(""));
+        resources.insert(create_test_source_location_walker()); 
+        resources.insert(create_test_monitor());   
+        resources.insert(create_test_source_reader());    
+
+        Ok(())
+    }
 }
 
 pub enum SourceChangeType {

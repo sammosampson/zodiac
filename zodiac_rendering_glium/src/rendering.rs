@@ -1,27 +1,29 @@
-use log::{info};
+use log::{debug};
 
 use glium::*;
 use glium::index::*;
 use glium::glutin::event_loop::*;
+use zodiac_entities::*;
+use zodiac_rendering::*;
 
 use crate::primitives::*;
 use crate::shaders::*;
 use crate::display::*;
 
-#[derive(Debug)]
-pub enum RendererError {
-    FailedToDisplayWindow,
-    FailedToCreateShaders(String),
-    FailedToLoadFont,
-    BufferSwapError,
-    BufferCreationError,
-    DrawError
+pub fn create_glium_renderer(event_loop: &EventLoop<()>) -> Result<GliumRenderer, RendererError> {
+    GliumRenderer::new(event_loop)
 }
 
 pub struct GliumRenderer {
     display: Display,
     shader_program: Program,
     vertex_buffer: VertexBuffer::<RenderPrimitive>
+}
+
+impl Renderer for GliumRenderer {
+    fn get_window_dimensions(&self) -> Dimensions {
+        Dimensions::from(self.display.get_framebuffer_dimensions())
+    }
 }
 
 fn get_shader_error_message(from: ProgramCreationError) -> String {
@@ -42,11 +44,6 @@ impl GliumRenderer {
             shader_program,
             vertex_buffer
         })
-    }
-
-    pub fn get_window_dimensions(&self) -> (u16, u16) {
-        let dimensions = self.display.get_framebuffer_dimensions();
-        (dimensions.0 as u16, dimensions.1 as u16)
     }
 
     pub fn set_primitives(&mut self, to_set: &Vec::<RenderPrimitive>) -> Result<(), RendererError>  {
@@ -73,7 +70,7 @@ impl GliumRenderer {
         let mut target = self.display.draw();
         let (width, height) = target.get_dimensions();
 
-        //info!("width: {}, height: {}", width, height);
+        //debug!("width: {}, height: {}", width, height);
 
         let uniforms = uniform! {
             uResolution: [width as f32, height as f32]
@@ -85,7 +82,7 @@ impl GliumRenderer {
         
         // TODO: log timing better here
         let draw_time = std::time::Instant::now() - draw_frame_start;
-        info!("frame draw time: {:?}", draw_time);
+        debug!("frame draw time: {:?}", draw_time);
         
         Ok(())
     }

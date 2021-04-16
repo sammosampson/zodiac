@@ -1,29 +1,47 @@
 
 use legion::*;
-use log::{info};
+use log::{debug};
 use legion::systems::*;
 use legion::world::*;
+use shrev::EventChannel;
 use zodiac_entities::*;
 
+use crate::events::*;
 use crate::measurement::*;
 use crate::positioning::*;
 use crate::resizing::*;
 use crate::constraints::*;
 
+pub fn request_root_layout(
+    world: &mut SubWorld,
+    command_buffer: &mut CommandBuffer,
+    dimensions: &Dimensions) {
+    for root in <Entity>::query()
+        .filter(component::<Root>())
+        .iter(world) {
+            command_buffer.add_component(*root, LayoutRequest::from(dimensions));
+    }
+}
+
 #[system(simple)]
-#[read_component(RootWindowResized)]
 #[read_component(Root)]
 #[write_component(LayoutRequest)]
-pub fn resize_screen(world: &mut SubWorld, command_buffer: &mut CommandBuffer) {
-    for (entity, window_resized) in <(Entity, &RootWindowResized)>::query()
-        .iter(world) {
-            for root in <Entity>::query()
-                .filter(component::<Root>())
-                .iter(world) {
-                    command_buffer.add_component(*root, LayoutRequest::from(window_resized));
-            }
-            command_buffer.remove(*entity);
-    } 
+pub fn resize_screen(
+    world: &mut SubWorld,
+    command_buffer: &mut CommandBuffer,
+    #[resource] event_channel: &mut EventChannel::<SystemEvent>,
+    #[resource] event_readers: &mut LayoutEventReaderRegistry
+) {
+    for event in event_channel.read(&mut event_readers.resize_screen) {
+        match event {
+            SystemEvent::Window(SystemWindowEventType::RootWindowResize(dimensions)) => {
+                debug!("root window resize recieved");
+                debug!("requesting root layout");
+                request_root_layout(world, command_buffer, &dimensions);
+            },
+            _ => {}
+        }
+    }
 }
 
 #[system(for_each)]
@@ -34,7 +52,7 @@ pub fn resize_after_rebuild(
     entity: &Entity,
     current_layout_constraints: &CurrentLayoutConstraints
 ) {
-    info!("source file change {:?}", current_layout_constraints);
+    debug!("source file change {:?}", current_layout_constraints);
     command_buffer.add_component(*entity, LayoutRequest::from(current_layout_constraints));
 }
 

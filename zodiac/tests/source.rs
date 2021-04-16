@@ -1,6 +1,9 @@
 use legion::*;
 use zodiac_rendering_glium::*;
-use zodiac::test_helpers::*;
+use zodiac::testing::*;
+use zodiac_entities::*;
+use zodiac::*;
+use zodiac_layout::*;
 //use zodiac::formatting::*;
 
 #[test]
@@ -27,21 +30,23 @@ fn imported_control_gets_output() {
     </canvas>
 </root>
 ";
-
     
-    let mut world = World::default();
-    let mut resources = build_zodiac_resources();
-    let mut schedule = build_zodiac_systems_schedule();
+    let mut runner = Application::new()
+        .with_builder(test_source_file_building())
+        .with_builder(test_source_building())
+        .with_builder(standard_layout())
+        .with_builder(standard_test_rendering())
+        .with_builder(test_renderer(Dimensions::new(100, 100)))
+        .build()
+        .unwrap();
     
-    apply_initial_source(&mut resources, ".\\big_control.zod", big_control);
-    apply_initial_source(&mut resources, ".\\root.zod", root);
+    apply_initial_source(runner.resources_mut(), ".\\big_control.zod", big_control);
+    apply_initial_source(runner.resources_mut(), ".\\root.zod", root);
     
-    notify_resize_root_window(&mut world, (100, 100));
-
-    schedule.execute(&mut world, &mut resources);
+    runner.run_once();
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
-        .iter(&mut world)
+        .iter(runner.world_mut())
         .map(|change| *change)
         .collect();
     
@@ -84,23 +89,26 @@ fn changed_imported_control_gets_output() {
     />
 </control>
 ";  
-    let mut world = World::default();
-    let mut resources = build_zodiac_resources();
-    let mut schedule = build_zodiac_systems_schedule();
+    let mut runner = Application::new()
+        .with_builder(test_source_file_building())
+        .with_builder(test_source_building())
+        .with_builder(standard_layout())
+        .with_builder(standard_test_rendering())
+        .with_builder(test_renderer(Dimensions::new(1024, 768)))
+        .build()
+        .unwrap();
     
-    apply_initial_source(&mut resources, ".\\big_control.zod", big_control);
-    apply_initial_source(&mut resources, ".\\root.zod", root);
+    apply_initial_source(runner.resources_mut(), ".\\big_control.zod", big_control);
+    apply_initial_source(runner.resources_mut(), ".\\root.zod", root);
 
-    notify_resize_root_window(&mut world, (100, 100));
+    runner.run_once();
 
-    schedule.execute(&mut world, &mut resources);
+    apply_changed_source(runner.resources_mut(), ".\\big_control.zod", changed_big_control);
 
-    apply_changed_source(&mut resources, ".\\big_control.zod", changed_big_control);
-
-    schedule.execute(&mut world, &mut resources);
+    runner.run_once();
     
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
-        .iter(&mut world)
+        .iter(runner.world_mut())
         .map(|change| *change)
         .collect();
     
@@ -131,22 +139,27 @@ fn created_then_imported_control_gets_output() {
     <big-control/>
 </root>    
 ";  
-    let mut world = World::default();
-    let mut resources = build_zodiac_resources();
-    let mut schedule = build_zodiac_systems_schedule();
+    let mut runner = Application::new()
+        .with_builder(test_source_file_building())
+        .with_builder(test_source_building())
+        .with_builder(standard_layout())
+        .with_builder(standard_test_rendering())
+        .with_builder(test_renderer(Dimensions::new(1024, 768)))
+        .build()
+        .unwrap();
     
-    apply_initial_source(&mut resources, ".\\root.zod", root);
-    notify_resize_root_window(&mut world, (100, 100));
-    schedule.execute(&mut world, &mut resources);
+    apply_initial_source(runner.resources_mut(), ".\\root.zod", root);
     
-    apply_created_source(&mut resources, ".\\big_control.zod", new_control);
-    schedule.execute(&mut world, &mut resources);
+    runner.run_once();
     
-    apply_changed_source(&mut resources, ".\\root.zod", changed_root);
-    schedule.execute(&mut world, &mut resources);
+    apply_created_source(runner.resources_mut(), ".\\big_control.zod", new_control);
+    runner.run_once();
+    
+    apply_changed_source(runner.resources_mut(), ".\\root.zod", changed_root);
+    runner.run_once();
     
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
-        .iter(&mut world)
+        .iter(runner.world_mut())
         .map(|change| *change)
         .collect();
     
@@ -177,23 +190,28 @@ fn nonexistent_imported_then_created_control_gets_output() {
     <big-control/>
 </root>    
 ";  
-    let mut world = World::default();
-    let mut resources = build_zodiac_resources();
-    let mut schedule = build_zodiac_systems_schedule();
+    let mut runner = Application::new()
+        .with_builder(test_source_file_building())
+        .with_builder(test_source_building())
+        .with_builder(standard_layout())
+        .with_builder(standard_test_rendering())
+        .with_builder(test_renderer(Dimensions::new(1024, 768)))
+        .build()
+        .unwrap();
     
-    apply_initial_source(&mut resources, ".\\root.zod", root);
-    notify_resize_root_window(&mut world, (100, 100));
-    schedule.execute(&mut world, &mut resources);
+    apply_initial_source(runner.resources_mut(), ".\\root.zod", root);
     
-    apply_changed_source(&mut resources, ".\\root.zod", changed_root);
-    schedule.execute(&mut world, &mut resources);
+    runner.run_once();
+    
+    apply_changed_source(runner.resources_mut(), ".\\root.zod", changed_root);
+    runner.run_once();
 
-    apply_created_source(&mut resources, ".\\big_control.zod", new_control);
-    schedule.execute(&mut world, &mut resources);
+    apply_created_source(runner.resources_mut(), ".\\big_control.zod", new_control);
+    runner.run_once();
 
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
-        .iter(&mut world)
+        .iter(runner.world_mut())
         .map(|change| *change)
         .collect();
     
@@ -219,23 +237,28 @@ fn imported_then_deleted_then_recreated_control_gets_output() {
     <big-control/>
 </root>
 ";  
-    let mut world = World::default();
-    let mut resources = build_zodiac_resources();
-    let mut schedule = build_zodiac_systems_schedule();
+    let mut runner = Application::new()
+        .with_builder(test_source_file_building())
+        .with_builder(test_source_building())
+        .with_builder(standard_layout())
+        .with_builder(standard_test_rendering())
+        .with_builder(test_renderer(Dimensions::new(1024, 768)))
+        .build()
+        .unwrap();
     
-    apply_initial_source(&mut resources, ".\\big_control.zod", new_control);
-    apply_initial_source(&mut resources, ".\\root.zod", root);
-    notify_resize_root_window(&mut world, (100, 100));
-    schedule.execute(&mut world, &mut resources);
+    apply_initial_source(runner.resources_mut(), ".\\big_control.zod", new_control);
+    apply_initial_source(runner.resources_mut(), ".\\root.zod", root);
     
-    delete_source(&mut resources, ".\\big_control.zod");
-    schedule.execute(&mut world, &mut resources);
+    runner.run_once();
     
-    apply_created_source(&mut resources, ".\\big_control.zod", new_control);
-    schedule.execute(&mut world, &mut resources);
+    delete_source(runner.resources_mut(), ".\\big_control.zod");
+    runner.run_once();
+    
+    apply_created_source(runner.resources_mut(), ".\\big_control.zod", new_control);
+    runner.run_once();
     
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
-        .iter(&mut world)
+        .iter(runner.world_mut())
         .map(|change| *change)
         .collect();
     

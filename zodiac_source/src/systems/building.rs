@@ -1,4 +1,4 @@
-use log::{info};
+use log::{debug};
 use legion::*;
 use legion::systems::*;
 use zodiac_entities::*;
@@ -49,13 +49,13 @@ pub fn error_control_for_renderable (
     let entity = *entity;
     match renderable.render_type {
         RenderType::Circle => {
-            info!("Adding circle error to {:?}", entity);
+            debug!("Adding circle error to {:?}", entity);
             command_buffer.add_component(entity, red);
             command_buffer.add_component(entity, no_stroke_colour);
             command_buffer.add_component(entity, no_stroke_width);
         }
         RenderType::Rectangle => {
-            info!("Adding rect error to {:?}", entity);
+            debug!("Adding rect error to {:?}", entity);
             command_buffer.add_component(entity, red);
             command_buffer.add_component(entity, no_stroke_colour);
             command_buffer.add_component(entity, no_stroke_width);
@@ -77,7 +77,7 @@ pub fn error_control_for_non_renderable (
     
     let error_entity = world_builder.create_rectangle_entity();
 
-    info!("Adding rect error to {:?}", error_entity);
+    debug!("Adding rect error to {:?}", error_entity);
     world_builder.add_component_to_current_entity(Colour::red());
     world_builder.add_component_to_current_entity(CornerRadii::default());
     world_builder.add_component_to_current_entity( StrokeWidth::default());

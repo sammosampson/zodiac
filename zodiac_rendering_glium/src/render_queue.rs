@@ -1,4 +1,4 @@
-use log::{info};
+use log::{debug};
 use legion::*;
 use legion::systems::*;
 use zodiac_rendering::*;
@@ -15,7 +15,7 @@ pub struct GliumRenderQueue {
 
 impl GliumRenderQueue {  
     fn queue_primitive_for_render(&mut self, command_buffer: &mut CommandBuffer, entity: &Entity, to_queue: RenderPrimitive) {
-        info!("Queueing: {:?}", to_queue);
+        debug!("Queueing: {:?}", to_queue);
         command_buffer.add_component(*entity, to_queue)
     }
 }

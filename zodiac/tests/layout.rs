@@ -1,6 +1,10 @@
 use legion::*;
 use zodiac_rendering_glium::*;
-use zodiac::test_helpers::*;
+use zodiac::testing::*;
+use zodiac_entities::*;
+use zodiac::*;
+use zodiac_layout::*;
+//use zodiac::formatting::*;
 
 #[test]
 fn absolute_positioning_on_screen() {
@@ -36,25 +40,28 @@ fn absolute_positioning_on_screen() {
     />
 </root>
 ";
-    let mut world = World::default();
-    let mut resources = build_zodiac_resources();
-    let mut schedule = build_zodiac_systems_schedule();
+    let mut runner = Application::new()
+        .with_builder(test_source_file_building())
+        .with_builder(test_source_building())
+        .with_builder(standard_layout())
+        .with_builder(standard_test_rendering())
+        .with_builder(test_renderer(Dimensions::new(1024, 768)))
+        .build()
+        .unwrap();
 
-    apply_initial_source(&mut resources, ".\\root.zod", source);
-    
-    notify_resize_root_window(&mut world, (1024, 768));
+    apply_initial_source(runner.resources_mut(), ".\\root.zod", source);
 
-    schedule.execute(&mut world, &mut resources);
+    runner.run_once();
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
-        .iter(&mut world)
+        .iter(runner.world_mut())
         .map(|change| *change)
-        .collect();   
+        .collect();
     
+    assert_eq!(changes.len(), 3);
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([10, 11], [12, 13], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::circle([11, 12], 12, [0.4, 0.4, 0.4, 0.1], [1.0, 1.0, 1.0, 1.0], 3.0)), true);
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([12, 13], [14, 15], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 4.0, [50, 0, 50, 50])), true);
-    assert_eq!(changes.len(), 3);
 }
 
 #[test]
@@ -76,25 +83,27 @@ fn absolute_positioning_on_canvas_offset_from_screen() {
     </canvas>
 </root>
 ";
-    let mut world = World::default();
-    let mut resources = build_zodiac_resources();
-    let mut schedule = build_zodiac_systems_schedule();
-    
-    apply_initial_source(&mut resources, ".\\root.zod", source);
+    let mut runner = Application::new()
+        .with_builder(test_source_file_building())
+        .with_builder(test_source_building())
+        .with_builder(standard_layout())
+        .with_builder(standard_test_rendering())
+        .with_builder(test_renderer(Dimensions::new(100, 110)))
+        .build()
+        .unwrap();
 
-    notify_resize_root_window(&mut world, (100, 110));
+    apply_initial_source(runner.resources_mut(), ".\\root.zod", source);
 
-    schedule.execute(&mut world, &mut resources);
+    runner.run_once();
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
-        .iter(&mut world)
+        .iter(runner.world_mut())
         .map(|change| *change)
-        .collect();   
-    
+        .collect();
+
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([20, 22], [100, 110], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
     assert_eq!(changes.len(), 1);
 }
-
 
 #[test]
 fn dimensions_fit_parent_when_not_specified() {
@@ -110,20 +119,23 @@ fn dimensions_fit_parent_when_not_specified() {
     </horizontal-stack>
 </root>
 ";
-    let mut world = World::default();
-    let mut resources = build_zodiac_resources();
-    let mut schedule = build_zodiac_systems_schedule();
+    let mut runner = Application::new()
+        .with_builder(test_source_file_building())
+        .with_builder(test_source_building())
+        .with_builder(standard_layout())
+        .with_builder(standard_test_rendering())
+        .with_builder(test_renderer(Dimensions::new(100, 110)))
+        .build()
+        .unwrap();
 
-    apply_initial_source(&mut resources, ".\\root.zod", source);
-    
-    notify_resize_root_window(&mut world, (100, 110));
+    apply_initial_source(runner.resources_mut(), ".\\root.zod", source);
 
-    schedule.execute(&mut world, &mut resources);
+    runner.run_once();
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
-        .iter(&mut world)
+        .iter(runner.world_mut())
         .map(|change| *change)
-        .collect();   
+        .collect();
     
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([0, 0], [100, 110], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
     assert_eq!(changes.len(), 1);
@@ -149,21 +161,24 @@ fn horizontal_layout_for_none_sized_children() {
     </horizontal-stack>
 </root>
 ";
-    let mut world = World::default();
-    let mut resources = build_zodiac_resources();
-    let mut schedule = build_zodiac_systems_schedule();
+    let mut runner = Application::new()
+        .with_builder(test_source_file_building())
+        .with_builder(test_source_building())
+        .with_builder(standard_layout())
+        .with_builder(standard_test_rendering())
+        .with_builder(test_renderer(Dimensions::new(100, 100)))
+        .build()
+        .unwrap();
 
-    apply_initial_source(&mut resources, ".\\root.zod", source);
-    
-    notify_resize_root_window(&mut world, (100, 100));
+    apply_initial_source(runner.resources_mut(), ".\\root.zod", source);
 
-    schedule.execute(&mut world, &mut resources);
+    runner.run_once();
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
-        .iter(&mut world)
+        .iter(runner.world_mut())
         .map(|change| *change)
-        .collect();   
-    
+        .collect(); 
+        
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([0, 0], [50, 100], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([50, 0], [50, 100], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
     assert_eq!(changes.len(), 2);
@@ -197,27 +212,29 @@ fn horizontal_layout_for_sized_children() {
     </horizontal-stack>
 </root>
 ";
-    let mut world = World::default();
-    let mut resources = build_zodiac_resources();
-    let mut schedule = build_zodiac_systems_schedule();
+    let mut runner = Application::new()
+        .with_builder(test_source_file_building())
+        .with_builder(test_source_building())
+        .with_builder(standard_layout())
+        .with_builder(standard_test_rendering())
+        .with_builder(test_renderer(Dimensions::new(100, 100)))
+        .build()
+        .unwrap();
 
-    apply_initial_source(&mut resources, ".\\root.zod", source);
-    
-    notify_resize_root_window(&mut world, (100, 100));
+    apply_initial_source(runner.resources_mut(), ".\\root.zod", source);
 
-    schedule.execute(&mut world, &mut resources);
+    runner.run_once();
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
-        .iter(&mut world)
+        .iter(runner.world_mut())
         .map(|change| *change)
-        .collect();   
+        .collect();
     
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([0, 0], [25, 100], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([25, 0], [40, 100], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([65, 0], [35, 100], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
     assert_eq!(changes.len(), 3);
 }
-
 
 #[test]
 fn vertical_layout_for_none_sized_children() {
@@ -239,21 +256,24 @@ fn vertical_layout_for_none_sized_children() {
     </vertical-stack>
 </root>
 ";
-    let mut world = World::default();
-    let mut resources = build_zodiac_resources();
-    let mut schedule = build_zodiac_systems_schedule();
+    let mut runner = Application::new()
+        .with_builder(test_source_file_building())
+        .with_builder(test_source_building())
+        .with_builder(standard_layout())
+        .with_builder(standard_test_rendering())
+        .with_builder(test_renderer(Dimensions::new(100, 100)))
+        .build()
+        .unwrap();
 
-    apply_initial_source(&mut resources, ".\\root.zod", source);
-    
-    notify_resize_root_window(&mut world, (100, 100));
+    apply_initial_source(runner.resources_mut(), ".\\root.zod", source);
 
-    schedule.execute(&mut world, &mut resources);
+    runner.run_once();
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
-        .iter(&mut world)
+        .iter(runner.world_mut())
         .map(|change| *change)
-        .collect();   
-    
+        .collect();
+        
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([0, 0], [100, 50], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([0, 50], [100, 50], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
     assert_eq!(changes.len(), 2);
@@ -287,20 +307,23 @@ fn vertical_layout_for_sized_children() {
     </vertical-stack>
 </root>
 ";
-    let mut world = World::default();
-    let mut resources = build_zodiac_resources();
-    let mut schedule = build_zodiac_systems_schedule();
+    let mut runner = Application::new()
+        .with_builder(test_source_file_building())
+        .with_builder(test_source_building())
+        .with_builder(standard_layout())
+        .with_builder(standard_test_rendering())
+        .with_builder(test_renderer(Dimensions::new(100, 100)))
+        .build()
+        .unwrap();
 
-    apply_initial_source(&mut resources, ".\\root.zod", source);
+    apply_initial_source(runner.resources_mut(), ".\\root.zod", source);
 
-    notify_resize_root_window(&mut world, (100, 100));
-    
-    schedule.execute(&mut world, &mut resources);
+    runner.run_once();
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
-        .iter(&mut world)
+        .iter(runner.world_mut())
         .map(|change| *change)
-        .collect();   
+        .collect();
     
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([0, 0], [100, 25], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([0, 25], [100, 40], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);

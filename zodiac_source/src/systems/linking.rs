@@ -1,4 +1,4 @@
-use log::{info};
+use log::{debug};
 use std::collections::*;
 use legion::*;
 use legion::world::*;
@@ -152,7 +152,7 @@ fn remove_source_implementations_children_from_world(
     relationship: Relationship,
     source_impl_entity: Entity) {
 
-    info!("Removing Source from world");    
+    debug!("Removing Source from world");    
     remove_children(command_buffer, relationship_map, source_impl_entity);
     reset_relationship(command_buffer, relationship, relationship_map, source_impl_entity);
     remove_mapped(command_buffer, source_impl_entity);
@@ -167,7 +167,7 @@ fn remove_children(
     entity: Entity) {
 
     for child in relationship_map.get_children(&entity) {
-        info!("marking child as removed: {:?}", child);
+        debug!("marking child as removed: {:?}", child);
         command_buffer.add_component(child, Removed::default());
         remove_children(command_buffer, relationship_map, child);
     }

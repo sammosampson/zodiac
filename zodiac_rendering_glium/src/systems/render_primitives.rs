@@ -1,5 +1,5 @@
 use legion::*;
-use log::{info};
+use log::{debug};
 use legion::world::*;
 use zodiac_entities::*;
 
@@ -29,5 +29,5 @@ pub fn render_primitives(
     
     renderer.render().unwrap();
 
-    info!("primitives rendered {:?}", primitives.len());
+    debug!("primitives rendered {:?}", primitives.len());
 }

@@ -1,4 +1,4 @@
-use log::{info};
+use log::{debug};
 use legion::*;
 use zodiac_entities::*;
 use crate::building::*;
@@ -131,7 +131,7 @@ impl<T:SourceReader> EntityBuilder<T> for StandardBuilder {
     }
 
     fn build(&self, _: &BuildResources<T>, build_resources_mut: &mut MutableBuildResources) -> Result<(), BuildError> {
-        info!("building entity {:?}", self.entity);
+        debug!("building entity {:?}", self.entity);
         let processed_tokens = self.tokens.get_processed_tokens()?;
         for token in processed_tokens {
             match token {

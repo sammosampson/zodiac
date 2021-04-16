@@ -1,0 +1,27 @@
+[package]
+name = "zodiac_rendering_pathfinder"
+version = "0.1.0"
+authors = ["Chris Sampson <csampson@appliedsystems.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+log = "0.4.14"
+legion = "0.3.1"
+serde = "1.0.125"
+gl = "0.14"
+glutin = "0.23"
+winit = "0.21"
+shrev = "1.1.1"
+pathfinder_canvas = "0.5.0"
+pathfinder_color = "0.5.0"
+pathfinder_content = "0.5.0"
+pathfinder_geometry = "0.5.1"
+pathfinder_gl = "0.5.0"
+pathfinder_gpu = "0.5.0"
+pathfinder_renderer = "0.5.0"
+pathfinder_resources = "0.5.0"
+zodiac_entities = {path = "../zodiac_entities", version = "0.1.0"}
+zodiac_rendering = {path = "../zodiac_rendering", version = "0.1.0"}
+

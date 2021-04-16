@@ -8,6 +8,11 @@
 			"args": [
 				"test", "--no-run"
 			],
+			"options": {
+                "env": {
+					"RUST_LOG": "debug",
+                }
+            },
 			"problemMatcher": [
 				"$rustc"
 			]

@@ -11,6 +11,7 @@ pub trait Pretty {
 impl Pretty for World {
     fn to_pretty(&mut self) {
         let mut registry = Registry::<String>::default();
+        registry.register::<Dimensions>("Dimensions".to_string());
         registry.register::<AbstractSyntaxNodeType>("AbstractSyntaxNodeType".to_string());
         registry.register::<BuildError>("BuildError".to_string());
         registry.register::<BuildError>("BuildError".to_string());
@@ -28,7 +29,6 @@ impl Pretty for World {
         registry.register::<Root>("Root".to_string());
         registry.register::<Control>("Control".to_string());
         registry.register::<Rebuild>("Rebuild".to_string());
-        registry.register::<RootWindowResized>("RootWindowResized".to_string());
         registry.register::<CurrentLayoutConstraints>("CurrentLayoutConstraints".to_string());
         registry.register::<Resized>("Resized".to_string());
         registry.register::<Mapped>("Mapped".to_string());

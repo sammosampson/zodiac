@@ -15,7 +15,8 @@
                 ]
             },
             "env": {
-                "CARGO_MANIFEST_DIR": "C:\\work\\other\\zodiac\\zodiac"
+                "CARGO_MANIFEST_DIR": "C:\\work\\other\\zodiac\\zodiac",
+                "RUST_LOG": "debug"
             },
             "args": [],
             "cwd": "${workspaceFolder}"
@@ -28,7 +29,7 @@
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [],
+            "environment": [{"RUST_LOG": "debug"}],
             "externalConsole": true,
             "preLaunchTask": "cargo test build",
         }
