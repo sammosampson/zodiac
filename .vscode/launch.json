@@ -15,7 +15,7 @@
                 ]
             },
             "env": {
-                "CARGO_MANIFEST_DIR": "/Users/Papa/work/zodiac/zodiac"
+                "CARGO_MANIFEST_DIR": "C:\\work\\other\\zodiac\\zodiac"
             },
             "args": [],
             "cwd": "${workspaceFolder}"

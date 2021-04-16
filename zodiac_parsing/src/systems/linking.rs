@@ -13,7 +13,6 @@ pub fn apply_initially_read_root_source_to_world (
     command_buffer: &mut CommandBuffer) {
     if let Some(root_source ) = get_initially_read_root_source(world) {
         add_enity_with_source_implementation(command_buffer, root_source);
-        println!("applied initially read root to world");
     }
 }
 

@@ -1,11 +1,11 @@
-use std::path::PathBuf;
 use std::sync::mpsc::*;
 use std::time::Duration;
 use notify::{ RecommendedWatcher, DebouncedEvent, Watcher, RecursiveMode };
-use crate::file_system::*; 
+use zodiac_parsing::SourceLocation;
+use crate::*    ; 
 
-pub fn monitor_files(paths: FilePaths, watch_check: Duration) -> Result<FileMonitor, FileMonitorError> {
-    FileMonitor::watch(paths, watch_check)
+pub fn monitor_files(paths: FilePaths, watch_check: Duration) -> Result<FileSystemFileMonitor, FileMonitorError> {
+    FileSystemFileMonitor::watch(paths, watch_check)
 }
 
 #[derive(Debug)]
@@ -21,17 +21,16 @@ pub enum FileMonitorWatchError {
 }
 
 pub enum FileMonitorFileChange {
-    Create(PathBuf),
-    Modify(PathBuf),
-    Delete(PathBuf),
+    Create(SourceLocation),
+    Modify(SourceLocation),
+    Delete(SourceLocation),
 }
 
-pub struct FileMonitor {
-    #[allow(dead_code)]
-    watcher: RecommendedWatcher,
-    rx: Receiver<DebouncedEvent>
+pub trait FileMonitor {
+    fn try_get_file_changed(&self) -> Result<FileMonitorFileChange, FileMonitorWatchError>;
 }
 
+                
 impl From<notify::Error> for FileMonitorError {
     fn from(error: notify::Error) -> FileMonitorError {
         FileMonitorError::WatchError(error)
@@ -44,7 +43,13 @@ impl From<FilePathError> for FileMonitorError {
     }
 }
 
-impl FileMonitor {
+pub struct FileSystemFileMonitor {
+    #[allow(dead_code)]
+    watcher: RecommendedWatcher,
+    rx: Receiver<DebouncedEvent>
+}
+
+impl FileSystemFileMonitor {
     pub fn watch(paths: FilePaths, watch_check: Duration) -> Result<Self, FileMonitorError> {
         let (tx, rx) = channel();
         let mut watcher: RecommendedWatcher = Watcher::new(tx, watch_check)?;
@@ -58,14 +63,16 @@ impl FileMonitor {
 
         Ok(monitor)
     }
+}
 
-    pub fn try_get_file_changed(&self) -> Result<FileMonitorFileChange, FileMonitorWatchError> {
+impl FileMonitor for FileSystemFileMonitor {
+    fn try_get_file_changed(&self) -> Result<FileMonitorFileChange, FileMonitorWatchError> {
         match self.rx.try_recv() {
             Ok(event) => {
                 match event {
-                    DebouncedEvent::Create(path) => Ok(FileMonitorFileChange::Create(path)),
-                    DebouncedEvent::Write(path) => Ok(FileMonitorFileChange::Modify(path)),
-                    DebouncedEvent::NoticeRemove(path) => Ok(FileMonitorFileChange::Delete(path)),
+                    DebouncedEvent::Create(path) => Ok(FileMonitorFileChange::Create(path.to_canonicalised_source_location().unwrap())),
+                    DebouncedEvent::Write(path) => Ok(FileMonitorFileChange::Modify(path.to_canonicalised_source_location().unwrap())),
+                    DebouncedEvent::NoticeRemove(path) => Ok(FileMonitorFileChange::Delete(path.to_canonicalised_source_location().unwrap())),
                     _ => Err(FileMonitorWatchError::NoFileChanges)
                 }
             },

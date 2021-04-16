@@ -1,8 +1,5 @@
 use std::collections::HashMap;
-
 use legion::*;
-use legion::world::*;
-use legion::systems::*;
 use zodiac_entities::*;
 use zodiac_parsing::*;
 use zodiac_resources::*;
@@ -12,7 +9,9 @@ use zodiac_rendering_glium::*;
 
 pub fn build_zodiac_systems_schedule() -> Schedule {
     Schedule::builder()
-        .add_thread_local(test_source_location_build_system())
+        .add_thread_local(recurisve_source_location_build_system::<TestSourceLocationWalker, TestSourceLocationIterator>())
+        .flush()
+        .add_thread_local(source_file_monitoring_system::<TestFileMonitor>())
         .flush()
         .add_system(source_token_removal_system())
         .add_system(source_parse_system::<TestSourceReader>())
@@ -69,11 +68,14 @@ pub fn build_zodiac_systems_schedule() -> Schedule {
         .build()
 }
 
-pub fn build_zodiac_resources(source_code_lookup: SourceCodeLookup) -> Resources {
+pub fn build_zodiac_resources() -> Resources {
     let mut resources=  Resources::default();
 
-    resources.insert(create_test_source_reader(source_code_lookup.to_owned()));    
-    resources.insert(source_code_lookup);    
+    let file_paths = FilePaths::new("");
+    resources.insert(file_paths);
+    resources.insert(create_test_source_location_walker()); 
+    resources.insert(create_test_monitor());   
+    resources.insert(create_test_source_reader());    
     resources.insert(create_source_entity_lookup());
     resources.insert(create_source_tokens_lookup());
     resources.insert(create_source_location_lookup());
@@ -95,38 +97,117 @@ pub fn notify_resize_root_window(world: &mut World, dimensions: (u16, u16)) {
     world.push((RootWindowResized::from(dimensions), ));
 }
 
+pub enum SourceChangeType {
+    Change,
+}
+
 pub type SourceCodeLookup = HashMap<SourceLocation, String>;
 
-#[system(simple)]
-#[write_component(SourceFile)]
-pub fn test_source_location_build(
-    world: &mut SubWorld,
-    command_buffer: &mut CommandBuffer,
-    #[resource] source_entity_lookup: &mut SourceEntityLookup,
-    #[resource] source_location_lookup: &mut SourceLocationLookup,
-    #[resource] source_code_lookup: &mut SourceCodeLookup) {
+fn create_test_source_location_walker() -> TestSourceLocationWalker {
+    TestSourceLocationWalker::new()
+}
     
-    let source_files: Vec::<&SourceFile> = <&SourceFile>::query().iter(world).collect();
+pub fn apply_initial_source(resources: &mut Resources, location: &str, source: &str) {
+    resources.get_mut::<TestSourceLocationWalker>().unwrap().add_location_to_walk(SourceLocation::from(location));
+    resources.get_mut::<TestSourceReader>().unwrap().add_source(SourceLocation::from(location), String::from(source));
+}
+    
+pub fn apply_changed_source(resources: &mut Resources, location: &str, source: &str) {
+    resources.get_mut::<TestFileMonitor>().unwrap().changed_source(SourceLocation::from(location), SourceChangeType::Change);
+    resources.get_mut::<TestSourceReader>().unwrap().add_source(SourceLocation::from(location), String::from(source));
+}
 
-    if source_files.len() > 0 {
-        return;
+
+pub struct TestSourceLocationWalker {
+    locations: Vec::<SourceLocation>
+}
+
+impl TestSourceLocationWalker {
+    fn new() -> Self {
+        Self {
+            locations: vec!()
+        }
     }
-    
-    for location in source_code_lookup.keys() {
-        let entity = command_buffer.push((SourceFile::default(), SourceFileInitialRead::default()));
-        source_location_lookup.insert(entity, location.to_owned());
-        source_entity_lookup.insert(location.to_owned(), entity);
+
+    pub fn add_location_to_walk(&mut self, to_add: SourceLocation) {
+        self.locations.push(to_add);
     }
 }
 
-pub fn create_test_source_reader(source_code_lookup: SourceCodeLookup) -> TestSourceReader {
-    TestSourceReader {
-        source_code_lookup
+
+impl SourceLocationWalker<TestSourceLocationIterator> for TestSourceLocationWalker {
+    fn walk(&self, _: &FilePaths) -> Result<TestSourceLocationIterator, SourceLocationWalkerError> {
+        Ok(TestSourceLocationIterator::new(self.locations.clone()))     
     }
+}
+
+pub struct TestSourceLocationIterator {
+    locations: std::vec::IntoIter::<SourceLocation>
+}
+
+impl TestSourceLocationIterator {
+    fn new(locations: Vec::<SourceLocation>) -> Self {
+        Self {
+            locations: locations.into_iter()
+        }
+    }
+}
+
+impl Iterator for TestSourceLocationIterator {
+    type Item = SourceLocation;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.locations.next()           
+    }
+}
+
+fn create_test_monitor() -> TestFileMonitor {
+    TestFileMonitor::default()
+}
+
+pub type SourceCodeChangeLookup = HashMap<SourceLocation, SourceChangeType>;
+
+#[derive(Default)]
+pub struct TestFileMonitor {
+    change: Option<(SourceLocation, SourceChangeType)>
+}
+
+impl TestFileMonitor {
+    fn changed_source(&mut self, location: SourceLocation, change: SourceChangeType) {
+        self.change = Some((location, change));
+    }
+}
+
+impl FileMonitor for TestFileMonitor {
+    fn try_get_file_changed(&self) -> Result<FileMonitorFileChange, FileMonitorWatchError> {
+        if let Some((location, change)) = &self.change {
+            match change {
+                SourceChangeType::Change => Ok(FileMonitorFileChange::Modify(location.clone()))
+            }
+        } else {
+            Err(FileMonitorWatchError::NoFileChanges)            
+        }
+    }
+}
+
+fn create_test_source_reader() -> TestSourceReader {
+    TestSourceReader::new()
 }
 
 pub struct TestSourceReader {
     source_code_lookup: SourceCodeLookup
+}
+
+impl TestSourceReader {
+    fn new() -> Self {
+        Self {
+            source_code_lookup: SourceCodeLookup::default()
+        }
+    }
+
+    pub fn add_source(&mut self, location: SourceLocation, source: String) {
+        self.source_code_lookup.insert(location, source);
+    }
 }
 
 impl SourceReader for TestSourceReader {

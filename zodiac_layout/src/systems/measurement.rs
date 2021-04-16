@@ -9,7 +9,6 @@ pub fn build_width_map(#[resource] width_map: &mut WidthMap, entity: &Entity, wi
     width_map.insert(*entity, *width);
 }
 
-
 #[system(for_each)]
 #[filter(component::<Removed>())]
 pub fn remove_from_minimum_width_map(#[resource] width_map: &mut MinimumWidthMap, entity: &Entity) {

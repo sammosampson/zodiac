@@ -1,7 +1,6 @@
 use legion::*;
 use zodiac_rendering_glium::*;
 use zodiac::test_helpers::*;
-use zodiac_parsing::*;
 
 #[test]
 fn text_gets_output_as_glyphs() {
@@ -10,12 +9,11 @@ fn text_gets_output_as_glyphs() {
     <text content=\"abc\" colour=(1.0, 1.0, 1.0, 0.1) />
 </root>
 ";
-    let mut source_lookup = SourceCodeLookup::new();
-    source_lookup.insert(SourceLocation::from(".\\root.zod"), String::from(source));
-
     let mut world = World::default();
-    let mut resources = build_zodiac_resources(source_lookup);
+    let mut resources = build_zodiac_resources();
     let mut schedule = build_zodiac_systems_schedule();
+
+    apply_initial_source(&mut resources, ".\\root.zod", source);
     
     notify_resize_root_window(&mut world, (100, 100));
 

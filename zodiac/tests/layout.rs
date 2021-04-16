@@ -1,7 +1,6 @@
 use legion::*;
 use zodiac_rendering_glium::*;
 use zodiac::test_helpers::*;
-use zodiac_parsing::*;
 
 #[test]
 fn absolute_positioning_on_screen() {
@@ -37,12 +36,11 @@ fn absolute_positioning_on_screen() {
     />
 </root>
 ";
-    let mut source_lookup = SourceCodeLookup::new();
-    source_lookup.insert(SourceLocation::from(".\\root.zod"), String::from(source));
-
     let mut world = World::default();
-    let mut resources = build_zodiac_resources(source_lookup);
+    let mut resources = build_zodiac_resources();
     let mut schedule = build_zodiac_systems_schedule();
+
+    apply_initial_source(&mut resources, ".\\root.zod", source);
     
     notify_resize_root_window(&mut world, (1024, 768));
 
@@ -78,13 +76,12 @@ fn absolute_positioning_on_canvas_offset_from_screen() {
     </canvas>
 </root>
 ";
-    let mut source_lookup = SourceCodeLookup::new();
-    source_lookup.insert(SourceLocation::from(".\\root.zod"), String::from(source));
-
     let mut world = World::default();
-    let mut resources = build_zodiac_resources(source_lookup);
+    let mut resources = build_zodiac_resources();
     let mut schedule = build_zodiac_systems_schedule();
     
+    apply_initial_source(&mut resources, ".\\root.zod", source);
+
     notify_resize_root_window(&mut world, (100, 110));
 
     schedule.execute(&mut world, &mut resources);
@@ -113,12 +110,11 @@ fn dimensions_fit_parent_when_not_specified() {
     </horizontal-stack>
 </root>
 ";
-    let mut source_lookup = SourceCodeLookup::new();
-    source_lookup.insert(SourceLocation::from(".\\root.zod"), String::from(source));
-
     let mut world = World::default();
-    let mut resources = build_zodiac_resources(source_lookup);
+    let mut resources = build_zodiac_resources();
     let mut schedule = build_zodiac_systems_schedule();
+
+    apply_initial_source(&mut resources, ".\\root.zod", source);
     
     notify_resize_root_window(&mut world, (100, 110));
 
@@ -153,12 +149,11 @@ fn horizontal_layout_for_none_sized_children() {
     </horizontal-stack>
 </root>
 ";
-    let mut source_lookup = SourceCodeLookup::new();
-    source_lookup.insert(SourceLocation::from(".\\root.zod"), String::from(source));
-
     let mut world = World::default();
-    let mut resources = build_zodiac_resources(source_lookup);
+    let mut resources = build_zodiac_resources();
     let mut schedule = build_zodiac_systems_schedule();
+
+    apply_initial_source(&mut resources, ".\\root.zod", source);
     
     notify_resize_root_window(&mut world, (100, 100));
 
@@ -202,12 +197,11 @@ fn horizontal_layout_for_sized_children() {
     </horizontal-stack>
 </root>
 ";
-    let mut source_lookup = SourceCodeLookup::new();
-    source_lookup.insert(SourceLocation::from(".\\root.zod"), String::from(source));
-
     let mut world = World::default();
-    let mut resources = build_zodiac_resources(source_lookup);
+    let mut resources = build_zodiac_resources();
     let mut schedule = build_zodiac_systems_schedule();
+
+    apply_initial_source(&mut resources, ".\\root.zod", source);
     
     notify_resize_root_window(&mut world, (100, 100));
 
@@ -245,12 +239,11 @@ fn vertical_layout_for_none_sized_children() {
     </vertical-stack>
 </root>
 ";
-    let mut source_lookup = SourceCodeLookup::new();
-    source_lookup.insert(SourceLocation::from(".\\root.zod"), String::from(source));
-
     let mut world = World::default();
-    let mut resources = build_zodiac_resources(source_lookup);
+    let mut resources = build_zodiac_resources();
     let mut schedule = build_zodiac_systems_schedule();
+
+    apply_initial_source(&mut resources, ".\\root.zod", source);
     
     notify_resize_root_window(&mut world, (100, 100));
 
@@ -294,15 +287,14 @@ fn vertical_layout_for_sized_children() {
     </vertical-stack>
 </root>
 ";
-    let mut source_lookup = SourceCodeLookup::new();
-    source_lookup.insert(SourceLocation::from(".\\root.zod"), String::from(source));
-
     let mut world = World::default();
-    let mut resources = build_zodiac_resources(source_lookup);
+    let mut resources = build_zodiac_resources();
     let mut schedule = build_zodiac_systems_schedule();
-    
-    notify_resize_root_window(&mut world, (100, 100));
 
+    apply_initial_source(&mut resources, ".\\root.zod", source);
+
+    notify_resize_root_window(&mut world, (100, 100));
+    
     schedule.execute(&mut world, &mut resources);
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()

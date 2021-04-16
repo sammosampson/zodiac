@@ -41,9 +41,9 @@ impl Application {
         let world = World::default();
         let resources = Resources::default();
         let schedule = Schedule::builder()
-            .add_thread_local(recurisve_source_location_build_system())
+            .add_thread_local(recurisve_source_location_build_system::<FileSystemSourceLocationWalker, FileSystemSourceLocationIterator>())
             .flush()
-            .add_thread_local(source_file_monitoring_system())
+            .add_thread_local(source_file_monitoring_system::<FileSystemFileMonitor>())
             .flush()
             .add_system(source_token_removal_system())
             .add_system(source_parse_system::<FileSourceReader>())
@@ -118,11 +118,12 @@ impl Application {
     pub fn run(mut self) -> Result<(), ZodiacError> {
         let file_paths = FilePaths::new(self.relative_zod_folder_path);
         &mut self.resources.insert(file_paths);
+        &mut self.resources.insert(create_file_system_source_location_walker());
+        &mut self.resources.insert(monitor_files(file_paths, self.file_monitor_poll)?);
         &mut self.resources.insert(create_source_file_reader());
         &mut self.resources.insert(create_source_entity_lookup());
         &mut self.resources.insert(create_source_tokens_lookup());
         &mut self.resources.insert(create_source_location_lookup());
-        &mut self.resources.insert(monitor_files(file_paths, self.file_monitor_poll)?);
         &mut self.resources.insert(create_text_colour_map());
         &mut self.resources.insert(create_relationship_map());
         &mut self.resources.insert(create_layout_type_map());
