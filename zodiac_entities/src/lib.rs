@@ -1,5 +1,4 @@
 pub mod components;
-pub mod formatting;
 pub mod relationships;
 pub mod systems;
 

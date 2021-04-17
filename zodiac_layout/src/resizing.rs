@@ -26,7 +26,6 @@ pub fn perform_resize(
         command_buffer.add_component(*entity, Width { width: constraints.width });
         command_buffer.add_component(*entity, Height { height: constraints.height });
         command_buffer.add_component(*entity, Resized::default());
-        command_buffer.add_component(*entity, CurrentLayoutConstraints::from(constraints));
         command_buffer.remove_component::<LayoutRequest>(*entity);
         perform_layout(maps, world, command_buffer, entity, constraints);
 }
@@ -46,6 +45,7 @@ pub fn perform_layout(
         } else {
             layout_renderable(maps, command_buffer, entity, constraints);
         }
+        command_buffer.add_component(*entity, CurrentLayoutConstraints::from(constraints));
 }
 
 pub fn layout_canvas(

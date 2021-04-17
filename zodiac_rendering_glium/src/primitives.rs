@@ -1,6 +1,7 @@
 use glium::*;
+use serde::*;
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct RenderPrimitive {
     pub position: [u16; 2],
     pub dimensions: [u16; 2],

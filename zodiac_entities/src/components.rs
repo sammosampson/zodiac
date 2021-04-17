@@ -1,8 +1,8 @@
 use std::ops::Add;
 use legion::*;
+use serde::*;
 
-
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub enum AbstractSyntaxNodeType {
     Root,
     Import,
@@ -27,7 +27,7 @@ pub enum AbstractSyntaxNodeType {
     Unknown
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum BuildErrorReason {
     UnexpectedToken(AbstractSyntaxNodeType),
     MissingRequiredTokens(Vec<AbstractSyntaxNodeType>),
@@ -36,7 +36,7 @@ pub enum BuildErrorReason {
     ControlSourceDoesNotExist(String)
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BuildError {
     pub entity: Entity,
     reason: BuildErrorReason
@@ -51,7 +51,7 @@ impl BuildError {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BuildErrorOccurrence {
     pub error: BuildError
 }
@@ -64,16 +64,16 @@ impl From<BuildError> for BuildErrorOccurrence {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct SourceFile {
 }
 
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct SourceFileRoot {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SourceImplementation {
     pub source_file_entity: Entity
 }
@@ -86,31 +86,31 @@ impl SourceImplementation {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct SourceFileParsed {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct SourceFileChange {
 }
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct SourceFileCreation {
 }
 
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct SourceFileInitialRead {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct SourceFileRemoval {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Removed {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Relationship {
     pub parent: Option<Entity>,
     pub next_sibling: Option<Entity>,
@@ -138,20 +138,20 @@ impl Relationship {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Root {
 }
 
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Control {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Rebuild {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct RootWindowResized {
     pub width: u16,
     pub height: u16
@@ -166,7 +166,7 @@ impl From<(u16, u16)> for RootWindowResized {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CurrentLayoutConstraints {
     pub left: u16,
     pub top: u16,
@@ -174,7 +174,7 @@ pub struct CurrentLayoutConstraints {
     pub height: u16
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct LayoutRequest {
     pub left: u16,
     pub top: u16,
@@ -205,26 +205,26 @@ impl From<&CurrentLayoutConstraints> for LayoutRequest {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Resized {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Mapped {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Import {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub enum LayoutType {
     Horizontal,
     Vertical,
     Canvas,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct LayoutContent {
     pub layout_type: LayoutType
 }
@@ -243,14 +243,14 @@ impl LayoutContent {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub enum RenderType {
     Circle,
     Rectangle,
     Glyph
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Renderable { 
     pub render_type: RenderType 
 }
@@ -270,7 +270,7 @@ impl Renderable {
 }
 
 
-#[derive(Clone, Debug, PartialEq, Default)]
+#[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Name { 
     pub name: String
 }
@@ -283,7 +283,7 @@ impl From<&str> for Name {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Default)]
+#[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Path { 
     pub path: String
 }
@@ -296,7 +296,7 @@ impl From<&str> for Path {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Character { 
     pub character: char,
     pub position: usize
@@ -311,7 +311,7 @@ impl Character {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Left {
     pub left: u16
 }
@@ -324,7 +324,7 @@ impl From<u16> for Left {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Top {
     pub top: u16
 }
@@ -337,11 +337,11 @@ impl From<u16> for Top {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct OffsetsMapped {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct LayoutChange {
     pub left: u16,
     pub top: u16,
@@ -365,7 +365,7 @@ impl Add<Top> for LayoutChange {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Width {
     pub width: u16
 }
@@ -386,12 +386,12 @@ impl From<&Radius> for Width {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MinimumWidth {
     pub width: u16
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Height {
     pub height: u16
 }
@@ -413,12 +413,12 @@ impl From<&Radius> for Height {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MinimumHeight {
     pub height: u16
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Radius {
     pub radius: u16
 }
@@ -431,7 +431,7 @@ impl From<u16> for Radius {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct GlyphIndex {
     pub index: u16
 }
@@ -444,7 +444,7 @@ impl From<u16> for GlyphIndex {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Colour {
     pub r: f32,
     pub g: f32,
@@ -463,7 +463,7 @@ impl From<(f32, f32, f32, f32)> for Colour {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct StrokeWidth {
     pub width: u16
 }
@@ -476,7 +476,7 @@ impl From<u16> for StrokeWidth {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct StrokeColour {
     pub r: f32,
     pub g: f32,
@@ -495,7 +495,7 @@ impl From<(f32, f32, f32, f32)> for StrokeColour {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CornerRadii {
     pub left_top: u16,
     pub right_top: u16,

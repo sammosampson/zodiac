@@ -50,7 +50,6 @@ fn imported_control_gets_output() {
 }
 
 #[test]
-#[ignore]
 fn changed_imported_control_gets_output() {
     let big_control = "
 <control>
@@ -83,9 +82,7 @@ fn changed_imported_control_gets_output() {
         stroke-width=5
     />
 </control>
-";
-
-    
+";  
     let mut world = World::default();
     let mut resources = build_zodiac_resources();
     let mut schedule = build_zodiac_systems_schedule();
@@ -96,7 +93,7 @@ fn changed_imported_control_gets_output() {
     notify_resize_root_window(&mut world, (100, 100));
 
     schedule.execute(&mut world, &mut resources);
-    
+
     apply_changed_source(&mut resources, ".\\big_control.zod", changed_big_control);
 
     schedule.execute(&mut world, &mut resources);
@@ -107,5 +104,5 @@ fn changed_imported_control_gets_output() {
         .collect();
     
     assert_eq!(changes.len(), 1);
-    assert_eq!(changes[0], RenderPrimitive::circle([0, 0], 400, [0.4, 0.4, 0.4, 0.1], [1.0, 1.0, 1.0, 1.0], 5.0));
+    assert_eq!(changes[0], RenderPrimitive::circle([10, 11], 400, [0.4, 0.4, 0.4, 0.1], [1.0, 1.0, 1.0, 1.0], 5.0));
 }
