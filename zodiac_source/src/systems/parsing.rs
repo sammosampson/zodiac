@@ -35,20 +35,18 @@ pub fn source_parse<T:SourceReader + 'static> (
         
     println!("Source is now {:?} chars", source_text.len());
 
-    let tokens: Result<Vec<AbstractSyntaxToken>, AbstractSyntaxTokenError> = AbstractSyntaxTokenizer
-        ::from_source(SourceTokenizer::from_string(&source_text))
+    let tokenizer = AbstractSyntaxTokenizer
+        ::from_source(SourceTokenizer::from_string(&source_text));
+    
+    let tokens: Vec::<AbstractSyntaxTokenResult> = tokenizer
         .into_iter()
         .collect();
 
-    let tokens = tokens.unwrap(); // TODO: error token error
+    if contains_root(&tokens) {
+        command_buffer.add_component(*entity, SourceFileRoot::default());
+    }
 
-    let is_root = tokens.iter().any(|token| *token == AbstractSyntaxToken::Root);
-    
     source_tokens_lookup.insert(*entity, tokens); 
     
     command_buffer.add_component(*entity, SourceFileParsed::default());
-
-    if is_root {
-        command_buffer.add_component(*entity, SourceFileRoot::default());
-    }
 }

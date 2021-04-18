@@ -1,4 +1,5 @@
 use zodiac_source::tokenization::source::*;
+use zodiac_entities::*;
 
 #[test]
 fn single_control_produces_correct_tokens() {

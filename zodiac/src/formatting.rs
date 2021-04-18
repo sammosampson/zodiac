@@ -11,7 +11,7 @@ impl Pretty for World {
     fn to_pretty(&mut self) {
         let mut registry = Registry::<String>::default();
         registry.register::<AbstractSyntaxNodeType>("AbstractSyntaxNodeType".to_string());
-        registry.register::<BuildErrorReason>("BuildErrorReason".to_string());
+        registry.register::<BuildError>("BuildError".to_string());
         registry.register::<BuildError>("BuildError".to_string());
         registry.register::<BuildErrorOccurrence>("BuildErrorOccurrence".to_string());
         registry.register::<SourceFile>("SourceFile".to_string());

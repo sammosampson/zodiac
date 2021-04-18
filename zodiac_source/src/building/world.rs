@@ -8,8 +8,6 @@ use zodiac_entities::*;
 pub fn create_world_builder<'a>(command_buffer: &'a mut CommandBuffer, root: Entity) -> WorldBuilder {
     WorldBuilder::<'a>::new(command_buffer, root)
 }
-
-
 pub struct WorldBuilder<'a> {
     command_buffer: &'a mut CommandBuffer,
     root_used_for_initial_entity: bool,
@@ -29,6 +27,10 @@ impl<'a> WorldBuilder<'a> {
         builder.set_relationship_component(builder.current_entity, Relationship::default());
         
         builder
+    }
+
+    pub fn set_root_used(&mut self) {
+        self.root_used_for_initial_entity = true;
     }
 
     pub fn get_current_entity(&self) -> Entity {
@@ -59,7 +61,7 @@ impl<'a> WorldBuilder<'a> {
         self.create_entity_with_component(source_implementation);
         self.root_used_for_initial_entity = false;
         (self.current_entity, source_implementation)
-    }
+    }    
 
     pub fn create_canvas_layout_content_entity(&mut self) -> Entity {
         self.create_entity_with_component(LayoutContent::canvas());
@@ -88,6 +90,11 @@ impl<'a> WorldBuilder<'a> {
 
     pub fn create_glyph_entity(&mut self) {
         self.create_entity_with_component(Renderable::glyph());
+    }
+
+    pub fn add_error_component_to_entity(&mut self, entity: Entity, error: BuildError) {
+        println!("Adding error ocurrence {:?} to {:?}", error, entity);
+        self.add_component(entity, BuildErrorOccurrence::from(error));
     }
 
     pub fn add_canvas_layout_content_component(&mut self) {
@@ -147,7 +154,7 @@ impl<'a> WorldBuilder<'a> {
     pub fn create_entity_with_component<T:Component + Debug>(&mut self, component: T) {
         if !self.root_used_for_initial_entity {
             self.add_component_to_current_entity(component);
-            self.root_used_for_initial_entity = true;
+            self.set_root_used();
             return;
         }
 

@@ -1,6 +1,7 @@
 use std::vec;
 use std::iter::Enumerate;
 use std::str::Chars;
+use zodiac_entities::*;
 
 #[derive(PartialEq, PartialOrd, Debug)]
 pub enum SourceTokenPropertyValue {
@@ -17,17 +18,6 @@ pub enum SourceToken {
     EndControl(String),
     Property(String),
     PropertyValue(SourceTokenPropertyValue),
-}
-
-#[derive(PartialEq, Eq, Debug, Copy, Clone)]
-pub enum SourceTokenError {
-    CouldNotFindStartTag(usize),
-    CouldNotParseNumberValue(usize),
-    CouldNotFindControlName(usize),
-    CouldNotFindPropertyStartSymbol(usize),
-    CouldNotFindControlToClose(usize),
-    CouldNotFindControlCloseSymbol(usize),
-    ClosingWrongTag(usize)
 }
 
 #[derive(PartialEq, Eq, Debug)]

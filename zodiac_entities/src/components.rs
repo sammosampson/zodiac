@@ -2,6 +2,33 @@ use std::ops::Add;
 use legion::*;
 use serde::*;
 
+#[derive(PartialEq, Eq, Debug, Copy, Clone, Serialize, Deserialize)]
+pub enum SourceTokenError {
+    CouldNotFindStartTag(usize),
+    CouldNotParseNumberValue(usize),
+    CouldNotFindControlName(usize),
+    CouldNotFindPropertyStartSymbol(usize),
+    CouldNotFindControlToClose(usize),
+    CouldNotFindControlCloseSymbol(usize),
+    ClosingWrongTag(usize)
+}
+
+#[derive(PartialEq, Eq, Debug, Copy, Clone, Serialize, Deserialize)]
+pub enum AbstractSyntaxTokenError {
+    SourceTokenError(SourceTokenError),
+    UnusedPropertyType,
+    UnknownProperty,
+    BadColourValue,
+    BadStrokeColourValue,
+    BadCornerRadiiValue
+}
+
+impl<'a> From<SourceTokenError> for AbstractSyntaxTokenError {
+    fn from(error: SourceTokenError) -> Self {
+        AbstractSyntaxTokenError::SourceTokenError(error)
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub enum AbstractSyntaxNodeType {
     Root,
@@ -28,7 +55,8 @@ pub enum AbstractSyntaxNodeType {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub enum BuildErrorReason {
+pub enum BuildError {
+    TokenError(AbstractSyntaxTokenError),
     UnexpectedToken(AbstractSyntaxNodeType),
     MissingRequiredTokens(Vec<AbstractSyntaxNodeType>),
     SourceLocationDoesNotExist(String),
@@ -37,18 +65,9 @@ pub enum BuildErrorReason {
     ControlSourceFileDoesNotExist
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BuildError {
-    pub entity: Entity,
-    reason: BuildErrorReason
-}
-
-impl BuildError {
-    pub fn new(entity: Entity, reason: BuildErrorReason) -> Self {
-        Self {
-            entity,
-            reason
-        }
+impl<'a> From<AbstractSyntaxTokenError> for BuildError {
+    fn from(error: AbstractSyntaxTokenError) -> Self {
+        BuildError::TokenError(error)
     }
 }
 
@@ -453,6 +472,17 @@ pub struct Colour {
     pub a: f32,
 }
 
+impl Colour {
+    pub fn red() -> Self {
+        Self {
+            r: 1.0, 
+            g: 0.0, 
+            b: 0.0, 
+            a: 1.0
+        }
+    }
+}
+
 impl From<(f32, f32, f32, f32)> for Colour {
     fn from(colour: (f32, f32, f32, f32)) -> Self {
         Self {
@@ -464,7 +494,7 @@ impl From<(f32, f32, f32, f32)> for Colour {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize, Default)]
 pub struct StrokeWidth {
     pub width: u16
 }
@@ -477,7 +507,7 @@ impl From<u16> for StrokeWidth {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize, Default)]
 pub struct StrokeColour {
     pub r: f32,
     pub g: f32,
@@ -496,7 +526,7 @@ impl From<(f32, f32, f32, f32)> for StrokeColour {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize, Default)]
 pub struct CornerRadii {
     pub left_top: u16,
     pub right_top: u16,

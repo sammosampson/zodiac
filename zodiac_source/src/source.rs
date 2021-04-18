@@ -56,5 +56,5 @@ pub fn create_source_tokens_lookup() -> SourceTokensLookup {
     SourceTokensLookup::new()
 }
 
-pub type SourceTokensLookup = HashMap<Entity, Vec<AbstractSyntaxToken>>;
+pub type SourceTokensLookup = HashMap<Entity, Vec<AbstractSyntaxTokenResult>>;
 

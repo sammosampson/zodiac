@@ -19,7 +19,7 @@ pub fn apply_initially_read_root_source_to_world (
 #[system(simple)]
 #[read_component(SourceFile)]
 #[read_component(SourceFileRemoval)]
-#[read_component(SourceFileRoot)]
+#[read_component(Root)]
 #[read_component(Relationship)]
 pub fn apply_created_source_to_world (
     world: &mut SubWorld,
@@ -36,7 +36,7 @@ pub fn apply_created_source_to_world (
 #[system(simple)]
 #[read_component(SourceFile)]
 #[read_component(SourceFileRemoval)]
-#[read_component(SourceFileRoot)]
+#[read_component(Root)]
 #[read_component(Relationship)]
 pub fn apply_removed_source_to_world (
     world: &mut SubWorld,
@@ -155,6 +155,7 @@ fn remove_source_implementations_children_from_world(
     remove_children(command_buffer, relationship_map, source_impl_entity);
     reset_relationship(command_buffer, relationship, relationship_map, source_impl_entity);
     remove_mapped(command_buffer, source_impl_entity);
+    remove_build_error(command_buffer, source_impl_entity);
     add_rebuild(command_buffer, source_impl_entity);
 }
 
@@ -184,6 +185,10 @@ fn reset_relationship(
 
 fn remove_mapped(command_buffer: &mut CommandBuffer, entity: Entity) {
     command_buffer.remove_component::<Mapped>(entity);
+}
+
+fn remove_build_error(command_buffer: &mut CommandBuffer, entity: Entity) {
+    command_buffer.remove_component::<BuildErrorOccurrence>(entity);
 }
 
 fn add_rebuild(command_buffer: &mut CommandBuffer, entity: Entity) {

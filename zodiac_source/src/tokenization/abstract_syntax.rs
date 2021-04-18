@@ -1,5 +1,5 @@
 
-use crate::tokenization::source::{SourceTokenResult, SourceTokenError, SourceToken, SourceTokenPropertyValue};
+use crate::tokenization::source::{SourceTokenResult, SourceToken, SourceTokenPropertyValue};
 use crate::tokenization::tuple::{TupleTokenizer, TupleTokenFloatIterator, TupleTokenUnsignedShortIterator};
 use zodiac_entities::*;
 
@@ -58,22 +58,6 @@ impl<'a> From<&AbstractSyntaxToken> for AbstractSyntaxNodeType {
     }
 }
 
-#[derive(PartialEq, Eq, Debug, Copy, Clone)]
-pub enum AbstractSyntaxTokenError {
-    SourceTokenError(SourceTokenError),
-    UnusedPropertyType,
-    UnknownProperty,
-    BadColourValue,
-    BadStrokeColourValue,
-    BadCornerRadiiValue
-}
-
-impl<'a> From<SourceTokenError> for AbstractSyntaxTokenError {
-    fn from(error: SourceTokenError) -> Self {
-        AbstractSyntaxTokenError::SourceTokenError(error)
-    }
-}
-
 pub type AbstractSyntaxTokenResult = Result<AbstractSyntaxToken, AbstractSyntaxTokenError>;
 pub type AbstractSyntaxTokenOption = Option<AbstractSyntaxTokenResult>;
 
@@ -106,9 +90,9 @@ impl <I> AbstractSyntaxTokenizer<I>  where I : Iterator<Item=SourceTokenResult> 
     pub fn from_source(source_token_iterator: I) -> Self {
         Self {
             source_token_iterator,
-            current_property: String::from(""),
+            current_property: String::from("")
         }
-    }   
+    }
     
     fn transition(&mut self, token: SourceToken) -> AbstractSyntaxTokenOption {
         match token {
@@ -211,4 +195,15 @@ impl<IT, I> SpecificAmountCollector<IT, I> for IT where IT: Iterator<Item=I> {
             Err(SpecificCollectionError::NotEnoughItems(count))
         }
     }
+}
+
+pub fn contains_root(tokens: &Vec<AbstractSyntaxTokenResult>) -> bool {
+    tokens
+        .iter()
+        .any(|token_result| { 
+            match token_result {
+                Ok(token) => *token == AbstractSyntaxToken::Root,
+                Err(_) => false
+            }
+        })
 }
