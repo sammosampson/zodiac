@@ -1,5 +1,5 @@
-use zodiac_parsing::tokenization::abstract_syntax::*;
-use zodiac_parsing::tokenization::source::*;
+use zodiac_source::tokenization::abstract_syntax::*;
+use zodiac_source::tokenization::source::*;
 
 #[test]
 fn parse_root_layout_container_produces_container_node() {

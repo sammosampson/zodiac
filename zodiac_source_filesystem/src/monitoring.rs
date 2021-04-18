@@ -1,8 +1,8 @@
 use std::sync::mpsc::*;
 use std::time::Duration;
 use notify::{ RecommendedWatcher, DebouncedEvent, Watcher, RecursiveMode };
-use zodiac_parsing::SourceLocation;
-use crate::*    ; 
+use zodiac_source::SourceLocation;
+use crate::*; 
 
 pub fn monitor_files(paths: FilePaths, watch_check: Duration) -> Result<FileSystemFileMonitor, FileMonitorError> {
     FileSystemFileMonitor::watch(paths, watch_check)

@@ -1,4 +1,4 @@
-use zodiac_parsing::tokenization::source::*;
+use zodiac_source::tokenization::source::*;
 
 #[test]
 fn single_control_produces_correct_tokens() {

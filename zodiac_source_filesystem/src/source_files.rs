@@ -1,7 +1,7 @@
 use std::{ path::*};
 use legion::systems::*;
 use zodiac_entities::*;
-use zodiac_parsing::*;
+use zodiac_source::*;
 
 pub trait ToSourceLocationConversion {
     fn to_canonicalised_source_location(&self) -> Result<SourceLocation, SourceLocationError>;

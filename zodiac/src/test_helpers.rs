@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use legion::*;
 use zodiac_entities::*;
-use zodiac_parsing::*;
-use zodiac_resources::*;
+use zodiac_source::*;
+use zodiac_source_filesystem::*;
 use zodiac_layout::*;
 use zodiac_rendering::*;
 use zodiac_rendering_glium::*;

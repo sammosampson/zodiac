@@ -1,5 +1,5 @@
 [package]
-name = "zodiac_resources"
+name = "zodiac_source_filesystem"
 version = "0.1.0"
 authors = ["Chris Sampson <sammosampson@gmail.com>"]
 edition = "2018"
@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 zodiac_entities = {path = "../zodiac_entities", version = "0.1.0"}
-zodiac_parsing = {path = "../zodiac_parsing", version = "0.1.0"}
+zodiac_source = {path = "../zodiac_source", version = "0.1.0"}
 legion = "0.3.1"
 glob = "0.3.0"
 notify = "4.0.15"

@@ -4,8 +4,8 @@ members = [
     "zodiac",
     "zodiac_layout",
     "zodiac_entities",
-    "zodiac_parsing",
-    "zodiac_resources",
+    "zodiac_source",
+    "zodiac_source_filesystem",
     "zodiac_rendering",
     "zodiac_rendering_glium"
 ]

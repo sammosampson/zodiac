@@ -1,4 +1,4 @@
-use zodiac_parsing::tokenization::tuple::*;
+use zodiac_source::tokenization::tuple::*;
 
 #[test]
 fn empty_parentheses_produces_no_tuple_values() {

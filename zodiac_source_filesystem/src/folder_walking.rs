@@ -1,7 +1,7 @@
 
 use std::path::*;
 use walkdir::WalkDir;
-use zodiac_parsing::*;
+use zodiac_source::*;
 use crate::*;
 
 pub trait SourceLocationWalker<T> where T: IntoIterator<Item=SourceLocation> {

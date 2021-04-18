@@ -1,5 +1,5 @@
 use std::{fs, path::*};
-use zodiac_parsing::*;
+use zodiac_source::*;
 use crate::source_files::*;
 
 pub fn create_file_paths(relative_folder_path: &'static str) -> FilePaths {
