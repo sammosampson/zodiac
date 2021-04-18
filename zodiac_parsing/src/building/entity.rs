@@ -40,7 +40,9 @@ pub fn build<'a, T:SourceReader + 'a> (
     build_resources_mut: &mut MutableBuildResources) -> Result<(), BuildError> {
         
     let mut current_entity_builders = vec!();
-    let tokens = build_resources.source_tokens_lookup.get(&source_implementation.source_file_entity).unwrap();
+    let tokens = build_resources.source_tokens_lookup
+        .get(&source_implementation.source_file_entity)
+        .ok_or(BuildError::new(*root_source_implementation_entity, BuildErrorReason::ControlSourceFileDoesNotExist))?;
 
     for token in tokens {
         match token {

@@ -30,8 +30,8 @@ pub fn source_parse<T:SourceReader + 'static> (
     #[resource] source_reader: &mut T
 ) {
 
-    let location = source_location_lookup.get(entity).unwrap(); // TODO: error source does not exist
-    let source_text = source_reader.read_source_at_location(location).unwrap();  // TODO: error source cannot be read
+    let location = source_location_lookup.get(entity).unwrap();
+    let source_text = source_reader.read_source_at_location(location).unwrap();
         
     println!("Source is now {:?} chars", source_text.len());
 

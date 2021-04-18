@@ -1,21 +1,39 @@
-use std::path::PathBuf;
+use std::{ path::*};
 use legion::systems::*;
 use zodiac_entities::*;
 use zodiac_parsing::*;
 
-pub trait ToCanonicalisedSourceLocationConversion {
+pub trait ToSourceLocationConversion {
     fn to_canonicalised_source_location(&self) -> Result<SourceLocation, SourceLocationError>;
+    fn to_source_location(&self) -> SourceLocation;
 }
 
 pub trait ToPathBufConversion {
     fn to_path_buf(&self) -> PathBuf;
 }
 
-impl ToCanonicalisedSourceLocationConversion for PathBuf {    
+
+#[cfg(not(target_os = "windows"))]
+fn remove_canonicalization_prefix<P: AsRef<std::path::Path>>(path: P) -> PathBuf {
+    PathBuf::from(path.as_ref().display().to_string())
+}
+
+#[cfg(target_os = "windows")]
+fn remove_canonicalization_prefix<P: AsRef<std::path::Path>>(path: P) -> PathBuf {
+    const VERBATIM_PREFIX: &str = r#"\\?\"#;
+    let path = path.as_ref().display().to_string();
+    if path.starts_with(VERBATIM_PREFIX) {
+        PathBuf::from(path[VERBATIM_PREFIX.len()..].to_string())
+    } else {
+        PathBuf::from(path)
+    }
+}
+
+impl ToSourceLocationConversion for PathBuf {    
     fn to_canonicalised_source_location(&self) -> Result<SourceLocation, SourceLocationError> {
         if let Ok(path) = self.canonicalize() {
             Ok(SourceLocation { 
-                location: match path.to_str() {
+                location: match remove_canonicalization_prefix(path).to_str() {
                     Some(path) => Some(path.to_owned()),
                     None => None
                 }
@@ -24,18 +42,32 @@ impl ToCanonicalisedSourceLocationConversion for PathBuf {
             Err(SourceLocationError::DoesNotExist)
         }
     }
-}
 
-
-impl ToCanonicalisedSourceLocationConversion for &str {    
-    fn to_canonicalised_source_location(&self) -> Result<SourceLocation, SourceLocationError> {
-        PathBuf::from(self).to_canonicalised_source_location()
+    fn to_source_location(&self) -> SourceLocation {
+        SourceLocation { 
+            location: Some(self.to_str().unwrap().to_owned())
+        }
     }
 }
 
-impl ToCanonicalisedSourceLocationConversion for String {    
+
+impl ToSourceLocationConversion for &str {    
     fn to_canonicalised_source_location(&self) -> Result<SourceLocation, SourceLocationError> {
         PathBuf::from(self).to_canonicalised_source_location()
+    }
+
+    fn to_source_location(&self) -> SourceLocation {
+        PathBuf::from(self).to_source_location()
+    }
+}
+
+impl ToSourceLocationConversion for String {    
+    fn to_canonicalised_source_location(&self) -> Result<SourceLocation, SourceLocationError> {
+        PathBuf::from(self).to_canonicalised_source_location()
+    }
+
+    fn to_source_location(&self) -> SourceLocation {
+        PathBuf::from(self).to_source_location()
     }
 }
 
@@ -73,13 +105,16 @@ pub fn modify_source(
 pub fn create_source(
     location: SourceLocation,
     command_buffer: &mut CommandBuffer,
-    source_entity_lookup: &mut SourceEntityLookup) {
+    source_entity_lookup: &mut SourceEntityLookup,
+    source_location_lookup: &mut SourceLocationLookup) {
 
     if let Some(entity) = source_entity_lookup.get(&location) {
         command_buffer.add_component(*entity, SourceFileCreation::default());
         command_buffer.remove_component::<SourceFileParsed>(*entity);
     } else {
-        todo!() // error here the entity should exist in the lookup
+        let entity = command_buffer.push((SourceFile::default(), SourceFileCreation::default()));
+        source_location_lookup.insert(entity, location.to_owned());
+        source_entity_lookup.insert(location, entity);
     }
 }
 

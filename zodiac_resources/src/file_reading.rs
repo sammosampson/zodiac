@@ -71,26 +71,10 @@ impl SourceReader for FileSourceReader {
     }
 
     fn get_relative_source_location(&self, from: &SourceLocation, relative_location: &str) -> Result<SourceLocation, SourceLocationError> {
-        remove_canonicalization_prefix(from.to_path_buf())
+        from.to_path_buf()
             .parent().unwrap()
             .join(relative_location)
             .to_canonicalised_source_location()
         
-    }
-}
-
-#[cfg(not(target_os = "windows"))]
-fn remove_canonicalization_prefix<P: AsRef<Path>>(path: P) -> PathBuf {
-    PathBuf::from(path.as_ref().display().to_string())
-}
-
-#[cfg(target_os = "windows")]
-fn remove_canonicalization_prefix<P: AsRef<Path>>(path: P) -> PathBuf {
-    const VERBATIM_PREFIX: &str = r#"\\?\"#;
-    let path = path.as_ref().display().to_string();
-    if path.starts_with(VERBATIM_PREFIX) {
-        PathBuf::from(path[VERBATIM_PREFIX.len()..].to_string())
-    } else {
-        PathBuf::from(path)
     }
 }

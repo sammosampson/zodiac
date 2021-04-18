@@ -1,8 +1,8 @@
 <control>
     <circle
-        colour=(0.4, 0.4, 0.4, 0.1)
-        stroke-colour=(1.0, 1.0, 1.0, 1.0)
-        stroke-width=5
-        radius=70
+        colour=(1.0, 1.0, 1.0, 0.1)
+        stroke-colour=(0.0, 1.0, 1.0, 1.0)
+        stroke-width=4
+        radius=50
     />
 </control>

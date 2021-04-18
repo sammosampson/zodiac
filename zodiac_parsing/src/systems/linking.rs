@@ -20,6 +20,7 @@ pub fn apply_initially_read_root_source_to_world (
 #[read_component(SourceFile)]
 #[read_component(SourceFileRemoval)]
 #[read_component(SourceFileRoot)]
+#[read_component(Relationship)]
 pub fn apply_created_source_to_world (
     world: &mut SubWorld,
     command_buffer: &mut CommandBuffer,
@@ -36,6 +37,7 @@ pub fn apply_created_source_to_world (
 #[read_component(SourceFile)]
 #[read_component(SourceFileRemoval)]
 #[read_component(SourceFileRoot)]
+#[read_component(Relationship)]
 pub fn apply_removed_source_to_world (
     world: &mut SubWorld,
     command_buffer: &mut CommandBuffer,

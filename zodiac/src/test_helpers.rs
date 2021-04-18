@@ -99,6 +99,8 @@ pub fn notify_resize_root_window(world: &mut World, dimensions: (u16, u16)) {
 
 pub enum SourceChangeType {
     Change,
+    Creation,
+    Remove
 }
 
 pub type SourceCodeLookup = HashMap<SourceLocation, String>;
@@ -117,6 +119,15 @@ pub fn apply_changed_source(resources: &mut Resources, location: &str, source: &
     resources.get_mut::<TestSourceReader>().unwrap().add_source(SourceLocation::from(location), String::from(source));
 }
 
+pub fn apply_created_source(resources: &mut Resources, location: &str, source: &str) {
+    resources.get_mut::<TestFileMonitor>().unwrap().changed_source(SourceLocation::from(location), SourceChangeType::Creation);
+    resources.get_mut::<TestSourceReader>().unwrap().add_source(SourceLocation::from(location), String::from(source));
+}
+
+pub fn delete_source(resources: &mut Resources, location: &str) {
+    resources.get_mut::<TestFileMonitor>().unwrap().changed_source(SourceLocation::from(location), SourceChangeType::Remove);
+    resources.get_mut::<TestSourceReader>().unwrap().remove_source(SourceLocation::from(location));
+}
 
 pub struct TestSourceLocationWalker {
     locations: Vec::<SourceLocation>
@@ -182,7 +193,9 @@ impl FileMonitor for TestFileMonitor {
     fn try_get_file_changed(&self) -> Result<FileMonitorFileChange, FileMonitorWatchError> {
         if let Some((location, change)) = &self.change {
             match change {
-                SourceChangeType::Change => Ok(FileMonitorFileChange::Modify(location.clone()))
+                SourceChangeType::Change => Ok(FileMonitorFileChange::Modify(location.clone())),
+                SourceChangeType::Creation => Ok(FileMonitorFileChange::Create(location.clone())),
+                SourceChangeType::Remove => Ok(FileMonitorFileChange::Delete(location.clone())),
             }
         } else {
             Err(FileMonitorWatchError::NoFileChanges)            
@@ -207,6 +220,10 @@ impl TestSourceReader {
 
     pub fn add_source(&mut self, location: SourceLocation, source: String) {
         self.source_code_lookup.insert(location, source);
+    }
+
+    pub fn remove_source(&mut self, location: SourceLocation) {
+        self.source_code_lookup.remove(&location);
     }
 }
 

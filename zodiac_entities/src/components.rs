@@ -33,7 +33,8 @@ pub enum BuildErrorReason {
     MissingRequiredTokens(Vec<AbstractSyntaxNodeType>),
     SourceLocationDoesNotExist(String),
     ControlDoesNotExist(String),
-    ControlSourceDoesNotExist(String)
+    ControlSourceDoesNotExist(String),
+    ControlSourceFileDoesNotExist
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
