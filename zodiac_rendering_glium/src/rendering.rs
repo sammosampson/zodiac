@@ -1,3 +1,5 @@
+use log::{info};
+
 use glium::*;
 use glium::index::*;
 use glium::glutin::event_loop::*;
@@ -71,7 +73,7 @@ impl GliumRenderer {
         let mut target = self.display.draw();
         let (width, height) = target.get_dimensions();
 
-        //println!("width: {}, height: {}", width, height);
+        //info!("width: {}, height: {}", width, height);
 
         let uniforms = uniform! {
             uResolution: [width as f32, height as f32]
@@ -83,7 +85,7 @@ impl GliumRenderer {
         
         // TODO: log timing better here
         let draw_time = std::time::Instant::now() - draw_frame_start;
-        println!("frame draw time: {:?}", draw_time);
+        info!("frame draw time: {:?}", draw_time);
         
         Ok(())
     }

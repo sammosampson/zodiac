@@ -1,4 +1,5 @@
 use std::fmt::Debug;
+use log::{info};
 
 use legion::*;
 use legion::storage::*;
@@ -38,7 +39,7 @@ impl<'a> WorldBuilder<'a> {
     }
 
     pub fn complete_entity(&mut self) {
-        println!("completing entity {:?}", self.current_entity);
+        info!("completing entity {:?}", self.current_entity);
         if let Some(relationship) = self.get_relationship(self.current_entity) {
             if let Some(parent) = relationship.parent {
                 self.current_entity = parent;
@@ -93,7 +94,7 @@ impl<'a> WorldBuilder<'a> {
     }
 
     pub fn add_error_component_to_entity(&mut self, entity: Entity, error: BuildError) {
-        println!("Adding error ocurrence {:?} to {:?}", error, entity);
+        info!("Adding error ocurrence {:?} to {:?}", error, entity);
         self.add_component(entity, BuildErrorOccurrence::from(error));
     }
 
@@ -161,7 +162,7 @@ impl<'a> WorldBuilder<'a> {
         let component_desc = format!("{:?}", component);
         let parent = self.current_entity;
         self.current_entity = self.command_buffer.push((component, ));
-        println!("creating entity with component {:?}: {}", self.current_entity, component_desc);
+        info!("creating entity with component {:?}: {}", self.current_entity, component_desc);
         self.setup_current_entity_relationships(parent);
     }
 
@@ -189,7 +190,7 @@ impl<'a> WorldBuilder<'a> {
     }
 
     fn set_relationship_component(&mut self, entity: Entity, relationship: Relationship) {
-        println!("setting relationship for entity {:?}: {:?}", entity, relationship);
+        info!("setting relationship for entity {:?}: {:?}", entity, relationship);
         
         self.add_component(entity, relationship);
         self.update_relationship_map(entity, relationship);
@@ -211,7 +212,7 @@ impl<'a> WorldBuilder<'a> {
     }
     
     pub fn add_component_to_current_entity<T:Component + Debug>(&mut self, component: T) {
-        println!("adding entity component {:?}: {:?}", self.current_entity, component);
+        info!("adding entity component {:?}: {:?}", self.current_entity, component);
         self.add_component(self.current_entity, component)
     }
 }

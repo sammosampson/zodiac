@@ -1,3 +1,4 @@
+use log::{info};
 use legion::*;
 use zodiac_entities::*;
 use crate::building::*;
@@ -40,7 +41,7 @@ impl<T:SourceReader> EntityBuilder<T> for ImportBuilder {
     }
 
     fn build(&self, build_resources: &BuildResources<T>, build_resources_mut: &mut MutableBuildResources) -> Result<(), BuildError> {
-        println!("building import {:?}", self.root_entity);
+        info!("building import {:?}", self.root_entity);
         
         let mut import_relative_path = String::default();
         let mut import_control_name = String::default();

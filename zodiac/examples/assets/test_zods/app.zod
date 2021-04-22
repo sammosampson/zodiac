@@ -12,18 +12,6 @@
         <vertical-stack>
             <small-control/>
             <small-control/>
-            <small-control/>
-            <small-control/>
-            <small-control/>
-            <small-control/>
-            <small-control/>
-            <small-control/>
-            <small-control/>
-            <small-control/>
-            <small-control/>
-            <small-control/>
-            <small-control/>
-            <small-control/>
         </vertical-stack>
     </horizontal-stack>
 </root>

@@ -2,7 +2,7 @@
     <circle
         colour=(1.0, 1.0, 1.0, 0.1)
         stroke-colour=(0.0, 1.0, 1.0, 1.0)
-        stroke-width=4
+        stroke-width=1
         radius=50
     />
 </control>

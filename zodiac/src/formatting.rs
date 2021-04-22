@@ -1,4 +1,5 @@
 use legion::*;
+use log::{debug};
 use legion::world::*;
 use zodiac_entities::*;
 use zodiac_rendering_glium::*;
@@ -56,7 +57,7 @@ impl Pretty for World {
         registry.register::<CornerRadii>("CornerRadii".to_string());
         registry.register::<RenderPrimitive>("RenderPrimitive".to_string());
         let json = serde_json::to_value(self.as_serializable(passthrough(), &registry)).unwrap();
-        println!("{:#}", json);
+        debug!("{:#}", json);
     }
 }
 

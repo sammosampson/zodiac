@@ -1,4 +1,5 @@
-use std::ops::Add;
+use std::{fmt, ops::*};
+use std::error::*;
 use legion::*;
 use serde::*;
 
@@ -13,6 +14,28 @@ pub enum SourceTokenError {
     ClosingWrongTag(usize)
 }
 
+impl Error for SourceTokenError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            _ => None
+        }
+    }
+}
+
+impl fmt::Display for SourceTokenError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            SourceTokenError::CouldNotFindStartTag(position) => write!(f, "could not find start tag ({:?})", position),
+            SourceTokenError::CouldNotParseNumberValue(position) => write!(f, "could not parse number value ({:?})", position),
+            SourceTokenError::CouldNotFindControlName(position) => write!(f, "could not find control name ({:?})", position),
+            SourceTokenError::CouldNotFindPropertyStartSymbol(position) => write!(f, "could not find property start symbol ({:?})", position),
+            SourceTokenError::CouldNotFindControlToClose(position) => write!(f, "could not find control to close ({:?})", position),
+            SourceTokenError::CouldNotFindControlCloseSymbol(position) => write!(f, "could not find control close symbol ({:?})", position),
+            SourceTokenError::ClosingWrongTag(position) => write!(f, "closing wrong tag ({:?})", position),
+        }
+    }    
+}
+
 #[derive(PartialEq, Eq, Debug, Copy, Clone, Serialize, Deserialize)]
 pub enum AbstractSyntaxTokenError {
     SourceTokenError(SourceTokenError),
@@ -21,6 +44,32 @@ pub enum AbstractSyntaxTokenError {
     BadColourValue,
     BadStrokeColourValue,
     BadCornerRadiiValue
+}
+
+impl Error for AbstractSyntaxTokenError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            AbstractSyntaxTokenError::SourceTokenError(source) => Some(source),
+            AbstractSyntaxTokenError::UnusedPropertyType => None,
+            AbstractSyntaxTokenError::UnknownProperty => None,
+            AbstractSyntaxTokenError::BadColourValue => None,
+            AbstractSyntaxTokenError::BadStrokeColourValue => None,
+            AbstractSyntaxTokenError::BadCornerRadiiValue => None,
+        }
+    }
+}
+
+impl fmt::Display for AbstractSyntaxTokenError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            AbstractSyntaxTokenError::SourceTokenError(source) => write!(f, "Error in source ({:?})", source),
+            AbstractSyntaxTokenError::UnusedPropertyType => write!(f, "Unused property type"),
+            AbstractSyntaxTokenError::UnknownProperty => write!(f, "Unknown property"),
+            AbstractSyntaxTokenError::BadColourValue => write!(f, "Bad colour value"),
+            AbstractSyntaxTokenError::BadStrokeColourValue => write!(f, "Bad stroke colour value"),
+            AbstractSyntaxTokenError::BadCornerRadiiValue => write!(f, "Bad corner radii value"),
+        }
+    }    
 }
 
 impl<'a> From<SourceTokenError> for AbstractSyntaxTokenError {
@@ -63,6 +112,34 @@ pub enum BuildError {
     ControlDoesNotExist(String),
     ControlSourceDoesNotExist(String),
     ControlSourceFileDoesNotExist
+}
+
+impl Error for BuildError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            BuildError::TokenError(source) => Some(source),
+            BuildError::UnexpectedToken(_) => None,
+            BuildError::MissingRequiredTokens(_) => None,
+            BuildError::SourceLocationDoesNotExist(_) => None,
+            BuildError::ControlDoesNotExist(_) => None,
+            BuildError::ControlSourceDoesNotExist(_) => None,
+            BuildError::ControlSourceFileDoesNotExist => None
+        }
+    }
+}
+
+impl fmt::Display for BuildError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            BuildError::TokenError(source) => source.fmt(f),
+            BuildError::UnexpectedToken(token) => write!(f, "Unexpected token {:?}", token),
+            BuildError::MissingRequiredTokens(tokens) => write!(f, "Missing required tokens ({:?})", tokens),
+            BuildError::SourceLocationDoesNotExist(location) => write!(f, "Source does not exist for {:?}", location),
+            BuildError::ControlDoesNotExist(control) => write!(f, "Control does not exist {:?}", control),
+            BuildError::ControlSourceDoesNotExist(control) => write!(f, "Control source does not exist {:?}", control),
+            BuildError::ControlSourceFileDoesNotExist => write!(f, "Control source file does not exist"),
+        }
+    }    
 }
 
 impl<'a> From<AbstractSyntaxTokenError> for BuildError {

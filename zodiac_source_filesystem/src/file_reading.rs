@@ -1,4 +1,5 @@
 use std::{fs, path::*};
+use log::{info};
 use zodiac_source::*;
 use crate::source_files::*;
 
@@ -25,7 +26,7 @@ impl FilePaths {
 
     pub fn get_absolute_folder_path(&self) -> Result<PathBuf, FilePathError> {
         let path = std::env::var("CARGO_MANIFEST_DIR").map_err(|_|FilePathError::ManifestDirectoryEnvironmentVariableNotSet)?;
-        println!("manifest path {:?}", path);
+        info!("manifest path {:?}", path);
         Ok(PathBuf::from(path).join(self.relative_folder_path))
     }
 }

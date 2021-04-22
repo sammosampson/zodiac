@@ -1,8 +1,10 @@
 use std::time::*;
+use log::{info};
 use legion::*;
 use glium::*;
 use glium::glutin::event_loop::*;
 use glutin::event::*;
+use crate::systems::error_reporting::*;
 use zodiac_entities::*;
 use zodiac_source_filesystem::*;
 use zodiac_source::*;
@@ -93,6 +95,7 @@ impl Application {
             .add_thread_local(queue_render_primitives_system::<GliumRenderQueue>())
             .flush()
             .add_thread_local(render_primitives_system())
+            .add_thread_local(report_build_error_system())
             .flush()
             .add_thread_local(remove_layout_change_system())
             .add_thread_local(remove_resized_system())
@@ -101,6 +104,7 @@ impl Application {
             .add_thread_local(remove_source_file_creation_system())
             .add_thread_local(remove_source_file_removal_system())
             .add_thread_local(remove_rebuild_system())
+            .add_thread_local(remove_build_error_system())
             .flush()
             .build();
             
@@ -119,6 +123,8 @@ impl Application {
     }
     
     pub fn run(mut self) -> Result<(), ZodiacError> {
+        pretty_env_logger::init();
+        
         let file_paths = FilePaths::new(self.relative_zod_folder_path);
         &mut self.resources.insert(file_paths);
         &mut self.resources.insert(create_file_system_source_location_walker());
@@ -169,7 +175,7 @@ impl Application {
     }
 
     fn notify_resize_root_window(&mut self, dimensions: (u16, u16)) {
-        println!("root window resize {:?}", dimensions);
+        info!("root window resize {:?}", dimensions);
         self.world.push((RootWindowResized::from(dimensions), ));
     }
 }

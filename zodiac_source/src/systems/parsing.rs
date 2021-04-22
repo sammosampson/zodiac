@@ -1,3 +1,4 @@
+use log::{info};
 use legion::*;
 use legion::systems::*;
 use zodiac_entities::*;
@@ -33,7 +34,7 @@ pub fn source_parse<T:SourceReader + 'static> (
     let location = source_location_lookup.get(entity).unwrap();
     let source_text = source_reader.read_source_at_location(location).unwrap();
         
-    println!("Source is now {:?} chars", source_text.len());
+    info!("Source is now {:?} chars", source_text.len());
 
     let tokenizer = AbstractSyntaxTokenizer
         ::from_source(SourceTokenizer::from_string(&source_text));

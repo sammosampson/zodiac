@@ -1,5 +1,6 @@
 
 use legion::*;
+use log::{info};
 use legion::systems::*;
 use legion::world::*;
 use zodiac_entities::*;
@@ -33,7 +34,7 @@ pub fn resize_after_rebuild(
     entity: &Entity,
     current_layout_constraints: &CurrentLayoutConstraints
 ) {
-    println!("source file change {:?}", current_layout_constraints);
+    info!("source file change {:?}", current_layout_constraints);
     command_buffer.add_component(*entity, LayoutRequest::from(current_layout_constraints));
 }
 

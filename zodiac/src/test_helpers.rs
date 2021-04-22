@@ -67,6 +67,7 @@ pub fn build_zodiac_systems_schedule() -> Schedule {
         .add_thread_local(remove_source_file_creation_system())
         .add_thread_local(remove_source_file_removal_system())
         .add_thread_local(remove_rebuild_system())
+        .add_thread_local(remove_build_error_system())
         .flush()
         .build()
 }

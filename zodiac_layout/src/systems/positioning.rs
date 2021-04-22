@@ -1,5 +1,6 @@
 
 use legion::*;
+use log::{info};
 use legion::systems::*;
 use zodiac_entities::*;
 
@@ -18,7 +19,7 @@ pub fn build_layout_type_map(
 #[system(for_each)]
 #[filter(component::<Removed>())]
 pub fn remove_from_layout_type_map(#[resource] layout_map: &mut LayoutTypeMap, entity: &Entity) {
-    println!("removing from layout type map {:?}", entity);
+    info!("removing from layout type map {:?}", entity);
     layout_map.remove(entity);
 }
 
@@ -37,7 +38,7 @@ pub fn build_left_offset_map(#[resource] offset_map: &mut LeftOffsetMap, entity:
 #[system(for_each)]
 #[filter(component::<Removed>())]
 pub fn remove_from_left_offset_map(#[resource] offset_map: &mut LeftOffsetMap, entity: &Entity) {
-    println!("removing from left offset map {:?}", entity);
+    info!("removing from left offset map {:?}", entity);
     offset_map.remove(entity);
 }
 
@@ -50,6 +51,6 @@ pub fn build_top_offset_map(#[resource] offset_map: &mut TopOffsetMap, entity: &
 #[system(for_each)]
 #[filter(component::<Removed>())]
 pub fn remove_from_top_offset_map(#[resource] offset_map: &mut TopOffsetMap, entity: &Entity) {
-    println!("removing from top offset map {:?}", entity);
+    info!("removing from top offset map {:?}", entity);
     offset_map.remove(entity);
 }
