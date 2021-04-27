@@ -3,7 +3,6 @@ use zodiac_rendering_glium::*;
 use zodiac::testing::*;
 use zodiac_entities::*;
 use zodiac::*;
-use zodiac_layout::*;
 //use zodiac::formatting::*;
 
 #[test]
@@ -41,11 +40,7 @@ fn absolute_positioning_on_screen() {
 </root>
 ";
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(1024, 768)))
+        .with_builders(&mut test_builders(Dimensions::new(1024, 768)))
         .build()
         .unwrap();
 
@@ -84,11 +79,7 @@ fn absolute_positioning_on_canvas_offset_from_screen() {
 </root>
 ";
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(100, 110)))
+        .with_builders(&mut test_builders(Dimensions::new(100, 110)))
         .build()
         .unwrap();
 
@@ -120,11 +111,7 @@ fn dimensions_fit_parent_when_not_specified() {
 </root>
 ";
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(100, 110)))
+        .with_builders(&mut test_builders(Dimensions::new(100, 110)))
         .build()
         .unwrap();
 
@@ -162,11 +149,7 @@ fn horizontal_layout_for_none_sized_children() {
 </root>
 ";
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(100, 100)))
+        .with_builders(&mut test_builders(Dimensions::new(100, 100)))
         .build()
         .unwrap();
 
@@ -213,11 +196,7 @@ fn horizontal_layout_for_sized_children() {
 </root>
 ";
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(100, 100)))
+        .with_builders(&mut test_builders(Dimensions::new(100, 100)))
         .build()
         .unwrap();
 
@@ -257,11 +236,7 @@ fn vertical_layout_for_none_sized_children() {
 </root>
 ";
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(100, 100)))
+        .with_builders(&mut test_builders(Dimensions::new(100, 100)))
         .build()
         .unwrap();
 
@@ -308,11 +283,7 @@ fn vertical_layout_for_sized_children() {
 </root>
 ";
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(100, 100)))
+        .with_builders(&mut test_builders(Dimensions::new(100, 100)))
         .build()
         .unwrap();
 

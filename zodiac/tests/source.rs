@@ -3,7 +3,6 @@ use zodiac_rendering_glium::*;
 use zodiac::testing::*;
 use zodiac_entities::*;
 use zodiac::*;
-use zodiac_layout::*;
 //use zodiac::formatting::*;
 
 #[test]
@@ -32,11 +31,7 @@ fn imported_control_gets_output() {
 ";
     
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(100, 100)))
+        .with_builders(&mut test_builders(Dimensions::new(100, 100)))
         .build()
         .unwrap();
     
@@ -90,11 +85,7 @@ fn changed_imported_control_gets_output() {
 </control>
 ";  
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(1024, 768)))
+        .with_builders(&mut test_builders(Dimensions::new(1024, 768)))
         .build()
         .unwrap();
     
@@ -140,11 +131,7 @@ fn created_then_imported_control_gets_output() {
 </root>    
 ";  
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(1024, 768)))
+        .with_builders(&mut test_builders(Dimensions::new(1024, 768)))
         .build()
         .unwrap();
     
@@ -191,11 +178,7 @@ fn nonexistent_imported_then_created_control_gets_output() {
 </root>    
 ";  
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(1024, 768)))
+        .with_builders(&mut test_builders(Dimensions::new(1024, 768)))
         .build()
         .unwrap();
     
@@ -238,11 +221,7 @@ fn imported_then_deleted_then_recreated_control_gets_output() {
 </root>
 ";  
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(1024, 768)))
+        .with_builders(&mut test_builders(Dimensions::new(1024, 768)))
         .build()
         .unwrap();
     

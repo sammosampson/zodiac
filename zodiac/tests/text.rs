@@ -3,7 +3,6 @@ use zodiac_rendering_glium::*;
 use zodiac::testing::*;
 use zodiac_entities::*;
 use zodiac::*;
-use zodiac_layout::*;
 //use zodiac::formatting::*;
 
 #[test]
@@ -14,11 +13,7 @@ fn text_gets_output_as_glyphs() {
 </root>
 ";
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(100, 110)))
+        .with_builders(&mut test_builders(Dimensions::new(100, 110)))
         .build()
         .unwrap();
 

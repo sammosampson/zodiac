@@ -3,7 +3,6 @@ use zodiac_rendering_glium::*;
 use zodiac::testing::*;
 use zodiac_entities::*;
 use zodiac::*;
-use zodiac_layout::*;
 //use zodiac::formatting::*;
 
 #[test]
@@ -16,11 +15,7 @@ fn invalid_source_causes_top_level_error_circle_renderable_control_output() {
 </root>
 ";  
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(100, 100)))
+        .with_builders(&mut test_builders(Dimensions::new(100, 100)))
         .build()
         .unwrap();
     
@@ -47,11 +42,7 @@ fn invalid_source_causes_top_level_error_rect_renderable_control_output() {
 </root>
 ";  
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(100, 100)))
+        .with_builders(&mut test_builders(Dimensions::new(100, 100)))
         .build()
         .unwrap();
 
@@ -77,11 +68,7 @@ fn invalid_import_causes_top_level_error_control_output() {
 </root>
 ";  
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(100, 100)))
+        .with_builders(&mut test_builders(Dimensions::new(100, 100)))
         .build()
         .unwrap();
 
@@ -106,11 +93,7 @@ fn invalid_control_causes_top_level_error_control_output() {
 </root>
 ";  
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(100, 100)))
+        .with_builders(&mut test_builders(Dimensions::new(100, 100)))
         .build()
         .unwrap();
 
@@ -135,11 +118,7 @@ fn error_control_does_not_apply_twice() {
 </root>
 ";  
     let mut runner = Application::new()
-        .with_builder(test_source_file_building())
-        .with_builder(test_source_building())
-        .with_builder(standard_layout())
-        .with_builder(standard_test_rendering())
-        .with_builder(test_renderer(Dimensions::new(100, 100)))
+        .with_builders(&mut test_builders(Dimensions::new(100, 100)))
         .build()
         .unwrap();
 

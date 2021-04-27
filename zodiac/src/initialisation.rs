@@ -3,8 +3,49 @@ use shrev::*;
 use legion::*;
 use legion::systems::*;
 use zodiac_entities::*;
+use zodiac_layout::*;
+use zodiac_source_filesystem::*;
+use zodiac_rendering::*;
 
 use crate::systems::error_reporting::*;
+
+pub fn standard_builders(relative_zod_folder_path: &'static str) -> Vec::<Box::<dyn ApplicationBundleBuilder>> {
+    vec!(
+        Box::new(standard_source_file_building(relative_zod_folder_path)),
+        Box::new(standard_source_building()),
+        Box::new(standard_layout()),
+        Box::new(standard_rendering()),
+        Box::new(renderer())
+    )
+}
+
+#[cfg(feature = "glium_rendering")]
+use zodiac_rendering_glium::*;
+
+
+#[cfg(feature = "glium_rendering")]
+pub fn standard_rendering() -> RendereringBuilder<GliumRenderer, GliumRenderQueue> {
+    standard_glium_rendering()
+}
+
+#[cfg(feature = "glium_rendering")]
+pub fn renderer() -> GliumRendererBuilder {
+    glium_renderer()
+}
+
+#[cfg(feature = "pathfinder_rendering")]
+use zodiac_rendering_pathfinder::*;
+
+#[cfg(feature = "pathfinder_rendering")]
+pub fn standard_rendering() -> RendereringBuilder<PathFinderRenderer, PathFinderRenderQueue> {
+    standard_pathfinder_rendering()
+}
+
+#[cfg(feature = "pathfinder_rendering")]
+pub fn renderer() -> PathFinderRendererBuilder {
+    pathfinder_renderer()
+}
+
 
 pub struct Application {
     resources: Resources,
@@ -27,6 +68,12 @@ impl Application {
     pub fn with_builder<T>(mut self, builder: T) -> Self
         where T: ApplicationBundleBuilder + 'static {
         self.builders.push(Box::new(builder));
+        self
+    }
+
+    pub fn with_builders(mut self, builders: &mut Vec::<Box::<dyn ApplicationBundleBuilder>>) -> Self
+    {
+        self.builders.append(builders);
         self
     }
 
