@@ -5,6 +5,7 @@ use glutin::event_loop::*;
 use winit::event::{Event, WindowEvent, DeviceEvent};
 use zodiac_entities::*;
 use shrev::*;
+use log::*;
 
 use crate::*;
 
@@ -16,6 +17,7 @@ pub fn event_loop(
     event_loop.run_return(|event, _, flow| {
         match event {
             Event::WindowEvent { window_id: _, event} => {
+                info!("Window event {:?}", event);
                 event_producer.push(WrappedSystemEvent::from(event).into());
             }
             Event::DeviceEvent { device_id: _, event } => {

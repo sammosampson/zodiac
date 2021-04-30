@@ -42,6 +42,7 @@ impl PathFinderRenderer {
     }
 
     pub fn reset(&mut self, size: WrappedDimensions) {
+        info!("resetting view");
         self.display.reset_renderer(size);
     }
   
@@ -53,6 +54,7 @@ impl PathFinderRenderer {
             for primitive in &primitives {
                 match &primitive.definition {
                     RenderPrimitiveDefinition::Rectangle(position, dimensions, inner_colour, outer_colour, stroke_width) => {
+                        debug!("Rendering rect");
                         canvas.set_fill_style(*inner_colour);
                         canvas.fill_rect(RectF::new(*position, *dimensions));
                         
@@ -62,6 +64,7 @@ impl PathFinderRenderer {
                     
                     }
                     RenderPrimitiveDefinition::Circle(position, dimensions, inner_colour, outer_colour, stroke_width) => {
+                        debug!("Rendering circle");
                         let mut path = Path2D::new();
                         canvas.set_fill_style(*inner_colour);
                         path.ellipse(*position, *dimensions, 0.0, 0.0, PI2);
@@ -76,6 +79,7 @@ impl PathFinderRenderer {
                         canvas.stroke_path(path);
                     }
                     RenderPrimitiveDefinition::Text(position, _, colour, text) => {
+                        debug!("Rendering text {:?}, {:?}, {:?}", position, colour, text);
                         canvas.set_font_size(8.0);
                         canvas.set_fill_style(*colour);
                         canvas.fill_text(text, *position);

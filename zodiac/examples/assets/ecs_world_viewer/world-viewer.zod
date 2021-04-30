@@ -1,5 +1,3 @@
 <control>
-    <canvas>
-        <text content="Hello World" colour=(0.0, 1.0, 1.0, 1.0) />
-    </canvas>
+    <text content="Hello World!" colour=(1.0, 1.0, 1.0, 1.0) left=500 />
 </control>

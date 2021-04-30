@@ -1,6 +1,6 @@
-<import name="big-control" path=".\big-control.zod" />    
-<import name="small-control" path=".\small-control.zod" />
-<import name="other-control" path=".\other-control.zod" />
+<import name="big-control" path="./big-control.zod" />    
+<import name="small-control" path="./small-control.zod" />
+<import name="other-control" path="./other-control.zod" />
 <root>
     <horizontal-stack>
         <other-control />
