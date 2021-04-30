@@ -6,7 +6,7 @@ use zodiac::*;
 //use zodiac::formatting::*;
 
 #[test]
-fn text_gets_output_as_glyphs() {
+fn text_gets_output() {
     let source = "
 <root>
     <text content=\"abc\" colour=(1.0, 1.0, 1.0, 0.1) />
@@ -26,8 +26,6 @@ fn text_gets_output_as_glyphs() {
         .map(|change| *change)
         .collect();  
     
-    assert_eq!(changes.len(), 3);
-    assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::glyph([0, 0], [16, 16], [1.0, 1.0, 1.0, 0.1], 35)), true);
-    assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::glyph([16, 0], [16, 16], [1.0, 1.0, 1.0, 0.1], 36)), true);
-    assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::glyph([32, 0], [16, 16], [1.0, 1.0, 1.0, 0.1], 37)), true);
+    assert_eq!(changes.len(), 1);
+    assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::text([0, 0], [100, 110], [1.0, 1.0, 1.0, 0.1], "abc".to_string())), true);
 }

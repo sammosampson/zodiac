@@ -45,40 +45,41 @@ impl PathFinderRenderer {
         self.display.reset_renderer(size);
     }
   
-    pub fn render(&mut self) -> Result<(), RendererError> {  
+    pub fn render(&mut self, primitives: Vec::<RenderPrimitive>) -> Result<(), RendererError> {  
         let draw_frame_start = std::time::Instant::now();
         let display = &mut self.display;
-        let primitives = &self.primitives;
         
         display.render_canvas(|canvas| {
-            for primitive in primitives {
-                match primitive.definition {
+            for primitive in &primitives {
+                match &primitive.definition {
                     RenderPrimitiveDefinition::Rectangle(position, dimensions, inner_colour, outer_colour, stroke_width) => {
-                        canvas.set_fill_style(inner_colour);
-                        canvas.fill_rect(RectF::new(position, dimensions));
+                        canvas.set_fill_style(*inner_colour);
+                        canvas.fill_rect(RectF::new(*position, *dimensions));
                         
-                        canvas.set_line_width(stroke_width);
-                        canvas.set_stroke_style(outer_colour);
-                        canvas.stroke_rect(RectF::new(position, dimensions));
+                        canvas.set_line_width(*stroke_width);
+                        canvas.set_stroke_style(*outer_colour);
+                        canvas.stroke_rect(RectF::new(*position, *dimensions));
                     
                     }
                     RenderPrimitiveDefinition::Circle(position, dimensions, inner_colour, outer_colour, stroke_width) => {
                         let mut path = Path2D::new();
-                        canvas.set_fill_style(inner_colour);
-                        path.ellipse(position, dimensions, 0.0, 0.0, PI2);
+                        canvas.set_fill_style(*inner_colour);
+                        path.ellipse(*position, *dimensions, 0.0, 0.0, PI2);
                         path.close_path();
                         canvas.fill_path(path, FillRule::Winding);
                         
                         let mut path = Path2D::new();
-                        canvas.set_line_width(stroke_width);
-                        canvas.set_stroke_style(outer_colour);
-                        path.ellipse(position, dimensions, 0.0, 0.0, PI2);
+                        canvas.set_line_width(*stroke_width);
+                        canvas.set_stroke_style(*outer_colour);
+                        path.ellipse(*position, *dimensions, 0.0, 0.0, PI2);
                         path.close_path();
                         canvas.stroke_path(path);
-        
-    
                     }
-                    RenderPrimitiveDefinition::Glyph(_, _, _, _) => {
+                    RenderPrimitiveDefinition::Text(position, _, colour, text) => {
+                        canvas.set_font_size(8.0);
+                        canvas.set_fill_style(*colour);
+                        canvas.fill_text(text, *position);
+                        
                     }
                 }
             }

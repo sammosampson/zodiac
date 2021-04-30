@@ -47,7 +47,7 @@ pub fn create_circle_builder<T:SourceReader>(build_resources: &mut MutableBuildR
 }
 
 pub fn create_text_builder<T:SourceReader>(build_resources: &mut MutableBuildResources) -> Box<dyn EntityBuilder<T>> {
-    let mut builder = StandardBuilder::new(build_resources.world_builder.create_canvas_layout_content_entity());
+    let mut builder = StandardBuilder::new(build_resources.world_builder.create_text_entity());
     
     builder
         .with_required_token(AbstractSyntaxNodeType::Content)
@@ -141,7 +141,7 @@ impl<T:SourceReader> EntityBuilder<T> for StandardBuilder {
                 AbstractSyntaxToken::Height(height) => build_resources_mut.world_builder.add_height_component(height),
                 AbstractSyntaxToken::Radius(radius) => build_resources_mut.world_builder.add_radius_component(radius),
                 AbstractSyntaxToken::StrokeWidth(width) => build_resources_mut.world_builder.add_stroke_width_component(width),
-                AbstractSyntaxToken::Content(content) => build_resources_mut.world_builder.add_text_content_components(&content),
+                AbstractSyntaxToken::Content(content) => build_resources_mut.world_builder.add_content_component(&content),
                 AbstractSyntaxToken::Colour((r, g, b ,a)) => build_resources_mut.world_builder.add_colour_component(r, g, b ,a),
                 AbstractSyntaxToken::StrokeColour((r, g, b ,a)) => build_resources_mut.world_builder.add_stroke_colour_component(r, g, b ,a),
                 AbstractSyntaxToken::CornerRadii((left_top, right_top, right_bottom, left_bottom)) => build_resources_mut.world_builder.add_corner_radii_component(

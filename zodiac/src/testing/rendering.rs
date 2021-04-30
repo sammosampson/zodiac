@@ -43,6 +43,9 @@ impl ApplicationBundleBuilder for TestRendererBuilder {
     fn setup_cleanup_systems(&self, _: &mut Builder) {
     }
 
+    fn setup_final_functions(&self, _: &mut Builder) {
+    }
+
     fn setup_resources(&self, resources: &mut Resources, _: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
         resources.insert(create_test_renderer(self.dimensions));
         resources.insert(create_glium_render_queue());

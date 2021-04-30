@@ -61,7 +61,7 @@ pub fn error_control_for_renderable (
             command_buffer.add_component(entity, no_stroke_width);
             command_buffer.add_component(entity, square);
         }
-        RenderType::Glyph => {}
+        RenderType::Text => {}
     }
 }
 

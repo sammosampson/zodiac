@@ -48,6 +48,9 @@ where TSourceReader: SourceReader + Send + 'static {
 
     fn setup_cleanup_systems(&self, _: &mut Builder) {
     }
+    
+    fn setup_final_functions(&self, _: &mut Builder) {
+    }
 
     fn setup_resources(&self, resources: &mut Resources, _: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
         resources.insert(create_source_entity_lookup());

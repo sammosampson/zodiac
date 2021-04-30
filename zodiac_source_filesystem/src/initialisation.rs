@@ -57,6 +57,9 @@ impl ApplicationBundleBuilder for SourceFileBundleBuilder {
             .add_thread_local(remove_build_error_system());
     }
 
+    fn setup_final_functions(&self, _: &mut Builder) {
+    }
+
     fn setup_resources(&self, resources: &mut Resources, _: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
         let file_paths = FilePaths::new(self.relative_zod_folder_path);
         resources.insert(file_paths);

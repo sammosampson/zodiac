@@ -1,8 +1,8 @@
 use legion::*;
-use log::{debug};
+use legion::serialize::*;
+use log::{info};
 use legion::world::*;
 use zodiac_entities::*;
-use zodiac_rendering_glium::*;
 
 pub trait Pretty {
     fn to_pretty(&mut self);
@@ -11,6 +11,7 @@ pub trait Pretty {
 impl Pretty for World {
     fn to_pretty(&mut self) {
         let mut registry = Registry::<String>::default();
+        registry.on_unknown(UnknownType::Ignore);
         registry.register::<Dimensions>("Dimensions".to_string());
         registry.register::<AbstractSyntaxNodeType>("AbstractSyntaxNodeType".to_string());
         registry.register::<BuildError>("BuildError".to_string());
@@ -39,9 +40,8 @@ impl Pretty for World {
         registry.register::<LayoutChange>("LayoutChange".to_string());
         registry.register::<RenderType>("RenderType".to_string());
         registry.register::<Renderable>("Renderable".to_string());
-        registry.register::<Name>("Name".to_string());
+        registry.register::<Content>("Content".to_string());
         registry.register::<Path>("Path".to_string());
-        registry.register::<Character>("Character".to_string());
         registry.register::<Left>("Left".to_string());
         registry.register::<Top>("Top".to_string());
         registry.register::<OffsetsMapped>("OffsetsMapped".to_string());
@@ -50,14 +50,13 @@ impl Pretty for World {
         registry.register::<Height>("Height".to_string());
         registry.register::<MinimumHeight>("MinimumHeight".to_string());
         registry.register::<Radius>("Radius".to_string());
-        registry.register::<GlyphIndex>("GlyphIndex".to_string());
         registry.register::<Colour>("Colour".to_string());
         registry.register::<StrokeWidth>("StrokeWidth".to_string());
         registry.register::<StrokeColour>("StrokeColour".to_string());
         registry.register::<CornerRadii>("CornerRadii".to_string());
-        registry.register::<RenderPrimitive>("RenderPrimitive".to_string());
+        registry.register::<zodiac_rendering_glium::RenderPrimitive>("zodiac_rendering_glium::RenderPrimitive".to_string());
         let json = serde_json::to_value(self.as_serializable(passthrough(), &registry)).unwrap();
-        debug!("{:#}", json);
+        info!("{:#}", json);
     }
 }
 

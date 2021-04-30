@@ -14,7 +14,6 @@ pub use positioning::*;
 pub use resizing::*;
 pub use events::*;
 pub use initialisation::*;
-pub use systems::text::*;
 pub use systems::measurement::*;
 pub use systems::positioning::*;
 pub use systems::resizing::*;

@@ -12,10 +12,10 @@ use crate::render_queue::*;
 #[read_component(StrokeColour)]
 #[read_component(StrokeWidth)]
 #[read_component(CornerRadii)]
-#[read_component(GlyphIndex)]
+#[read_component(Content)]
 pub fn queue_render_primitives<T:RenderQueue + 'static>(world: &mut SubWorld, command_buffer: &mut CommandBuffer, #[resource] render_queue: &mut T) {
-    let mut query = <(Entity, &Renderable, &LayoutChange, &Colour, TryRead<GlyphIndex>, TryRead<StrokeColour>, TryRead<StrokeWidth>, TryRead<CornerRadii>)>::query();
-    for (entity, renderable, layout_change, colour, glyph_index_option, stroke_colour_option, stroke_width_option, corner_radii_option) in query.iter_mut(world) {
+    let mut query = <(Entity, &Renderable, &LayoutChange, &Colour, TryRead<Content>, TryRead<StrokeColour>, TryRead<StrokeWidth>, TryRead<CornerRadii>)>::query();
+    for (entity, renderable, layout_change, colour, content_option, stroke_colour_option, stroke_width_option, corner_radii_option) in query.iter_mut(world) {
         match renderable.render_type {
             RenderType::Rectangle => {
                 let stroke_colour = stroke_colour_option.unwrap();
@@ -43,15 +43,15 @@ pub fn queue_render_primitives<T:RenderQueue + 'static>(world: &mut SubWorld, co
                     [stroke_colour.r, stroke_colour.g, stroke_colour.b, stroke_colour.a], 
                     stroke_width.width as f32);
             },
-            RenderType::Glyph => {
-                let glyph_index = glyph_index_option.unwrap();
-                render_queue.queue_glyph_for_render(
+            RenderType::Text => {
+                let content = content_option.unwrap();
+                render_queue.queue_text_for_render(
                     command_buffer,
                     entity,
                     [layout_change.left, layout_change.top],
                     [layout_change.width, layout_change.height],
                     [colour.r, colour.g, colour.b, colour.a],
-                    glyph_index.index);
+                    content.text.clone());
             }
         }
     }

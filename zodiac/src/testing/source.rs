@@ -45,6 +45,9 @@ impl ApplicationBundleBuilder for TestSourceFileBundleBuilder {
             .add_thread_local(remove_build_error_system());
     }
 
+    fn setup_final_functions(&self, _: &mut Builder) {
+    }
+
     fn setup_resources(&self, resources: &mut Resources, _: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
         resources.insert(FilePaths::new(""));
         resources.insert(create_test_source_location_walker()); 

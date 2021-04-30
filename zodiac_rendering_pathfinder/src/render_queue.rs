@@ -4,16 +4,16 @@ use legion::systems::*;
 use zodiac_rendering::*;
 use pathfinder_canvas::*;
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct RenderPrimitive {
     pub definition: RenderPrimitiveDefinition,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum RenderPrimitiveDefinition {
     Rectangle(Vector2F, Vector2F, ColorU, ColorU, f32),
     Circle(Vector2F, Vector2F, ColorU, ColorU, f32),
-    Glyph(Vector2F, Vector2F, ColorU, u16),
+    Text(Vector2F, Vector2F, ColorU, String),
 }
 
 pub fn create_pathfinder_render_queue() -> PathFinderRenderQueue {
@@ -77,22 +77,22 @@ impl RenderQueue for PathFinderRenderQueue {
 
     }
     
-    fn queue_glyph_for_render(
+    fn queue_text_for_render(
         &mut self,
         command_buffer: &mut CommandBuffer,
         entity: &Entity,
         position: [u16; 2],
         dimensions: [u16; 2],
         colour: [f32; 4],
-        glyph_index: u16) {
+        text: String) {
             self.queue_primitive_for_render(
                 command_buffer,
                 entity,
-                RenderPrimitiveDefinition::Glyph(
+                RenderPrimitiveDefinition::Text(
                     vec2f(position[0] as f32, position[1] as f32),
                     vec2f(dimensions[0] as f32, dimensions[1] as f32),
                     rgbaf(colour[0], colour[1], colour[2], colour[3]).to_u8(),
-                    glyph_index
+                    text
                 ));
 
     }

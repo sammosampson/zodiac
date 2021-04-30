@@ -32,10 +32,8 @@ pub fn render_primitives(
 
     let primitives: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(world)
-        .map(|primitive| *primitive)
+        .map(|primitive| primitive.clone())
         .collect();
        
-    renderer.set_primitives(primitives).unwrap();
-    
-    renderer.render().unwrap();
+    renderer.render(primitives).unwrap();
 }

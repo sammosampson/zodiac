@@ -39,6 +39,9 @@ impl ApplicationBundleBuilder for GliumRendererBuilder {
     fn setup_cleanup_systems(&self, _: &mut Builder) {
     }
 
+    fn setup_final_functions(&self, _: &mut Builder) {
+    }
+
     fn setup_resources(&self, resources: &mut Resources, _: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
         let mut event_loop = create_system_event_loop();
         

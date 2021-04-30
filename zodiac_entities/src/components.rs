@@ -407,7 +407,7 @@ impl LayoutContent {
 pub enum RenderType {
     Circle,
     Rectangle,
-    Glyph
+    Text
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
@@ -424,21 +424,21 @@ impl Renderable {
         Self { render_type: RenderType::Rectangle }
     }
 
-    pub fn glyph() -> Self {
-        Self { render_type: RenderType::Glyph }
+    pub fn text() -> Self {
+        Self { render_type: RenderType::Text }
     }
 }
 
 
 #[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct Name { 
-    pub name: String
+pub struct Content { 
+    pub text: String
 }
 
-impl From<&str> for Name {
-    fn from(name: &str) -> Self {
+impl From<&str> for Content {
+    fn from(text: &str) -> Self {
         Self {
-            name: name.to_string()
+            text: text.to_string()
         }
     }
 }
@@ -452,21 +452,6 @@ impl From<&str> for Path {
     fn from(path: &str) -> Self {
         Self {
             path: path.to_string()
-        }
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct Character { 
-    pub character: char,
-    pub position: usize
-}
-
-impl Character {
-    pub fn new(character: char, position: usize) -> Self {
-        Self {
-            character,
-            position
         }
     }
 }
@@ -587,19 +572,6 @@ impl From<u16> for Radius {
     fn from(radius: u16) -> Self {
         Self {
             radius
-        }
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct GlyphIndex {
-    pub index: u16
-}
-
-impl From<u16> for GlyphIndex {
-    fn from(index: u16) -> Self {
-        Self {
-            index
         }
     }
 }

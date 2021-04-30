@@ -89,8 +89,13 @@ impl<'a> WorldBuilder<'a> {
         self.current_entity
     }
 
-    pub fn create_glyph_entity(&mut self) {
-        self.create_entity_with_component(Renderable::glyph());
+    pub fn create_text_entity(&mut self) -> Entity {
+        self.create_entity_with_component(Renderable::text());
+        self.current_entity     
+    }
+
+    pub fn add_content_component(&mut self, content: &str) { 
+        self.add_component_to_current_entity(Content::from(content));        
     }
 
     pub fn add_error_component_to_entity(&mut self, entity: Entity, error: BuildError) {
@@ -101,21 +106,7 @@ impl<'a> WorldBuilder<'a> {
     pub fn add_canvas_layout_content_component(&mut self) {
         self.add_component_to_current_entity(LayoutContent::canvas());
     }
-
-    pub fn add_text_content_components(&mut self, content: &str) { 
-        let mut position = 0;
-        for character in content.chars() {
-            self.create_glyph_entity();
-            self.add_character_component(character, position);
-            self.complete_entity();
-            position = position + 1;
-        }
-    }
-    
-    pub fn add_character_component(&mut self, character: char, position: usize) {
-        self.add_component_to_current_entity(Character::new(character, position));
-    }
-    
+        
     pub fn add_left_component(&mut self, left: u16) {
         self.add_component_to_current_entity(Left::from(left));
     }

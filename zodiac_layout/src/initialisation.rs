@@ -25,11 +25,6 @@ impl ApplicationBundleBuilder for LayoutBundleBuilder {
             .add_system(resize_screen_system())
             .add_system(resize_after_rebuild_system())
             .flush()
-            .add_system(remove_from_text_colour_map_system())
-            .add_system(build_text_colour_map_system())
-            .flush()
-            .add_system(format_glyphs_system())
-            .flush()
             .add_system(remove_from_left_offset_map_system())
             .add_system(build_left_offset_map_system())
             .add_system(remove_from_top_offset_map_system())
@@ -60,6 +55,9 @@ impl ApplicationBundleBuilder for LayoutBundleBuilder {
 
     }
 
+    fn setup_final_functions(&self, _: &mut Builder) {
+    }
+    
     fn setup_resources(&self, resources: &mut Resources, event_channel: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
         resources.insert(create_layout_event_reader_registry(event_channel));
         resources.insert(create_text_colour_map());

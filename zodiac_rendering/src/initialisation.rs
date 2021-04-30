@@ -51,6 +51,9 @@ where
     fn setup_cleanup_systems(&self, _: &mut Builder) {
     }
 
+    fn setup_final_functions(&self, _: &mut Builder) {
+    }
+
     fn setup_resources(&self, _: &mut Resources, _: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
         Ok(())
     }

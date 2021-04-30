@@ -78,17 +78,17 @@ impl RenderPrimitive {
         ) 
     }
 
-    pub fn glyph(
+    pub fn text(
         position: [u16; 2],
         dimensions: [u16; 2],
         colour: [f32; 4],
-        glyph_index: u16) -> Self {
+        _: String) -> Self {
         RenderPrimitive::with_position_size_colours_identification_and_data(
             position,
             dimensions,
             colour,
             colour,
-            [2, glyph_index],
+            [2, 0],
             [0.0, 0.0, 0.0, 0.0],
             [0, 0, 0, 0]
         ) 

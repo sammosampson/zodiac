@@ -8,6 +8,7 @@ use zodiac_source_filesystem::*;
 use zodiac_rendering::*;
 
 use crate::systems::error_reporting::*;
+use crate::systems::world_vision::*;
 
 pub fn standard_builders(relative_zod_folder_path: &'static str) -> Vec::<Box::<dyn ApplicationBundleBuilder>> {
     vec!(
@@ -15,7 +16,7 @@ pub fn standard_builders(relative_zod_folder_path: &'static str) -> Vec::<Box::<
         Box::new(standard_source_building()),
         Box::new(standard_layout()),
         Box::new(standard_rendering()),
-        Box::new(renderer())
+        Box::new(renderer()),
     )
 }
 
@@ -46,6 +47,39 @@ pub fn renderer() -> PathFinderRendererBuilder {
     pathfinder_renderer()
 }
 
+pub fn world_vision() -> WorldVisionBundleBuilder {
+    WorldVisionBundleBuilder::default()
+}
+
+#[derive(Debug, Default)]
+pub struct WorldVisionBundleBuilder {
+}
+
+impl ApplicationBundleBuilder for WorldVisionBundleBuilder {
+    fn description(&self) -> String {
+        "world visualising build".to_string()
+    }
+
+    fn setup_build_systems(&self, _: &mut Builder) {
+    }
+
+    fn setup_layout_systems(&self, _: &mut Builder) {
+    }
+
+    fn setup_rendering_systems(&self, _: &mut Builder) {
+    }
+
+    fn setup_cleanup_systems(&self, _: &mut Builder) {            
+    }
+
+    fn setup_final_functions(&self, builder: &mut Builder) {
+        builder.add_thread_local_fn(log_world_view);
+    }
+
+    fn setup_resources(&self, _: &mut Resources, _: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
+        Ok(())
+    }
+}
 
 pub struct Application {
     resources: Resources,
@@ -63,6 +97,11 @@ impl Application {
             schedule_builder,
             builders: vec!()
         }
+    }
+
+    pub fn use_logging(self) -> Self {
+        pretty_env_logger::init();
+        self
     }
 
     pub fn with_builder<T>(mut self, builder: T) -> Self
@@ -116,6 +155,11 @@ impl Application {
             self.schedule_builder.flush();    
         }
         
+        for builder in &self.builders {
+            info!("setup_final_functions: {:?}", builder.description());
+            builder.setup_final_functions(&mut self.schedule_builder);
+        }
+
         for builder in &self.builders {
             info!("setup_resources: {:?}", builder.description());
             builder.setup_resources(&mut self.resources, &mut event_channel)?;
