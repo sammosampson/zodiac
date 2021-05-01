@@ -1,4 +1,4 @@
-use log::info;
+use log::*;
 use glutin::{dpi::PhysicalSize, event_loop::*};
 use pathfinder_canvas::*;
 use shrev::*;

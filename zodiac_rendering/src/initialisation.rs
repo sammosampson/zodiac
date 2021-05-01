@@ -45,7 +45,9 @@ where
 
     fn setup_rendering_systems(&self, builder: &mut Builder) {
         builder
-            .add_thread_local(queue_render_primitives_system::<TRenderQueue>());
+            .add_thread_local(queue_render_rectangle_primitives_system::<TRenderQueue>())
+            .add_thread_local(queue_render_circle_primitives_system::<TRenderQueue>())
+            .add_thread_local(queue_render_text_primitives_system::<TRenderQueue>());
     }
 
     fn setup_cleanup_systems(&self, _: &mut Builder) {

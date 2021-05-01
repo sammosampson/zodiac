@@ -1,5 +1,4 @@
 use legion::*;
-use zodiac_rendering_glium::*;
 use zodiac::testing::*;
 use zodiac_entities::*;
 use zodiac::*;
@@ -42,7 +41,7 @@ fn imported_control_gets_output() {
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
     
     assert_eq!(changes.len(), 2);
@@ -100,7 +99,7 @@ fn changed_imported_control_gets_output() {
     
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
     
     assert_eq!(changes.len(), 1);
@@ -147,7 +146,7 @@ fn created_then_imported_control_gets_output() {
     
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
     
     assert_eq!(changes.len(), 1);
@@ -195,7 +194,7 @@ fn nonexistent_imported_then_created_control_gets_output() {
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
     
     assert_eq!(changes.len(), 1);
@@ -238,7 +237,7 @@ fn imported_then_deleted_then_recreated_control_gets_output() {
     
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
     
     assert_eq!(changes.len(), 1);

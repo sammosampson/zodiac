@@ -21,6 +21,7 @@ pub enum AbstractSyntaxToken {
     Height(u16),
     Radius(u16),
     Content(String),
+    FontSize(u16),
     Path(String),
     Name(String),
     StrokeColour((f32, f32, f32, f32)),
@@ -42,6 +43,7 @@ impl<'a> From<&AbstractSyntaxToken> for AbstractSyntaxNodeType {
             &AbstractSyntaxToken::HorizontalLayoutContent => AbstractSyntaxNodeType::HorizontalLayoutContent,
             &AbstractSyntaxToken::VerticalLayoutContent => AbstractSyntaxNodeType::VerticalLayoutContent,
             &AbstractSyntaxToken::Content(_) => AbstractSyntaxNodeType::Content,
+            &AbstractSyntaxToken::FontSize(_) => AbstractSyntaxNodeType::FontSize,
             &AbstractSyntaxToken::Left(_) => AbstractSyntaxNodeType::Left,
             &AbstractSyntaxToken::Top(_) => AbstractSyntaxNodeType::Top,
             &AbstractSyntaxToken::Width(_) => AbstractSyntaxNodeType::Width,
@@ -137,6 +139,7 @@ impl <I> AbstractSyntaxTokenizer<I>  where I : Iterator<Item=SourceTokenResult> 
             "width" => Some(Ok(AbstractSyntaxToken::Width(value as u16))),
             "height" => Some(Ok(AbstractSyntaxToken::Height(value as u16))),
             "stroke-width" => Some(Ok(AbstractSyntaxToken::StrokeWidth(value as u16))),
+            "font-size" => Some(Ok(AbstractSyntaxToken::FontSize(value as u16))),
             "radius" => Some(Ok(AbstractSyntaxToken::Radius(value as u16))),
             _ => Some(Err(AbstractSyntaxTokenError::UnknownProperty))
         }

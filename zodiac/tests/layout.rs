@@ -1,5 +1,4 @@
 use legion::*;
-use zodiac_rendering_glium::*;
 use zodiac::testing::*;
 use zodiac_entities::*;
 use zodiac::*;
@@ -50,7 +49,7 @@ fn absolute_positioning_on_screen() {
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
     
     assert_eq!(changes.len(), 3);
@@ -89,7 +88,7 @@ fn absolute_positioning_on_canvas_offset_from_screen() {
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
 
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([20, 22], [100, 110], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
@@ -121,7 +120,7 @@ fn dimensions_fit_parent_when_not_specified() {
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
     
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([0, 0], [100, 110], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
@@ -159,7 +158,7 @@ fn horizontal_layout_for_none_sized_children() {
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect(); 
         
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([0, 0], [50, 100], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
@@ -206,7 +205,7 @@ fn horizontal_layout_for_sized_children() {
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
     
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([0, 0], [25, 100], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
@@ -246,7 +245,7 @@ fn vertical_layout_for_none_sized_children() {
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
         
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([0, 0], [100, 50], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);
@@ -293,7 +292,7 @@ fn vertical_layout_for_sized_children() {
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
     
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([0, 0], [100, 25], [1.0, 1.0, 1.0, 0.1], [0.2, 0.3, 1.0, 1.0], 2.0, [50, 0, 50, 50])), true);

@@ -98,6 +98,10 @@ impl<'a> WorldBuilder<'a> {
         self.add_component_to_current_entity(Content::from(content));        
     }
 
+    pub fn add_font_size_component(&mut self, size: u16) { 
+        self.add_component_to_current_entity(FontSize::from(size));        
+    }
+
     pub fn add_error_component_to_entity(&mut self, entity: Entity, error: BuildError) {
         debug!("Adding error ocurrence {:?} to {:?}", error, entity);
         self.add_component(entity, BuildErrorOccurrence::from(error));

@@ -29,5 +29,6 @@ pub trait RenderQueue {
         position: [u16; 2],
         dimensions: [u16; 2],
         colour: [f32; 4],
-        text: String);
+        text: String,
+        font_size: f32);
 }

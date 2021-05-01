@@ -51,6 +51,7 @@ pub fn create_text_builder<T:SourceReader>(build_resources: &mut MutableBuildRes
     
     builder
         .with_required_token(AbstractSyntaxNodeType::Content)
+        .with_required_token(AbstractSyntaxNodeType::FontSize)
         .with_required_token(AbstractSyntaxNodeType::Colour)
         .with_optional_token(AbstractSyntaxNodeType::Width)
         .with_optional_token(AbstractSyntaxNodeType::Height)
@@ -141,6 +142,7 @@ impl<T:SourceReader> EntityBuilder<T> for StandardBuilder {
                 AbstractSyntaxToken::Height(height) => build_resources_mut.world_builder.add_height_component(height),
                 AbstractSyntaxToken::Radius(radius) => build_resources_mut.world_builder.add_radius_component(radius),
                 AbstractSyntaxToken::StrokeWidth(width) => build_resources_mut.world_builder.add_stroke_width_component(width),
+                AbstractSyntaxToken::FontSize(size) => build_resources_mut.world_builder.add_font_size_component(size),
                 AbstractSyntaxToken::Content(content) => build_resources_mut.world_builder.add_content_component(&content),
                 AbstractSyntaxToken::Colour((r, g, b ,a)) => build_resources_mut.world_builder.add_colour_component(r, g, b ,a),
                 AbstractSyntaxToken::StrokeColour((r, g, b ,a)) => build_resources_mut.world_builder.add_stroke_colour_component(r, g, b ,a),

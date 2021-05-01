@@ -17,7 +17,7 @@ pub fn event_loop(
     event_loop.run_return(|event, _, flow| {
         match event {
             Event::WindowEvent { window_id: _, event} => {
-                info!("Window event {:?}", event);
+                debug!("Window event {:?}", event);
                 event_producer.push(WrappedSystemEvent::from(event).into());
             }
             Event::DeviceEvent { device_id: _, event } => {

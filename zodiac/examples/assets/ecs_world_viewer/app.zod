@@ -1,24 +1,4 @@
-<import name="world-viewer" path="./world-viewer.zod" />    
-
+<import name="world-viewer" path=".\world-viewer.zod" />    
 <root>
-    <vertical-stack>
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-        <world-viewer />
-    </vertical-stack>
+    <world-viewer />
 </root>

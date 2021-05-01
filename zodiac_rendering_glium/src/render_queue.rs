@@ -70,7 +70,8 @@ impl RenderQueue for GliumRenderQueue {
         position: [u16; 2],
         dimensions: [u16; 2],
         colour: [f32; 4],
-        text: String) {
+        text: String,
+        _: f32) {
         self.queue_primitive_for_render(
             command_buffer,
             entity,

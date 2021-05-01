@@ -1,5 +1,4 @@
 use legion::*;
-use zodiac_rendering_glium::*;
 use zodiac::testing::*;
 use zodiac_entities::*;
 use zodiac::*;
@@ -25,7 +24,7 @@ fn invalid_source_causes_top_level_error_circle_renderable_control_output() {
     
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
     
     assert_eq!(changes.len(), 1);
@@ -52,7 +51,7 @@ fn invalid_source_causes_top_level_error_rect_renderable_control_output() {
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
     
     assert_eq!(changes.len(), 1);
@@ -78,7 +77,7 @@ fn invalid_import_causes_top_level_error_control_output() {
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
 
     assert_eq!(changes.len(), 1);
@@ -103,7 +102,7 @@ fn invalid_control_causes_top_level_error_control_output() {
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
     
     assert_eq!(changes.len(), 1);
@@ -129,7 +128,7 @@ fn error_control_does_not_apply_twice() {
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();
     
     assert_eq!(changes.len(), 1);

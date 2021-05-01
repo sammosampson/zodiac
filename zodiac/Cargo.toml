@@ -11,6 +11,7 @@ log = "0.4.14"
 pretty_env_logger = "*"
 legion = "0.3.1"
 serde_json = "1.0.64"
+serde = "1.0.125"
 shrev = "1.1.1"
 zodiac_entities = {path = "../zodiac_entities", version = "0.1.0"}
 zodiac_source = {path = "../zodiac_source", version = "0.1.0"}

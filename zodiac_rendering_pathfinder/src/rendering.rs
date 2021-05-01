@@ -78,9 +78,9 @@ impl PathFinderRenderer {
                         path.close_path();
                         canvas.stroke_path(path);
                     }
-                    RenderPrimitiveDefinition::Text(position, _, colour, text) => {
+                    RenderPrimitiveDefinition::Text(position, _, colour, text, font_size) => {
                         debug!("Rendering text {:?}, {:?}, {:?}", position, colour, text);
-                        canvas.set_font_size(8.0);
+                        canvas.set_font_size(*font_size);
                         canvas.set_fill_style(*colour);
                         canvas.fill_text(text, *position);
                         

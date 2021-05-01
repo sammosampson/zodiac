@@ -146,6 +146,7 @@ pub enum AbstractSyntaxNodeType {
     Radius,
     StrokeWidth,
     Content,
+    FontSize,
     Path,
     Name,
     Colour,
@@ -439,6 +440,19 @@ impl From<&str> for Content {
     fn from(text: &str) -> Self {
         Self {
             text: text.to_string()
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
+pub struct FontSize { 
+    pub size: u16
+}
+
+impl From<u16> for FontSize {
+    fn from(size: u16) -> Self {
+        Self {
+            size
         }
     }
 }

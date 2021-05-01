@@ -13,7 +13,7 @@ pub struct RenderPrimitive {
 pub enum RenderPrimitiveDefinition {
     Rectangle(Vector2F, Vector2F, ColorU, ColorU, f32),
     Circle(Vector2F, Vector2F, ColorU, ColorU, f32),
-    Text(Vector2F, Vector2F, ColorU, String),
+    Text(Vector2F, Vector2F, ColorU, String, f32),
 }
 
 pub fn create_pathfinder_render_queue() -> PathFinderRenderQueue {
@@ -84,7 +84,8 @@ impl RenderQueue for PathFinderRenderQueue {
         position: [u16; 2],
         dimensions: [u16; 2],
         colour: [f32; 4],
-        text: String) {
+        text: String,
+        font_size: f32) {
             self.queue_primitive_for_render(
                 command_buffer,
                 entity,
@@ -92,7 +93,8 @@ impl RenderQueue for PathFinderRenderQueue {
                     vec2f(position[0] as f32, position[1] as f32),
                     vec2f(dimensions[0] as f32, dimensions[1] as f32),
                     rgbaf(colour[0], colour[1], colour[2], colour[3]).to_u8(),
-                    text
+                    text,
+                    font_size
                 ));
 
     }

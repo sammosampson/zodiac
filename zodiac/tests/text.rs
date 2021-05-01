@@ -1,5 +1,4 @@
 use legion::*;
-use zodiac_rendering_glium::*;
 use zodiac::testing::*;
 use zodiac_entities::*;
 use zodiac::*;
@@ -9,7 +8,7 @@ use zodiac::*;
 fn text_gets_output() {
     let source = "
 <root>
-    <text content=\"abc\" colour=(1.0, 1.0, 1.0, 0.1) />
+    <text content=\"abc\" font-size=32 colour=(1.0, 1.0, 1.0, 0.1) />
 </root>
 ";
     let mut runner = Application::new()
@@ -23,11 +22,11 @@ fn text_gets_output() {
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();  
     
     assert_eq!(changes.len(), 1);
-    assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::text([0, 0], [100, 110], [1.0, 1.0, 1.0, 0.1], "abc".to_string())), true);
+    assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::text([0, 0], [100, 110], [1.0, 1.0, 1.0, 0.1], "abc".to_string(), 32.0)), true);
 }
 
 #[test]
@@ -35,7 +34,7 @@ fn text_gets_output_in_stack() {
     let source = "
 <root>
     <horizontal-stack>
-        <text content=\"abc\" colour=(1.0, 1.0, 1.0, 0.1) />
+        <text content=\"abc\" font-size=32 colour=(1.0, 1.0, 1.0, 0.1) />
     </horizontal-stack>
 </root>
 ";
@@ -50,9 +49,9 @@ fn text_gets_output_in_stack() {
 
     let changes: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(runner.world_mut())
-        .map(|change| *change)
+        .map(|change| change.clone())
         .collect();  
     
     assert_eq!(changes.len(), 1);
-    assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::text([0, 0], [100, 110], [1.0, 1.0, 1.0, 0.1], "abc".to_string())), true);
+    assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::text([0, 0], [100, 110], [1.0, 1.0, 1.0, 0.1], "abc".to_string(), 32.0)), true);
 }

@@ -139,6 +139,15 @@ fn text_content_produces_content_node() {
 }
 
 #[test]
+fn text_content_produces_font_size_node() {
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text font-size=32 />"));
+    assert_eq!(AbstractSyntaxToken::Text, tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::FontSize(32), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
+    assert_eq!(None, tokenizer.next());
+}
+
+#[test]
 fn left_produces_left_node() {
     let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<text left=100 />"));
     assert_eq!(AbstractSyntaxToken::Text, tokenizer.next().unwrap().unwrap());
