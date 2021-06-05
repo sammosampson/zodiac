@@ -27,7 +27,6 @@ impl ParentRetrieval for RelationshipMap {
 
 impl ChildrenRetrieval for RelationshipMap {
     fn get_children(&self, parent: &Entity) -> ChildrenRelationshipIterator {
-
         ChildrenRelationshipIterator::new(self, *parent)
     }
 }
