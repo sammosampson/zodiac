@@ -1,24 +1,26 @@
-use legion::*;
+/* use legion::*;
 use zodiac::testing::*;
 use zodiac_entities::*;
+use zodiac_source::embedding::*;
 use zodiac::*;
+use mox::mox;
 //use zodiac::formatting::*;
+
+#[topo::nested]
+pub fn app_root() -> RootNode<TestState> {
+    mox!(
+        <root>
+            <circle radius=12 />
+        </root>
+    )
+}
 
 #[test]
 fn invalid_source_causes_top_level_error_circle_renderable_control_output() {
-    let root = "
-<root>
-    <circle
-        radius=
-    />
-</root>
-";  
     let mut runner = Application::new()
         .with_builders(&mut test_builders(Dimensions::new(100, 100)))
         .build()
         .unwrap();
-    
-    apply_initial_source(runner.resources_mut(), ".\\root.zod", root);
     
     runner.run_once();
     
@@ -133,3 +135,4 @@ fn error_control_does_not_apply_twice() {
     
     assert_eq!(changes.len(), 1);
 }
+ */

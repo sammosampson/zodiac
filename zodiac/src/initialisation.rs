@@ -4,16 +4,15 @@ use legion::*;
 use legion::systems::*;
 use zodiac_entities::*;
 use zodiac_layout::*;
-use zodiac_source_filesystem::*;
 use zodiac_rendering::*;
-
-use crate::systems::error_reporting::*;
+use zodiac_source::*;
+use zodiac_source::embedding::*;
+use zodiac_source::application_state::*;
 use crate::systems::world_vision::*;
 
-pub fn standard_builders(relative_zod_folder_path: &'static str) -> Vec::<Box::<dyn ApplicationBundleBuilder>> {
+pub fn standard_builders<TState: State, TRootFunc: FnMut() -> RootNode<TState> + Copy + Clone + 'static>(state: TState, root_func: TRootFunc) -> Vec::<Box::<dyn ApplicationBundleBuilder>> {
     vec!(
-        Box::new(standard_source_file_building(relative_zod_folder_path)),
-        Box::new(standard_source_building()),
+        Box::new(standard_source_building(state, root_func)),
         Box::new(standard_layout()),
         Box::new(standard_rendering()),
         Box::new(renderer()),
@@ -146,7 +145,6 @@ impl Application {
             self.schedule_builder.flush();    
         }
 
-        self.schedule_builder.add_thread_local(report_build_error_system());
         self.schedule_builder.flush(); 
 
         for builder in &self.builders {

@@ -1,6 +1,0 @@
-<import name="world-viewer-control" path=".\world-viewer-control.zod" />    
-<control>
-    <vertical-stack>
-        <world-viewer-control />
-    </vertical-stack>
-</control>

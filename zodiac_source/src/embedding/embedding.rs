@@ -44,8 +44,8 @@ element! {
         left(u16)
         top(u16)
         radius(u16)
-        colour(Colour)
-        stroke_colour(StrokeColour)
+        colour((u8, u8, u8, u8))
+        stroke_colour((u8, u8, u8, u8))
         stroke_width(u16)
     }
 }
@@ -58,8 +58,8 @@ element! {
         top(u16)
         width(u16)
         height(u16)
-        colour(Colour)
-        stroke_colour(StrokeColour)
+        colour((u8, u8, u8, u8))
+        stroke_colour((u8, u8, u8, u8))
         stroke_width(u16)
         corner_radii((u16, u16, u16, u16))
     }
@@ -73,7 +73,7 @@ element! {
         top(u16)
         width(u16)
         height(u16)
-        colour(Colour)
+        colour((u8, u8, u8, u8))
         content(String)
         font_size(u8)
     }

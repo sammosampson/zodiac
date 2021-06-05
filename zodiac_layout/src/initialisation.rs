@@ -8,7 +8,7 @@ pub fn standard_layout() -> LayoutBundleBuilder {
     LayoutBundleBuilder::default()
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Copy, Clone)]
 pub struct LayoutBundleBuilder {
 }
 

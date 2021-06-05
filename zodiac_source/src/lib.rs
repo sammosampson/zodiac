@@ -1,15 +1,11 @@
 pub mod embedding;
-pub mod tokenization;
-pub mod source;
-mod systems;
+pub mod application_state;
 mod building;
+mod systems;
+mod running;
 mod initialisation;
 mod changes;
-mod application_state;
 
-pub use systems::parsing::*;
-pub use systems::building::*;
-pub use systems::linking::*;
-pub use source::*;
-pub use building::*;
+pub use systems::running::*;
+pub use systems::cleanup::*;
 pub use initialisation::*;

@@ -1,49 +1,53 @@
 use legion::*;
+use mox::mox;
 use zodiac::testing::*;
 use zodiac_entities::*;
+use zodiac_source::embedding::*;
 use zodiac::*;
 //use zodiac::formatting::*;
 
+#[topo::nested]
+fn absolute_positioning_on_screen_app_root() -> RootNode<TestState> {
+    mox!(
+        <root>
+            <rect
+                left=10
+                top=11
+                width=12
+                height=13
+                colour=(255, 255, 255, 25)
+                stroke_colour=(50, 75, 255, 255)
+                stroke_width=2
+                corner_radii=(50, 0, 50, 50)
+            />
+            <circle
+                left=11
+                top=12
+                radius=12
+                colour=(100, 100, 100, 25)
+                stroke_colour=(255, 255, 255, 255)
+                stroke_width=3
+            />
+            <rect
+                left=12
+                top=13
+                width=14
+                height=15
+                colour=(255, 255, 255, 25)
+                stroke_colour=(50, 75, 255, 255)
+                stroke_width=4
+                corner_radii=(50, 0, 50, 50)
+            />
+        </root>
+    )
+}
+
 #[test]
 fn absolute_positioning_on_screen() {
-    let source = "
-<root>
-    <rect
-        left=10
-        top=11
-        width=12
-        height=13
-        colour=(255, 255, 255, 25)
-        stroke-colour=(50, 75, 255, 255)
-        stroke-width=2
-        corner-radii=(50, 0, 50, 50)
-    />
-    <circle
-        left=11
-        top=12
-        radius=12
-        colour=(100, 100, 100, 25)
-        stroke-colour=(255, 255, 255, 255)
-        stroke-width=3
-    />
-    <rect
-        left=12
-        top=13
-        width=14
-        height=15
-        colour=(255, 255, 255, 25)
-        stroke-colour=(50, 75, 255, 255)
-        stroke-width=4
-        corner-radii=(50, 0, 50, 50)
-    />
-</root>
-";
     let mut runner = Application::new()
-        .with_builders(&mut test_builders(Dimensions::new(1024, 768)))
+        .with_builders(&mut test_builders(absolute_positioning_on_screen_app_root, Dimensions::new(1024, 768)))
         .build()
         .unwrap();
-
-    apply_initial_source(runner.resources_mut(), ".\\root.zod", source);
 
     runner.run_once();
 
@@ -58,6 +62,7 @@ fn absolute_positioning_on_screen() {
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([12, 13], [14, 15], [255, 255, 255, 25], [50, 75, 255, 255], 4, [50, 0, 50, 50])), true);
 }
 
+/*
 #[test]
 fn absolute_positioning_on_canvas_offset_from_screen() {
     let source = "
@@ -300,3 +305,4 @@ fn vertical_layout_for_sized_children() {
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::rectangle([0, 65], [100, 35], [255, 255, 255, 25], [50, 75, 255, 255], 2, [50, 0, 50, 50])), true);
     assert_eq!(changes.len(), 3);
 }
+ */

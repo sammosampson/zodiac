@@ -13,18 +13,7 @@ impl Pretty for World {
         let mut registry = Registry::<String>::default();
         registry.on_unknown(UnknownType::Ignore);
         registry.register::<Dimensions>("Dimensions".to_string());
-        registry.register::<AbstractSyntaxNodeType>("AbstractSyntaxNodeType".to_string());
-        registry.register::<BuildError>("BuildError".to_string());
-        registry.register::<BuildError>("BuildError".to_string());
-        registry.register::<BuildErrorOccurrence>("BuildErrorOccurrence".to_string());
-        registry.register::<SourceFile>("SourceFile".to_string());
-        registry.register::<SourceFileParsed>("SourceFileParsed".to_string());
-        registry.register::<SourceFileChange>("SourceFileChange".to_string());
-        registry.register::<SourceFileCreation>("SourceFileCreation".to_string());
-        registry.register::<SourceFileInitialRead>("SourceFileInitialRead".to_string());
-        registry.register::<SourceFileRemoval>("SourceFileRemoval".to_string());
-        registry.register::<SourceFileRoot>("SourceFileRoot".to_string());
-        registry.register::<SourceImplementation>("SourceImplementation".to_string());
+        registry.register::<RootWindowResized>("RootWindowResized".to_string());
         registry.register::<Removed>("Removed".to_string());
         registry.register::<Relationship>("Relationship".to_string());
         registry.register::<Root>("Root".to_string());
@@ -33,7 +22,6 @@ impl Pretty for World {
         registry.register::<CurrentLayoutConstraints>("CurrentLayoutConstraints".to_string());
         registry.register::<Resized>("Resized".to_string());
         registry.register::<Mapped>("Mapped".to_string());
-        registry.register::<Import>("Import".to_string());
         registry.register::<LayoutType>("LayoutType".to_string());
         registry.register::<LayoutContent>("LayoutContent".to_string());
         registry.register::<LayoutRequest>("LayoutRequest".to_string());
@@ -41,7 +29,6 @@ impl Pretty for World {
         registry.register::<RenderType>("RenderType".to_string());
         registry.register::<Renderable>("Renderable".to_string());
         registry.register::<Content>("Content".to_string());
-        registry.register::<Path>("Path".to_string());
         registry.register::<Left>("Left".to_string());
         registry.register::<Top>("Top".to_string());
         registry.register::<OffsetsMapped>("OffsetsMapped".to_string());

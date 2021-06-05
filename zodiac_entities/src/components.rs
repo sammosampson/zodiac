@@ -1,12 +1,10 @@
-use std::{fmt, ops::*};
-use std::error::*;
+use std::ops::*;
 use legion::*;
 use serde::*;
 
 #[derive(Debug)]
 pub enum ZodiacError {
-    FailedToRender(RendererError),
-    FailedToFileMonitorFiles(FileMonitorError)
+    FailedToRender(RendererError)
 }
 
 impl From<RendererError> for ZodiacError {
@@ -25,234 +23,8 @@ pub enum RendererError {
     DrawError
 }
 
-impl From<FileMonitorError> for ZodiacError {
-    fn from(error: FileMonitorError) -> Self {
-        ZodiacError::FailedToFileMonitorFiles(error)
-    }
-}
-
-#[derive(Debug)]
-pub enum FileMonitorError {
-    WatchError,
-    FilePathError(FilePathError)
-}
-
-#[derive(Debug)]
-pub enum FileMonitorWatchError {
-    NoLongerMonitoring,
-    NoFileChanges
-}
-
-#[derive(Debug)]
-pub enum FilePathError {
-    ManifestDirectoryEnvironmentVariableNotSet
-}
-
-impl From<FilePathError> for FileMonitorError {
-    fn from(error: FilePathError) -> FileMonitorError {
-        FileMonitorError::FilePathError(error)
-    }
-}
-
-#[derive(PartialEq, Eq, Debug, Copy, Clone, Serialize, Deserialize)]
-pub enum SourceTokenError {
-    CouldNotFindStartTag(usize),
-    CouldNotParseNumberValue(usize),
-    CouldNotFindControlName(usize),
-    CouldNotFindPropertyStartSymbol(usize),
-    CouldNotFindControlToClose(usize),
-    CouldNotFindControlCloseSymbol(usize),
-    ClosingWrongTag(usize)
-}
-
-impl Error for SourceTokenError {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        match self {
-            _ => None
-        }
-    }
-}
-
-impl fmt::Display for SourceTokenError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            SourceTokenError::CouldNotFindStartTag(position) => write!(f, "could not find start tag ({:?})", position),
-            SourceTokenError::CouldNotParseNumberValue(position) => write!(f, "could not parse number value ({:?})", position),
-            SourceTokenError::CouldNotFindControlName(position) => write!(f, "could not find control name ({:?})", position),
-            SourceTokenError::CouldNotFindPropertyStartSymbol(position) => write!(f, "could not find property start symbol ({:?})", position),
-            SourceTokenError::CouldNotFindControlToClose(position) => write!(f, "could not find control to close ({:?})", position),
-            SourceTokenError::CouldNotFindControlCloseSymbol(position) => write!(f, "could not find control close symbol ({:?})", position),
-            SourceTokenError::ClosingWrongTag(position) => write!(f, "closing wrong tag ({:?})", position),
-        }
-    }    
-}
-
-#[derive(PartialEq, Eq, Debug, Copy, Clone, Serialize, Deserialize)]
-pub enum AbstractSyntaxTokenError {
-    SourceTokenError(SourceTokenError),
-    UnusedPropertyType,
-    UnknownProperty,
-    BadColourValue,
-    BadStrokeColourValue,
-    BadCornerRadiiValue
-}
-
-impl Error for AbstractSyntaxTokenError {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        match self {
-            AbstractSyntaxTokenError::SourceTokenError(source) => Some(source),
-            AbstractSyntaxTokenError::UnusedPropertyType => None,
-            AbstractSyntaxTokenError::UnknownProperty => None,
-            AbstractSyntaxTokenError::BadColourValue => None,
-            AbstractSyntaxTokenError::BadStrokeColourValue => None,
-            AbstractSyntaxTokenError::BadCornerRadiiValue => None,
-        }
-    }
-}
-
-impl fmt::Display for AbstractSyntaxTokenError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            AbstractSyntaxTokenError::SourceTokenError(source) => write!(f, "Error in source ({:?})", source),
-            AbstractSyntaxTokenError::UnusedPropertyType => write!(f, "Unused property type"),
-            AbstractSyntaxTokenError::UnknownProperty => write!(f, "Unknown property"),
-            AbstractSyntaxTokenError::BadColourValue => write!(f, "Bad colour value"),
-            AbstractSyntaxTokenError::BadStrokeColourValue => write!(f, "Bad stroke colour value"),
-            AbstractSyntaxTokenError::BadCornerRadiiValue => write!(f, "Bad corner radii value"),
-        }
-    }    
-}
-
-impl<'a> From<SourceTokenError> for AbstractSyntaxTokenError {
-    fn from(error: SourceTokenError) -> Self {
-        AbstractSyntaxTokenError::SourceTokenError(error)
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub enum AbstractSyntaxNodeType {
-    Root,
-    Import,
-    Circle,
-    Rectangle,
-    Text,
-    CanvasLayoutContent,
-    HorizontalLayoutContent,
-    VerticalLayoutContent,
-    Left,
-    Top,
-    Width,
-    Height,
-    Radius,
-    StrokeWidth,
-    Content,
-    FontSize,
-    Path,
-    Name,
-    Colour,
-    StrokeColour,
-    CornerRadii,
-    Unknown
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub enum BuildError {
-    TokenError(AbstractSyntaxTokenError),
-    UnexpectedToken(AbstractSyntaxNodeType),
-    MissingRequiredTokens(Vec<AbstractSyntaxNodeType>),
-    SourceLocationDoesNotExist(String),
-    ControlDoesNotExist(String),
-    ControlSourceDoesNotExist(String),
-    ControlSourceFileDoesNotExist
-}
-
-impl Error for BuildError {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        match self {
-            BuildError::TokenError(source) => Some(source),
-            BuildError::UnexpectedToken(_) => None,
-            BuildError::MissingRequiredTokens(_) => None,
-            BuildError::SourceLocationDoesNotExist(_) => None,
-            BuildError::ControlDoesNotExist(_) => None,
-            BuildError::ControlSourceDoesNotExist(_) => None,
-            BuildError::ControlSourceFileDoesNotExist => None
-        }
-    }
-}
-
-impl fmt::Display for BuildError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            BuildError::TokenError(source) => source.fmt(f),
-            BuildError::UnexpectedToken(token) => write!(f, "Unexpected token {:?}", token),
-            BuildError::MissingRequiredTokens(tokens) => write!(f, "Missing required tokens ({:?})", tokens),
-            BuildError::SourceLocationDoesNotExist(location) => write!(f, "Source does not exist for {:?}", location),
-            BuildError::ControlDoesNotExist(control) => write!(f, "Control does not exist {:?}", control),
-            BuildError::ControlSourceDoesNotExist(control) => write!(f, "Control source does not exist {:?}", control),
-            BuildError::ControlSourceFileDoesNotExist => write!(f, "Control source file does not exist"),
-        }
-    }    
-}
-
-impl<'a> From<AbstractSyntaxTokenError> for BuildError {
-    fn from(error: AbstractSyntaxTokenError) -> Self {
-        BuildError::TokenError(error)
-    }
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BuildErrorOccurrence {
-    pub error: BuildError
-}
-
-impl From<BuildError> for BuildErrorOccurrence {
-    fn from(error: BuildError) -> Self {
-        Self {
-            error
-        }
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct SourceFile {
-}
-
-
-#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct SourceFileRoot {
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SourceImplementation {
-    pub source_file_entity: Entity
-}
-
-impl SourceImplementation {
-    pub fn from_source_entity(source_file_entity: Entity) -> Self {
-        Self {
-            source_file_entity
-        }
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct SourceFileParsed {
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct SourceFileChange {
-}
-#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct SourceFileCreation {
-}
-
-
-#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct SourceFileInitialRead {
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct SourceFileRemoval {
+pub struct RootWindowResized {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
@@ -377,10 +149,6 @@ pub struct Resized {
 pub struct Mapped {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct Import {
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub enum LayoutType {
     Horizontal,
@@ -464,19 +232,6 @@ impl From<u8> for FontSize {
     fn from(size: u8) -> Self {
         Self {
             size
-        }
-    }
-}
-
-#[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct Path { 
-    pub path: String
-}
-
-impl From<&str> for Path {
-    fn from(path: &str) -> Self {
-        Self {
-            path: path.to_string()
         }
     }
 }
