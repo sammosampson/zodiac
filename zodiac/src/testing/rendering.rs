@@ -18,9 +18,9 @@ pub struct RenderPrimitive {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum RenderPrimitiveType {
-    Rectangle([u16; 2], [u16; 2], [f32; 4], [f32; 4], f32, [u16; 4]),
-    Circle([u16; 2], u16, [f32; 4], [f32; 4], f32),
-    Text([u16; 2], [u16; 2], [f32; 4], String, f32),
+    Rectangle([u16; 2], [u16; 2], [u8; 4], [u8; 4], u16, [u16; 4]),
+    Circle([u16; 2], u16, [u8; 4], [u8; 4], u16),
+    Text([u16; 2], [u16; 2], [u8; 4], String, u8),
 }
 
 pub fn create_test_render_queue() -> TestRenderQueue {
@@ -35,9 +35,9 @@ impl RenderPrimitive {
     pub fn rectangle(
         position: [u16; 2],
         dimensions: [u16; 2],
-        inner_colour: [f32; 4],
-        outer_colour: [f32; 4],
-        stroke_width: f32,
+        inner_colour: [u8; 4],
+        outer_colour: [u8; 4],
+        stroke_width: u16,
         corner_radii: [u16; 4]) -> Self {
         RenderPrimitive { render_type:  RenderPrimitiveType::Rectangle(position, dimensions, inner_colour, outer_colour, stroke_width, corner_radii) }
     }
@@ -45,18 +45,18 @@ impl RenderPrimitive {
     pub fn circle(
         position: [u16; 2],
         radius: u16,
-        inner_colour: [f32; 4],
-        outer_colour: [f32; 4],
-        stroke_width: f32) -> Self {
+        inner_colour: [u8; 4],
+        outer_colour: [u8; 4],
+        stroke_width: u16) -> Self {
         RenderPrimitive { render_type:  RenderPrimitiveType::Circle(position, radius, inner_colour, outer_colour, stroke_width) }
     }
 
     pub fn text(
         position: [u16; 2],
         dimensions: [u16; 2],
-        colour: [f32; 4],
+        colour: [u8; 4],
         text: String,
-        font_size: f32) -> Self {
+        font_size: u8) -> Self {
         RenderPrimitive { render_type: RenderPrimitiveType::Text(position, dimensions, colour, text, font_size) }
     }
 }
@@ -75,9 +75,9 @@ impl RenderQueue for TestRenderQueue {
         entity: &Entity,
         position: [u16; 2],
         dimensions: [u16; 2],
-        inner_colour: [f32; 4],
-        outer_colour: [f32; 4],
-        stroke_width: f32,
+        inner_colour: Colour,
+        outer_colour: StrokeColour,
+        stroke_width: u16,
         corner_radii: [u16; 4]) {
         self.queue_primitive_for_render(
             command_buffer,
@@ -85,8 +85,8 @@ impl RenderQueue for TestRenderQueue {
             RenderPrimitive::rectangle(
                 position,
                 dimensions,
-                inner_colour,
-                outer_colour,
+                inner_colour.into(),
+                outer_colour.into(),
                 stroke_width,
                 corner_radii));
     }
@@ -97,17 +97,17 @@ impl RenderQueue for TestRenderQueue {
         entity: &Entity,
         position: [u16; 2],
         radius: u16,
-        inner_colour: [f32; 4],
-        outer_colour: [f32; 4],
-        stroke_width: f32) {
+        inner_colour: Colour,
+        outer_colour: StrokeColour,
+        stroke_width: u16) {
         self.queue_primitive_for_render(
             command_buffer,
             entity,
             RenderPrimitive::circle(
                 position,
                 radius,
-                inner_colour,
-                outer_colour,
+                inner_colour.into(),
+                outer_colour.into(),
                 stroke_width));
     }
     
@@ -117,16 +117,16 @@ impl RenderQueue for TestRenderQueue {
         entity: &Entity,
         position: [u16; 2],
         dimensions: [u16; 2],
-        colour: [f32; 4],
+        colour: Colour,
         text: String,
-        font_size: f32) {
+        font_size: u8) {
         self.queue_primitive_for_render(
             command_buffer,
             entity,
             RenderPrimitive::text(
                 position,
                 dimensions,
-                colour,
+                colour.into(),
                 text,
                 font_size));
     }

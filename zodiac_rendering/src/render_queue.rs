@@ -1,5 +1,6 @@
 use legion::*;
 use legion::systems::*;
+use zodiac_entities::*;
 pub trait RenderQueue {
     fn queue_rectangle_for_render(
         &mut self,
@@ -7,9 +8,9 @@ pub trait RenderQueue {
         entity: &Entity,
         position: [u16; 2],
         dimensions: [u16; 2],
-        inner_colour: [f32; 4],
-        outer_colour: [f32; 4],
-        stroke_width: f32,
+        inner_colour: Colour,
+        outer_colour: StrokeColour,
+        stroke_width: u16,
         corner_radii: [u16; 4]);
 
     fn queue_circle_for_render(
@@ -18,9 +19,9 @@ pub trait RenderQueue {
         entity: &Entity,
         position: [u16; 2],
         radius: u16,
-        inner_colour: [f32; 4],
-        outer_colour: [f32; 4],
-        stroke_width: f32);
+        inner_colour: Colour,
+        outer_colour: StrokeColour,
+        stroke_width: u16);
 
     fn queue_text_for_render(
         &mut self,
@@ -28,7 +29,7 @@ pub trait RenderQueue {
         entity: &Entity,
         position: [u16; 2],
         dimensions: [u16; 2],
-        colour: [f32; 4],
+        colour: Colour,
         text: String,
-        font_size: f32);
+        font_size: u8);
 }

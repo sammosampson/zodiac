@@ -96,6 +96,34 @@ impl <'a, I> Iterator for TupleTokenUnsignedShortIterator<'a, I> where I : Itera
     }
 }
 
+pub struct TupleTokenUnsignedByteIterator<'a, I> where I : Iterator<Item=TupleTokenResult<'a>> {
+    token_iterator: I
+}
+
+impl<'a, I> TupleTokenUnsignedByteIterator<'a, I> where I : Iterator<Item=TupleTokenResult<'a>> {
+    pub fn from_iterator(token_iterator: I) -> Self {
+        Self {
+            token_iterator
+        }
+    }
+}
+
+impl <'a, I> Iterator for TupleTokenUnsignedByteIterator<'a, I> where I : Iterator<Item=TupleTokenResult<'a>>{
+    type Item = u8;
+    fn next(&mut self) -> Option<u8> {
+        loop {
+            return match self.token_iterator.next() {
+                Some(result) => if let Ok(TupleValue::UnsignedInt(value)) = result {
+                    Some(value as u8)
+                } else {
+                    None
+                },
+                None => None
+            }
+        }
+    }
+}
+
 pub type TupleTokenResult<'a> = Result<TupleValue<'a>, TupleTokenError<'a>>;
 pub type TupleTokenOption<'a> = Option<TupleTokenResult<'a>>;
 

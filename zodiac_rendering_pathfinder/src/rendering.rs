@@ -58,7 +58,7 @@ impl PathFinderRenderer {
                         canvas.set_fill_style(*inner_colour);
                         canvas.fill_rect(RectF::new(*position, *dimensions));
                         
-                        canvas.set_line_width(*stroke_width);
+                        canvas.set_line_width(*stroke_width as f32);
                         canvas.set_stroke_style(*outer_colour);
                         canvas.stroke_rect(RectF::new(*position, *dimensions));
                     
@@ -72,7 +72,7 @@ impl PathFinderRenderer {
                         canvas.fill_path(path, FillRule::Winding);
                         
                         let mut path = Path2D::new();
-                        canvas.set_line_width(*stroke_width);
+                        canvas.set_line_width(*stroke_width as f32);
                         canvas.set_stroke_style(*outer_colour);
                         path.ellipse(*position, *dimensions, 0.0, 0.0, PI2);
                         path.close_path();
@@ -80,7 +80,7 @@ impl PathFinderRenderer {
                     }
                     RenderPrimitiveDefinition::Text(position, _, colour, text, font_size) => {
                         debug!("Rendering text {:?}, {:?}, {:?}", position, colour, text);
-                        canvas.set_font_size(*font_size);
+                        canvas.set_font_size(*font_size as f32);
                         canvas.set_fill_style(*colour);
                         canvas.fill_text(text, *position);
                         

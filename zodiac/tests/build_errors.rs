@@ -28,7 +28,7 @@ fn invalid_source_causes_top_level_error_circle_renderable_control_output() {
         .collect();
     
     assert_eq!(changes.len(), 1);
-    assert_eq!(changes[0], RenderPrimitive::circle([0, 0], 100, [1.0, 0.0, 0.0, 1.0], [0.0, 0.0, 0.0, 0.0], 0.0));
+    assert_eq!(changes[0], RenderPrimitive::circle([0, 0], 100, [255, 0, 0, 255], [0, 0, 0, 0], 0));
 }
 
 #[test]
@@ -55,7 +55,7 @@ fn invalid_source_causes_top_level_error_rect_renderable_control_output() {
         .collect();
     
     assert_eq!(changes.len(), 1);
-    assert_eq!(changes[0], RenderPrimitive::rectangle([0, 0], [100, 100], [1.0, 0.0, 0.0, 1.0], [0.0, 0.0, 0.0, 0.0], 0.0, [0, 0, 0, 0]));
+    assert_eq!(changes[0], RenderPrimitive::rectangle([0, 0], [100, 100], [255, 0, 0, 255], [0, 0, 0, 0], 0, [0, 0, 0, 0]));
 }
 
 #[test]
@@ -81,7 +81,7 @@ fn invalid_import_causes_top_level_error_control_output() {
         .collect();
 
     assert_eq!(changes.len(), 1);
-    assert_eq!(changes[0], RenderPrimitive::rectangle([0, 0], [100, 100], [1.0, 0.0, 0.0, 1.0], [0.0, 0.0, 0.0, 0.0], 0.0, [0, 0, 0, 0]));
+    assert_eq!(changes[0], RenderPrimitive::rectangle([0, 0], [100, 100], [255, 0, 0, 255], [0, 0, 0, 0], 0, [0, 0, 0, 0]));
 }
 
 #[test]
@@ -106,7 +106,7 @@ fn invalid_control_causes_top_level_error_control_output() {
         .collect();
     
     assert_eq!(changes.len(), 1);
-    assert_eq!(changes[0], RenderPrimitive::rectangle([0, 0], [100, 100], [1.0, 0.0, 0.0, 1.0], [0.0, 0.0, 0.0, 0.0], 0.0, [0, 0, 0, 0]));
+    assert_eq!(changes[0], RenderPrimitive::rectangle([0, 0], [100, 100], [255, 0, 0, 255], [0, 0, 0, 0], 0, [0, 0, 0, 0]));
 }
 
 #[test]

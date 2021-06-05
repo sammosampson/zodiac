@@ -10,8 +10,8 @@ fn imported_control_gets_output() {
 <control>
     <circle
         radius=400
-        colour=(0.4, 0.4, 0.4, 0.1)
-        stroke-colour=(1.0, 1.0, 1.0, 1.0)
+        colour=(100, 100, 100, 25)
+        stroke-colour=(255, 255, 255, 255)
         stroke-width=3
     />
 </control>
@@ -45,8 +45,8 @@ fn imported_control_gets_output() {
         .collect();
     
     assert_eq!(changes.len(), 2);
-    assert_eq!(changes[0], RenderPrimitive::circle([10, 11], 400, [0.4, 0.4, 0.4, 0.1], [1.0, 1.0, 1.0, 1.0], 3.0));
-    assert_eq!(changes[1], RenderPrimitive::circle([10, 11], 400, [0.4, 0.4, 0.4, 0.1], [1.0, 1.0, 1.0, 1.0], 3.0));
+    assert_eq!(changes[0], RenderPrimitive::circle([10, 11], 400, [100, 100, 100, 25], [255, 255, 255, 255], 3));
+    assert_eq!(changes[1], RenderPrimitive::circle([10, 11], 400, [100, 100, 100, 25], [255, 255, 255, 255], 3));
 }
 
 #[test]
@@ -55,8 +55,8 @@ fn changed_imported_control_gets_output() {
 <control>
     <circle
         radius=400
-        colour=(0.4, 0.4, 0.4, 0.1)
-        stroke-colour=(1.0, 1.0, 1.0, 1.0)
+        colour=(100, 100, 100, 25)
+        stroke-colour=(255, 255, 255, 255)
         stroke-width=3
     />
 </control>
@@ -77,8 +77,8 @@ fn changed_imported_control_gets_output() {
 <control>
     <circle
         radius=400
-        colour=(0.4, 0.4, 0.4, 0.1)
-        stroke-colour=(1.0, 1.0, 1.0, 1.0)
+        colour=(100, 100, 100, 25)
+        stroke-colour=(255, 255, 255, 255)
         stroke-width=5
     />
 </control>
@@ -103,7 +103,7 @@ fn changed_imported_control_gets_output() {
         .collect();
     
     assert_eq!(changes.len(), 1);
-    assert_eq!(changes[0], RenderPrimitive::circle([10, 11], 400, [0.4, 0.4, 0.4, 0.1], [1.0, 1.0, 1.0, 1.0], 5.0));
+    assert_eq!(changes[0], RenderPrimitive::circle([10, 11], 400, [100, 100, 100, 25], [255, 255, 255, 255], 5));
 }
 
 #[test]
@@ -112,8 +112,8 @@ fn created_then_imported_control_gets_output() {
 <control>
     <circle
         radius=400
-        colour=(0.4, 0.4, 0.4, 0.1)
-        stroke-colour=(1.0, 1.0, 1.0, 1.0)
+        colour=(100, 100, 100, 25)
+        stroke-colour=(255, 255, 255, 255)
         stroke-width=3
     />
 </control>
@@ -150,7 +150,7 @@ fn created_then_imported_control_gets_output() {
         .collect();
     
     assert_eq!(changes.len(), 1);
-    assert_eq!(changes[0], RenderPrimitive::circle([0, 0], 400, [0.4, 0.4, 0.4, 0.1], [1.0, 1.0, 1.0, 1.0], 3.0));
+    assert_eq!(changes[0], RenderPrimitive::circle([0, 0], 400, [100, 100, 100, 25], [255, 255, 255, 255], 3));
 }
 
 #[test]
@@ -159,8 +159,8 @@ fn nonexistent_imported_then_created_control_gets_output() {
 <control>
     <circle
         radius=400
-        colour=(0.4, 0.4, 0.4, 0.1)
-        stroke-colour=(1.0, 1.0, 1.0, 1.0)
+        colour=(100, 100, 100, 25)
+        stroke-colour=(255, 255, 255, 255)
         stroke-width=3
     />
 </control>
@@ -198,7 +198,7 @@ fn nonexistent_imported_then_created_control_gets_output() {
         .collect();
     
     assert_eq!(changes.len(), 1);
-    assert_eq!(changes[0], RenderPrimitive::circle([0, 0], 400, [0.4, 0.4, 0.4, 0.1], [1.0, 1.0, 1.0, 1.0], 3.0));
+    assert_eq!(changes[0], RenderPrimitive::circle([0, 0], 400, [100, 100, 100, 25], [255, 255, 255, 255], 3));
 }
 
 #[test]
@@ -207,8 +207,8 @@ fn imported_then_deleted_then_recreated_control_gets_output() {
 <control>
     <circle
         radius=400
-        colour=(0.4, 0.4, 0.4, 0.1)
-        stroke-colour=(1.0, 1.0, 1.0, 1.0)
+        colour=(100, 100, 100, 25)
+        stroke-colour=(255, 255, 255, 255)
         stroke-width=3
     />
 </control>
@@ -241,5 +241,5 @@ fn imported_then_deleted_then_recreated_control_gets_output() {
         .collect();
     
     assert_eq!(changes.len(), 1);
-    assert_eq!(changes[0], RenderPrimitive::circle([0, 0], 400, [0.4, 0.4, 0.4, 0.1], [1.0, 1.0, 1.0, 1.0], 3.0));
+    assert_eq!(changes[0], RenderPrimitive::circle([0, 0], 400, [100, 100, 100, 25], [255, 255, 255, 255], 3));
 }

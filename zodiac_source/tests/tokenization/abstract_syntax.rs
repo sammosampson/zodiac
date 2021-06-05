@@ -185,16 +185,16 @@ fn height_produces_height_node() {
 
 #[test]
 fn colour_produces_colour_node() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect colour=(1.0, 0.9, 0.0, 1.0) />"));
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect colour=(255, 254, 0, 255) />"));
     assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
-    assert_eq!(AbstractSyntaxToken::Colour((1.0, 0.9, 0.0, 1.0)), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::Colour((255, 254, 0, 255)), tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
 
 #[test]
 fn malformed_colour_produces_error() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect colour=(1.0, 0.9, 0.0) />"));
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect colour=(255, 254, 0) />"));
     assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
     assert_eq!(Err(AbstractSyntaxTokenError::BadColourValue), tokenizer.next().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
@@ -203,16 +203,16 @@ fn malformed_colour_produces_error() {
 
 #[test]
 fn stroke_colour_produces_stroke_colour_node() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect stroke-colour=(1.0, 0.9, 0.0, 1.0) />"));
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect stroke-colour=(255, 254, 0, 255) />"));
     assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
-    assert_eq!(AbstractSyntaxToken::StrokeColour((1.0, 0.9, 0.0, 1.0)), tokenizer.next().unwrap().unwrap());
+    assert_eq!(AbstractSyntaxToken::StrokeColour((255, 254, 0, 255)), tokenizer.next().unwrap().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());
     assert_eq!(None, tokenizer.next());
 }
 
 #[test]
 fn malformed_stroke_colour_produces_error() {
-    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect stroke-colour=(1.0, 0.9, 0.0) />"));
+    let mut tokenizer = AbstractSyntaxTokenizer::from_source(SourceTokenizer::from_string("<rect stroke-colour=(255, 254, 0) />"));
     assert_eq!(AbstractSyntaxToken::Rectangle, tokenizer.next().unwrap().unwrap());
     assert_eq!(Err(AbstractSyntaxTokenError::BadStrokeColourValue), tokenizer.next().unwrap());
     assert_eq!(AbstractSyntaxToken::CompleteControl, tokenizer.next().unwrap().unwrap());

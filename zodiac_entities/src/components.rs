@@ -446,11 +446,11 @@ impl From<&str> for Content {
 
 #[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct FontSize { 
-    pub size: u16
+    pub size: u8
 }
 
-impl From<u16> for FontSize {
-    fn from(size: u16) -> Self {
+impl From<u8> for FontSize {
+    fn from(size: u8) -> Self {
         Self {
             size
         }
@@ -592,31 +592,53 @@ impl From<u16> for Radius {
 
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Colour {
-    pub r: f32,
-    pub g: f32,
-    pub b: f32,
-    pub a: f32,
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
+    pub a: u8,
 }
 
 impl Colour {
     pub fn red() -> Self {
         Self {
-            r: 1.0, 
-            g: 0.0, 
-            b: 0.0, 
-            a: 1.0
+            r: 255, 
+            g: 0, 
+            b: 0, 
+            a: 255
         }
     }
 }
 
-impl From<(f32, f32, f32, f32)> for Colour {
-    fn from(colour: (f32, f32, f32, f32)) -> Self {
+impl From<(u8, u8, u8, u8)> for Colour {
+    fn from(colour: (u8, u8, u8, u8)) -> Self {
         Self {
             r: colour.0,
             g: colour.1,
             b: colour.2,
             a: colour.3,
         }
+    }
+}
+
+impl Into<[f32;4]> for Colour {
+    fn into(self) -> ([f32;4]) {
+        [
+            self.r as f32 / 255.0,
+            self.g as f32 / 255.0,
+            self.b as f32 / 255.0,
+            self.a as f32 / 255.0
+        ]
+    }
+}
+
+impl Into<[u8;4]> for Colour {
+    fn into(self) -> ([u8;4]) {
+        [
+            self.r,
+            self.g,
+            self.b,
+            self.a
+        ]
     }
 }
 
@@ -635,20 +657,42 @@ impl From<u16> for StrokeWidth {
 
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize, Default)]
 pub struct StrokeColour {
-    pub r: f32,
-    pub g: f32,
-    pub b: f32,
-    pub a: f32,
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
+    pub a: u8,
 }
 
-impl From<(f32, f32, f32, f32)> for StrokeColour {
-    fn from(colour: (f32, f32, f32, f32)) -> Self {
+impl From<(u8, u8, u8, u8)> for StrokeColour {
+    fn from(colour: (u8, u8, u8, u8)) -> Self {
         Self {
             r: colour.0,
             g: colour.1,
             b: colour.2,
             a: colour.3,
         }
+    }
+}
+
+impl Into<[f32;4]> for StrokeColour {
+    fn into(self) -> ([f32;4]) {
+        [
+            self.r as f32 / 255.0,
+            self.g as f32 / 255.0,
+            self.b as f32 / 255.0,
+            self.a as f32 / 255.0
+        ]
+    }
+}
+
+impl Into<[u8;4]> for StrokeColour {
+    fn into(self) -> ([u8;4]) {
+        [
+            self.r,
+            self.g,
+            self.b,
+            self.a
+        ]
     }
 }
 

@@ -1,6 +1,6 @@
 
 use crate::tokenization::source::{SourceTokenResult, SourceToken, SourceTokenPropertyValue};
-use crate::tokenization::tuple::{TupleTokenizer, TupleTokenFloatIterator, TupleTokenUnsignedShortIterator};
+use crate::tokenization::tuple::{TupleTokenizer, TupleTokenUnsignedByteIterator, TupleTokenUnsignedShortIterator};
 use zodiac_entities::*;
 
 #[derive(PartialEq, PartialOrd, Debug, Clone)]
@@ -21,11 +21,11 @@ pub enum AbstractSyntaxToken {
     Height(u16),
     Radius(u16),
     Content(String),
-    FontSize(u16),
+    FontSize(u8),
     Path(String),
     Name(String),
-    StrokeColour((f32, f32, f32, f32)),
-    Colour((f32, f32, f32, f32)),
+    StrokeColour((u8, u8, u8, u8)),
+    Colour((u8, u8, u8, u8)),
     CornerRadii((u16, u16, u16, u16)),
     StrokeWidth(u16),
     CompleteControl,
@@ -139,7 +139,7 @@ impl <I> AbstractSyntaxTokenizer<I>  where I : Iterator<Item=SourceTokenResult> 
             "width" => Some(Ok(AbstractSyntaxToken::Width(value as u16))),
             "height" => Some(Ok(AbstractSyntaxToken::Height(value as u16))),
             "stroke-width" => Some(Ok(AbstractSyntaxToken::StrokeWidth(value as u16))),
-            "font-size" => Some(Ok(AbstractSyntaxToken::FontSize(value as u16))),
+            "font-size" => Some(Ok(AbstractSyntaxToken::FontSize(value as u8))),
             "radius" => Some(Ok(AbstractSyntaxToken::Radius(value as u16))),
             _ => Some(Err(AbstractSyntaxTokenError::UnknownProperty))
         }
@@ -158,13 +158,13 @@ impl <I> AbstractSyntaxTokenizer<I>  where I : Iterator<Item=SourceTokenResult> 
         let tuple_tokenizer = TupleTokenizer::from_string(&value);
         match property_name {
             "colour" => {
-                match TupleTokenFloatIterator::from_iterator(tuple_tokenizer).collect_specific_amount(4) {
+                match TupleTokenUnsignedByteIterator::from_iterator(tuple_tokenizer).collect_specific_amount(4) {
                     Ok(values) => Some(Ok(AbstractSyntaxToken::Colour((values[0], values[1], values[2], values[3])))),
                     Err(_) => Some(Err(AbstractSyntaxTokenError::BadColourValue))
                 }
             },
             "stroke-colour" => {
-                match TupleTokenFloatIterator::from_iterator(tuple_tokenizer).collect_specific_amount(4) {
+                match TupleTokenUnsignedByteIterator::from_iterator(tuple_tokenizer).collect_specific_amount(4) {
                     Ok(values) => Some(Ok(AbstractSyntaxToken::StrokeColour((values[0], values[1], values[2], values[3])))),
                     Err(_) => Some(Err(AbstractSyntaxTokenError::BadStrokeColourValue))
                 }

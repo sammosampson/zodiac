@@ -98,7 +98,7 @@ impl<'a> WorldBuilder<'a> {
         self.add_component_to_current_entity(Content::from(content));        
     }
 
-    pub fn add_font_size_component(&mut self, size: u16) { 
+    pub fn add_font_size_component(&mut self, size: u8) { 
         self.add_component_to_current_entity(FontSize::from(size));        
     }
 
@@ -135,11 +135,11 @@ impl<'a> WorldBuilder<'a> {
         self.add_component_to_current_entity(StrokeWidth::from(width));
     }
     
-    pub fn add_colour_component(&mut self, r: f32, g: f32, b: f32, a: f32) {
+    pub fn add_colour_component(&mut self, r: u8, g: u8, b: u8, a: u8) {
          self.add_component_to_current_entity(Colour::from((r, g, b, a)));
     }
 
-    pub fn add_stroke_colour_component(&mut self, r: f32, g: f32, b: f32, a: f32) {
+    pub fn add_stroke_colour_component(&mut self, r: u8, g: u8, b: u8, a: u8) {
         self.add_component_to_current_entity(StrokeColour::from((r, g, b ,a)));
     }
 

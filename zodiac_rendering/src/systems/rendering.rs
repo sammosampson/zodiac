@@ -24,9 +24,9 @@ pub fn queue_render_rectangle_primitives<T:RenderQueue + 'static> (
         entity,
         [layout_change.left, layout_change.top],
         [layout_change.width, layout_change.height],
-        [colour.r, colour.g, colour.b, colour.a], 
-        [stroke_colour.r, stroke_colour.g, stroke_colour.b, stroke_colour.a], 
-        stroke_width.width as f32, 
+        *colour,
+        *stroke_colour, 
+        stroke_width.width, 
         [corner_radii.left_top, corner_radii.right_top, corner_radii.right_bottom, corner_radii.left_bottom]);
 }
 
@@ -50,9 +50,9 @@ pub fn queue_render_circle_primitives<T:RenderQueue + 'static> (
         entity,
         [layout_change.left, layout_change.top],
         layout_change.width,
-        [colour.r, colour.g, colour.b, colour.a], 
-        [stroke_colour.r, stroke_colour.g, stroke_colour.b, stroke_colour.a], 
-        stroke_width.width as f32);
+        *colour,
+        *stroke_colour, 
+        stroke_width.width);
 }
 
 
@@ -77,7 +77,7 @@ pub fn queue_render_text_primitives<T:RenderQueue + 'static> (
         entity,
         [layout_change.left, layout_change.top],
         [layout_change.width, layout_change.height],
-        [colour.r, colour.g, colour.b, colour.a],
+        *colour,
         content.text.clone(),
-        font_size.size as f32);
+        font_size.size);
 }
