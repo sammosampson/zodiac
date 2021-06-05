@@ -3,7 +3,8 @@ use log::{debug};
 use legion::world::*;
 use zodiac_entities::*;
 
-use crate::{ GliumRenderer, primitives::RenderPrimitive };
+use crate::GliumRenderer;
+use crate::RenderPrimitive;
 
 #[system(simple)]
 #[read_component(Renderable)]

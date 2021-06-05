@@ -1,4 +1,0 @@
-<import name="world-viewer" path=".\world-viewer.zod" />    
-<root>
-    <world-viewer />
-</root>

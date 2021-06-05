@@ -7,11 +7,15 @@ pub mod matrices;
 pub mod events;
 pub mod systems;
 pub mod initialisation;
+mod embedding;
+mod components;
 
+pub use embedding::*;
 pub use rendering::*;
 pub use render_queue::*;
 pub use systems::render_primitives::*;
 pub use systems::events::*;
+pub use systems::rendering::*;
 pub use primitives::RenderPrimitive;
 pub use events::*;
 pub use initialisation::*;

@@ -1,7 +1,7 @@
 use log::{debug};
 use legion::*;
 use legion::systems::*;
-use zodiac_rendering::*;
+use zodiac_entities::*;
 use pathfinder_canvas::*;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -11,9 +11,9 @@ pub struct RenderPrimitive {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum RenderPrimitiveDefinition {
-    Rectangle(Vector2F, Vector2F, ColorU, ColorU, f32),
-    Circle(Vector2F, Vector2F, ColorU, ColorU, f32),
-    Text(Vector2F, Vector2F, ColorU, String, f32),
+    Rectangle(Vector2F, Vector2F, ColorU, ColorU, u16),
+    Circle(Vector2F, Vector2F, ColorU, ColorU, u16),
+    Text(Vector2F, Vector2F, ColorU, String, u8),
 }
 
 pub fn create_pathfinder_render_queue() -> PathFinderRenderQueue {
@@ -32,67 +32,66 @@ impl PathFinderRenderQueue {
     }
 }
 
-impl RenderQueue for PathFinderRenderQueue {
-    fn queue_rectangle_for_render(
+impl PathFinderRenderQueue {
+    pub fn queue_rectangle_for_render(
         &mut self,
         command_buffer: &mut CommandBuffer,
         entity: &Entity,
         position: [u16; 2],
         dimensions: [u16; 2],
-        inner_colour: [f32; 4],
-        outer_colour: [f32; 4],
-        stroke_width: f32,
-        _: [u16; 4]) {
+        inner_colour: Colour,
+        outer_colour: StrokeColour,
+        stroke_width: u16) {
             self.queue_primitive_for_render(
                 command_buffer,
                 entity,
                 RenderPrimitiveDefinition::Rectangle(
                     vec2f(position[0] as f32, position[1] as f32),
                     vec2f(dimensions[0] as f32, dimensions[1] as f32),
-                    rgbaf(inner_colour[0], inner_colour[1], inner_colour[2], inner_colour[3]).to_u8(),
-                    rgbaf(outer_colour[0], outer_colour[1], outer_colour[2], outer_colour[3]).to_u8(),
+                    rgbau(inner_colour.r, inner_colour.r, inner_colour.r, inner_colour.r),
+                    rgbau(outer_colour.r, outer_colour.r, outer_colour.r, outer_colour.r),
                     stroke_width
                 ));
     }
 
-    fn queue_circle_for_render(
+    pub fn queue_circle_for_render(
         &mut self,
         command_buffer: &mut CommandBuffer,
         entity: &Entity,
         position: [u16; 2],
         radius: u16,
-        inner_colour: [f32; 4],
-        outer_colour: [f32; 4],
-        stroke_width: f32) {
+        inner_colour: Colour,
+        outer_colour: StrokeColour,
+        stroke_width: u16) {
             self.queue_primitive_for_render(
                 command_buffer,
                 entity,
                 RenderPrimitiveDefinition::Circle(
                     vec2f((position[0] + radius) as f32 ,(position[1] + radius) as f32),
                     vec2f(radius as f32, radius as f32),
-                    rgbaf(inner_colour[0], inner_colour[1], inner_colour[2], inner_colour[3]).to_u8(),
-                    rgbaf(outer_colour[0], outer_colour[1], outer_colour[2], outer_colour[3]).to_u8(),
+                    rgbau(inner_colour.r, inner_colour.r, inner_colour.r, inner_colour.r),
+                    rgbau(outer_colour.r, outer_colour.r, outer_colour.r, outer_colour.r),
                     stroke_width
                 ));
 
     }
     
-    fn queue_text_for_render(
+    pub fn queue_text_for_render(
         &mut self,
         command_buffer: &mut CommandBuffer,
         entity: &Entity,
         position: [u16; 2],
         dimensions: [u16; 2],
-        colour: [f32; 4],
+        colour: Colour,
         text: String,
-        font_size: f32) {
+        font_size: u8) {
             self.queue_primitive_for_render(
                 command_buffer,
                 entity,
                 RenderPrimitiveDefinition::Text(
                     vec2f(position[0] as f32, position[1] as f32),
                     vec2f(dimensions[0] as f32, dimensions[1] as f32),
-                    rgbaf(colour[0], colour[1], colour[2], colour[3]).to_u8(),
+                    rgbau(colour.r, colour.g, colour.b, colour.a),
                     text,
                     font_size
                 ));

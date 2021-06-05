@@ -8,7 +8,7 @@ pub fn standard_layout() -> LayoutBundleBuilder {
     LayoutBundleBuilder::default()
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Copy, Clone)]
 pub struct LayoutBundleBuilder {
 }
 
@@ -70,5 +70,8 @@ impl ApplicationBundleBuilder for LayoutBundleBuilder {
         resources.insert(create_minimum_height_map());
         
         Ok(())
+    }    
+    
+    fn register_components_for_world_serializiation(&self, _: &mut zodiac_entities::WorldSerializer) {
     }
 }

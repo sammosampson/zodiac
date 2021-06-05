@@ -1,7 +1,7 @@
 use log::{debug};
 use legion::*;
 use legion::systems::*;
-use zodiac_rendering::*;
+use zodiac_entities::*;
 
 use crate::primitives::*;
 
@@ -20,16 +20,16 @@ impl GliumRenderQueue {
     }
 }
 
-impl RenderQueue for GliumRenderQueue {
-    fn queue_rectangle_for_render(
+impl GliumRenderQueue {
+    pub fn queue_rectangle_for_render(
         &mut self,
         command_buffer: &mut CommandBuffer,
         entity: &Entity,
         position: [u16; 2],
         dimensions: [u16; 2],
-        inner_colour: [f32; 4],
-        outer_colour: [f32; 4],
-        stroke_width: f32,
+        inner_colour: Colour,
+        outer_colour: StrokeColour,
+        stroke_width: u16,
         corner_radii: [u16; 4]) {
         self.queue_primitive_for_render(
             command_buffer,
@@ -37,48 +37,29 @@ impl RenderQueue for GliumRenderQueue {
             RenderPrimitive::rectangle(
                 position,
                 dimensions,
-                inner_colour,
-                outer_colour,
-                stroke_width,
+                inner_colour.into(),
+                outer_colour.into(),
+                stroke_width as f32,
                 corner_radii));
     }
 
-    fn queue_circle_for_render(
+    pub fn queue_circle_for_render(
         &mut self,
         command_buffer: &mut CommandBuffer,
         entity: &Entity,
         position: [u16; 2],
         radius: u16,
-        inner_colour: [f32; 4],
-        outer_colour: [f32; 4],
-        stroke_width: f32) {
+        inner_colour: Colour,
+        outer_colour: StrokeColour,
+        stroke_width: u16) {
         self.queue_primitive_for_render(
             command_buffer,
             entity,
             RenderPrimitive::circle(
                 position,
                 radius,
-                inner_colour,
-                outer_colour,
-                stroke_width));
-    }
-    
-    fn queue_text_for_render(
-        &mut self,
-        command_buffer: &mut CommandBuffer,
-        entity: &Entity,
-        position: [u16; 2],
-        dimensions: [u16; 2],
-        colour: [f32; 4],
-        text: String,
-        _: f32) {
-        self.queue_primitive_for_render(
-            command_buffer,
-            entity,
-            RenderPrimitive::text(
-                position,
-                dimensions,
-                colour,
-                text));
+                inner_colour.into(),
+                outer_colour.into(),
+                stroke_width as f32));
     }
 }

@@ -1,7 +1,0 @@
-<control>
-    <circle
-        colour=(0.0, 0.0, 1.0, 1.0)
-        stroke-colour=(1.0, 1.0, 1.0, 1.0)
-        stroke-width=20
-    />
-</control>
