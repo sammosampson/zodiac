@@ -263,6 +263,7 @@ pub struct Removed {
 pub struct Relationship {
     pub parent: Option<Entity>,
     pub next_sibling: Option<Entity>,
+    pub previous_sibling: Option<Entity>,
     pub first_child: Option<Entity>,
     pub last_child: Option<Entity>
 }
@@ -272,6 +273,7 @@ impl Relationship {
         Self {
             parent: Some(parent),
             next_sibling: None,
+            previous_sibling: None,
             first_child: None,
             last_child: None 
         }
@@ -281,6 +283,7 @@ impl Relationship {
         Self {
             parent: self.parent,
             next_sibling: self.next_sibling,
+            previous_sibling: self.previous_sibling,
             first_child: None,
             last_child: None 
         }
@@ -444,6 +447,14 @@ impl From<&str> for Content {
     }
 }
 
+impl From<String> for Content {
+    fn from(text: String) -> Self {
+        Self {
+            text
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct FontSize { 
     pub size: u8
@@ -590,7 +601,7 @@ impl From<u16> for Radius {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Colour {
     pub r: u8,
     pub g: u8,
@@ -655,7 +666,7 @@ impl From<u16> for StrokeWidth {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize, Default)]
 pub struct StrokeColour {
     pub r: u8,
     pub g: u8,
