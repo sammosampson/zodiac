@@ -22,6 +22,7 @@ fn world_viewer() -> Node {
             font_size=19
             colour=(255, 255, 255, 255)
             left=50
+            top=50
         />
     )
 }
