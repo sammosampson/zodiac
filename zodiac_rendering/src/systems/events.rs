@@ -9,7 +9,7 @@ use crate::*;
 
 #[system(for_each)]
 #[filter(component::<Root>())]
-#[filter(component::<RootWindowResized>())]
+#[filter(!component::<RootWindowResized>())]
 pub fn initial_window_size_notification<TRenderer: Renderer + 'static> (
     entity: &Entity,
     command_buffer: &mut CommandBuffer,

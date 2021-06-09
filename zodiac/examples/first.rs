@@ -99,9 +99,11 @@ fn app_root() -> RootNode<FirstState> {
     )
 }
 fn main() {
+    std::env::set_var("RUST_LOG", "info");
     Application::new()
         .use_logging()
         .with_builders(&mut standard_builders(FirstState::default(), app_root))
+        //.with_builder(world_vision())
         .build()
         .unwrap()
         .run_until_closed();

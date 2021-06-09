@@ -1,7 +1,9 @@
 use std::cell::RefCell;
 use std::collections::HashSet;
 use std::hash::Hash;
+use std::io::SeekFrom;
 use legion::systems::CommandBuffer;
+use log::debug;
 use zodiac_entities::*;
 use std::fmt::Debug;
 
@@ -50,7 +52,6 @@ impl Clone for SourceBuildChanges {
 
 impl SourceBuildChanges {
     fn push(&self, change: impl SourceBuildChange) {
-        println!("{:?}", change);
         self.inner.borrow_mut().push(Box::new(change));
     }
 
@@ -76,6 +77,7 @@ pub struct SourceBuildChangeState {
 
 impl SourceBuildChangeState {
     pub fn push_change(&self, change: impl SourceBuildChange) {
+        println!("pushing change {:?}", change);
         self.changes.push(change);        
     }
 
@@ -102,11 +104,13 @@ impl<T> NodeChanges<T> where T: Eq + PartialEq + Hash + Clone {
         let previous: HashSet<&T> = previous.iter().collect();
         let additions = current.difference(&previous);
         let deletions = previous.difference(&current);
+        let added: Vec<T> = additions.map(|node| (**node).clone()).collect(); 
+        let removed: Vec<T> = deletions.map(|node| (**node).clone()).collect();
         
         NodeChanges { 
-            added: additions.map(|node| (**node).clone()).collect(),
-            removed: deletions.map(|node| (**node).clone()).collect(),
-        } 
+            added,
+            removed
+        }
     }
 
     pub fn process_additions(&self, processor: &mut impl FnMut(&T) -> ()) {

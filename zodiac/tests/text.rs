@@ -1,22 +1,26 @@
-/* use legion::*;
+use legion::*;
+use mox::mox;
 use zodiac::testing::*;
 use zodiac_entities::*;
+use zodiac_source::embedding::*;
 use zodiac::*;
-//use zodiac::formatting::*;
+
+#[topo::nested]
+fn text_gets_output_app_root() -> RootNode<TestState> {
+    mox!(
+        <root>
+            <text content="abc".to_string() font_size=32 colour=(255, 255, 255, 25) />
+        </root>
+    )
+}
 
 #[test]
 fn text_gets_output() {
-    let source = "
-<root>
-    <text content=\"abc\" font-size=32 colour=(255, 255, 255, 25) />
-</root>
-";
     let mut runner = Application::new()
-        .with_builders(&mut test_builders(Dimensions::new(100, 110)))
+        .with_builders(&mut test_builders(text_gets_output_app_root, Dimensions::new(100, 110)))
+        .with_builder(world_vision())
         .build()
         .unwrap();
-
-    apply_initial_source(runner.resources_mut(), ".\\root.zod", source);
 
     runner.run_once();
 
@@ -29,21 +33,24 @@ fn text_gets_output() {
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::text([0, 0], [100, 110], [255, 255, 255, 25], "abc".to_string(), 32)), true);
 }
 
+#[topo::nested]
+fn text_gets_output_in_stack_app_root() -> RootNode<TestState> {
+    mox!(
+        <root>
+            <horizontal_stack>
+                <text content="abc".to_string() font_size=32 colour=(255, 255, 255, 25) />
+            </horizontal_stack>
+        </root>
+    )
+}
+
 #[test]
 fn text_gets_output_in_stack() {
-    let source = "
-<root>
-    <horizontal-stack>
-        <text content=\"abc\" font-size=32 colour=(255, 255, 255, 25) />
-    </horizontal-stack>
-</root>
-";
     let mut runner = Application::new()
-        .with_builders(&mut test_builders(Dimensions::new(100, 110)))
+        .with_builders(&mut test_builders(text_gets_output_in_stack_app_root, Dimensions::new(100, 110)))
+        .with_builder(world_vision())
         .build()
         .unwrap();
-
-    apply_initial_source(runner.resources_mut(), ".\\root.zod", source);
 
     runner.run_once();
 
@@ -54,4 +61,4 @@ fn text_gets_output_in_stack() {
     
     assert_eq!(changes.len(), 1);
     assert_eq!(changes.iter().any(|change| *change == RenderPrimitive::text([0, 0], [100, 110], [255, 255, 255, 25], "abc".to_string(), 32)), true);
-} */
+}
