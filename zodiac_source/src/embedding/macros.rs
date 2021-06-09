@@ -23,7 +23,7 @@ macro_rules! element {
         paste::item! {
             element_creator_func!($name);
             
-            #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+            #[derive(Debug, Clone, PartialEq, Eq, Hash, Ord, PartialOrd)]
             pub enum [<$name:camel Attribute>] {
                 None,
                 $($(
