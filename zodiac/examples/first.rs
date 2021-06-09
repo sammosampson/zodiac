@@ -41,15 +41,12 @@ fn big_control() -> Node {
 fn other_control() -> Node {
     mox!(
         <horizontal_stack>
-            <rect
-                colour=(255, 255, 255, 255)
-                stroke_colour=(0, 200, 255, 255)
-                stroke_width=5
-                corner_radii=(0, 0, 0, 0)
-            />
+            <big_control />
             <text
+                left=100
                 content="Hello World".to_string()
                 colour=(0, 255, 255, 255)
+                font_size=10
             />
         </horizontal_stack>
     )
@@ -59,42 +56,19 @@ fn other_control() -> Node {
 fn app_root() -> RootNode<FirstState> {
     mox!(
         <root>
-            <horizontal_stack>
-                <other_control />
-                <big_control />
-                <big_control />
-                <big_control />
-                <big_control />
-                <big_control />
-                <big_control />
-                <big_control />
-                <vertical_stack>
-                    <other_control/>
-                    <other_control/>
-                    <other_control/>
-                    <other_control/>
-                    <other_control/>
-                    <other_control/>
-                    <other_control/>
-                    <other_control/>
-                    <other_control/>
-                    <other_control/>
-                    <other_control/>
-                    <horizontal_stack>
-                        <other_control/>
-                        <other_control/>
-                        <other_control/>
-                        <other_control/>
-                        <other_control/>
-                        <other_control/>
-                        <other_control/>
-                        <other_control/>
-                        <other_control/>
-                        <other_control/>
-                        <other_control/>
-                    </horizontal_stack>
-                </vertical_stack>
-            </horizontal_stack>
+            <vertical_stack>
+                <small_control/>
+                <other_control/>
+                <other_control/>
+                <other_control/>
+                <other_control/>
+                <other_control/>
+                <other_control/>
+                <other_control/>
+                <other_control/>
+                <other_control/>
+                <other_control/>
+            </vertical_stack>
         </root>
     )
 }

@@ -93,7 +93,7 @@ impl RenderQueue for PathFinderRenderQueue {
                 RenderPrimitiveDefinition::Text(
                     vec2f(position[0] as f32, position[1] as f32),
                     vec2f(dimensions[0] as f32, dimensions[1] as f32),
-                    rgbau(colour.r, colour.r, colour.r, colour.r),
+                    rgbau(colour.r, colour.g, colour.b, colour.a),
                     text,
                     font_size
                 ));
