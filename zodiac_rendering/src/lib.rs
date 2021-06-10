@@ -1,9 +1,6 @@
 pub mod systems;
-pub mod render_queue;
 pub mod rendering;
 pub mod initialisation;
-pub use render_queue::*;
 pub use rendering::*;
 pub use initialisation::*;
-pub use systems::rendering::*;
 pub use systems::events::*;

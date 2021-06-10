@@ -3,11 +3,12 @@ use legion::*;
 use legion::systems::*;
 use zodiac_entities::*;
 use zodiac_rendering::*;
+use crate::components::*;
 use crate::*;
 
 pub fn standard_glium_rendering() ->
-    RendereringBuilder<GliumRenderer, GliumRenderQueue> {
-    RendereringBuilder::<GliumRenderer, GliumRenderQueue>::new()
+    RendereringBuilder<GliumRenderer> {
+    RendereringBuilder::<GliumRenderer>::new()
 }
 
 pub fn glium_renderer() -> GliumRendererBuilder {
@@ -33,6 +34,8 @@ impl ApplicationBundleBuilder for GliumRendererBuilder {
 
     fn setup_rendering_systems(&self, builder: &mut Builder) {
         builder
+            .add_thread_local(queue_render_rectangle_primitives_system())
+            .add_thread_local(queue_render_circle_primitives_system())
             .add_thread_local(render_primitives_system());
     }
 
@@ -50,5 +53,11 @@ impl ApplicationBundleBuilder for GliumRendererBuilder {
         resources.insert(create_glium_render_queue());
         
         Ok(())
+    }
+
+    fn register_components_for_world_serializiation(&self, world_serializer: &mut WorldSerializer) {
+        world_serializer.register_component::<RenderPrimitive>(stringify!(RenderPrimitive));
+        world_serializer.register_component::<Circle>(stringify!(Circle));
+        world_serializer.register_component::<Rectangle>(stringify!(Rectangle));
     }
 }

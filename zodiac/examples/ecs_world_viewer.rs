@@ -1,7 +1,8 @@
 use mox::mox;
 use zodiac::initialisation::*;
-use zodiac_source::application_state::*;
-use zodiac_source::embedding::*;
+use zodiac_entities::*;
+use zodiac_source::*;
+use zodiac_rendering_pathfinder::*;
 
 #[derive(Default, Debug, Copy, Clone, PartialEq)]
 pub struct WorldViewerState {
@@ -41,7 +42,7 @@ fn main() {
     Application::new()
         .use_logging()
         .with_builders(&mut standard_builders(WorldViewerState::default(), app_root))
-        //.with_builder(world_vision())
+        //.with_builder(world_logging())
         .build()
         .unwrap()
         .run_until_closed();

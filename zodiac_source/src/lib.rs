@@ -1,11 +1,16 @@
-pub mod embedding;
-pub mod application_state;
+mod embedding;
+mod application_state;
 mod building;
 mod systems;
 mod running;
 mod initialisation;
 mod changes;
 
-pub use systems::running::*;
-pub use systems::cleanup::*;
+use systems::running::*;
+use systems::cleanup::*;
+
+pub use application_state::*;
+pub use embedding::*;
+pub use changes::*;
+pub use building::*;
 pub use initialisation::*;

@@ -1,4 +1,5 @@
 
+#[macro_export]
 macro_rules! element_creator_func {
     (
         $name:ident
@@ -16,6 +17,9 @@ macro_rules! element {
     (
         <$name:ident>
         [$component:expr]
+        $(extra_components {$(
+            [$extra_component:expr]
+        )*})?
         $(attributes {$(
             $attr:ident $(($attr_ty:ty))?
         )*})?
@@ -109,6 +113,9 @@ macro_rules! element {
             impl SourceBuildChange for [<$name:camel Change>] {
                 fn apply<'a>(&self, command_buffer: &mut legion::systems::CommandBuffer, maps: &mut SourceBuildMaps<'a>) {        
                     let parent = command_buffer.get_or_create(self.node_id, || $component, maps);
+                    $($(
+                    command_buffer.add_component(parent, $extra_component);
+                    )*)?
                     
                     self.child_changes.process_additions(&mut |child_id| command_buffer.add_child(parent, child_id, maps));    
                     self.child_changes.process_removals(&mut |child_id| command_buffer.remove_child(parent, child_id, maps));

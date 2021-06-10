@@ -56,5 +56,8 @@ impl<TState: State, TRootFunc: FnMut() -> RootNode<TState> + Copy + Clone + 'sta
         resources.insert(create_state_repository::<TState>());
         resources.insert(create_entity_map());
         Ok(())
+    }    
+    
+    fn register_components_for_world_serializiation(&self, _: &mut WorldSerializer) {
     }
 }

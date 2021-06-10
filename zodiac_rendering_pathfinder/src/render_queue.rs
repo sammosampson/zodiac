@@ -2,7 +2,6 @@ use log::{debug};
 use legion::*;
 use legion::systems::*;
 use zodiac_entities::*;
-use zodiac_rendering::*;
 use pathfinder_canvas::*;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -33,8 +32,8 @@ impl PathFinderRenderQueue {
     }
 }
 
-impl RenderQueue for PathFinderRenderQueue {
-    fn queue_rectangle_for_render(
+impl PathFinderRenderQueue {
+    pub fn queue_rectangle_for_render(
         &mut self,
         command_buffer: &mut CommandBuffer,
         entity: &Entity,
@@ -42,8 +41,7 @@ impl RenderQueue for PathFinderRenderQueue {
         dimensions: [u16; 2],
         inner_colour: Colour,
         outer_colour: StrokeColour,
-        stroke_width: u16,
-        _: [u16; 4]) {
+        stroke_width: u16) {
             self.queue_primitive_for_render(
                 command_buffer,
                 entity,
@@ -56,7 +54,7 @@ impl RenderQueue for PathFinderRenderQueue {
                 ));
     }
 
-    fn queue_circle_for_render(
+    pub fn queue_circle_for_render(
         &mut self,
         command_buffer: &mut CommandBuffer,
         entity: &Entity,
@@ -78,7 +76,7 @@ impl RenderQueue for PathFinderRenderQueue {
 
     }
     
-    fn queue_text_for_render(
+    pub fn queue_text_for_render(
         &mut self,
         command_buffer: &mut CommandBuffer,
         entity: &Entity,

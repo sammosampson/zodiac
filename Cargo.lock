@@ -2945,12 +2945,14 @@ checksum = "b07db065a5cf61a7e4ba64f29e67db906fb1787316516c4e6e5ff0fea1efcd8a"
 name = "zodiac"
 version = "0.1.0"
 dependencies = [
+ "illicit",
  "legion",
  "log",
  "mox",
+ "moxie",
+ "paste",
  "pretty_env_logger",
  "serde",
- "serde_json",
  "shrev",
  "topo",
  "zodiac_entities",
@@ -2966,7 +2968,10 @@ name = "zodiac_entities"
 version = "0.1.0"
 dependencies = [
  "legion",
+ "log",
+ "pretty_env_logger",
  "serde",
+ "serde_json",
  "shrev",
 ]
 
@@ -2996,14 +3001,19 @@ version = "0.1.0"
 dependencies = [
  "glium",
  "glutin 0.23.0",
+ "illicit",
  "image",
  "legion",
  "log",
+ "moxie",
+ "paste",
  "serde",
  "shrev",
+ "topo",
  "winit 0.21.0",
  "zodiac_entities",
  "zodiac_rendering",
+ "zodiac_source",
 ]
 
 [[package]]
@@ -3012,8 +3022,11 @@ version = "0.1.0"
 dependencies = [
  "gl",
  "glutin 0.23.0",
+ "illicit",
  "legion",
  "log",
+ "moxie",
+ "paste",
  "pathfinder_canvas",
  "pathfinder_color",
  "pathfinder_content",
@@ -3024,9 +3037,11 @@ dependencies = [
  "pathfinder_resources",
  "serde",
  "shrev",
+ "topo",
  "winit 0.21.0",
  "zodiac_entities",
  "zodiac_rendering",
+ "zodiac_source",
 ]
 
 [[package]]

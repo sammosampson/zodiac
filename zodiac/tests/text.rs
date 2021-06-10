@@ -2,8 +2,7 @@ use legion::*;
 use mox::mox;
 use zodiac::testing::*;
 use zodiac_entities::*;
-use zodiac_source::embedding::*;
-use zodiac::*;
+use zodiac_source::*;
 
 #[topo::nested]
 fn text_gets_output_app_root() -> RootNode<TestState> {
@@ -18,7 +17,7 @@ fn text_gets_output_app_root() -> RootNode<TestState> {
 fn text_gets_output() {
     let mut runner = Application::new()
         .with_builders(&mut test_builders(text_gets_output_app_root, Dimensions::new(100, 110)))
-        .with_builder(world_vision())
+        .with_builder(world_logging())
         .build()
         .unwrap();
 
@@ -48,7 +47,7 @@ fn text_gets_output_in_stack_app_root() -> RootNode<TestState> {
 fn text_gets_output_in_stack() {
     let mut runner = Application::new()
         .with_builders(&mut test_builders(text_gets_output_in_stack_app_root, Dimensions::new(100, 110)))
-        .with_builder(world_vision())
+        .with_builder(world_logging())
         .build()
         .unwrap();
 

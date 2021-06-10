@@ -2,7 +2,6 @@ use log::{debug};
 use legion::*;
 use legion::systems::*;
 use zodiac_entities::*;
-use zodiac_rendering::*;
 
 use crate::primitives::*;
 
@@ -21,8 +20,8 @@ impl GliumRenderQueue {
     }
 }
 
-impl RenderQueue for GliumRenderQueue {
-    fn queue_rectangle_for_render(
+impl GliumRenderQueue {
+    pub fn queue_rectangle_for_render(
         &mut self,
         command_buffer: &mut CommandBuffer,
         entity: &Entity,
@@ -44,7 +43,7 @@ impl RenderQueue for GliumRenderQueue {
                 corner_radii));
     }
 
-    fn queue_circle_for_render(
+    pub fn queue_circle_for_render(
         &mut self,
         command_buffer: &mut CommandBuffer,
         entity: &Entity,
@@ -62,24 +61,5 @@ impl RenderQueue for GliumRenderQueue {
                 inner_colour.into(),
                 outer_colour.into(),
                 stroke_width as f32));
-    }
-    
-    fn queue_text_for_render(
-        &mut self,
-        command_buffer: &mut CommandBuffer,
-        entity: &Entity,
-        position: [u16; 2],
-        dimensions: [u16; 2],
-        colour: Colour,
-        text: String,
-        _: u8) {
-        self.queue_primitive_for_render(
-            command_buffer,
-            entity,
-            RenderPrimitive::text(
-                position,
-                dimensions,
-                colour.into(),
-                text));
     }
 }

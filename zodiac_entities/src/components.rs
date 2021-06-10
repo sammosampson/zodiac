@@ -175,31 +175,10 @@ impl LayoutContent {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub enum RenderType {
-    Circle,
-    Rectangle,
-    Text
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Renderable {
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Renderable { 
-    pub render_type: RenderType 
-}
-
-impl Renderable {
-    pub fn circle() -> Self {
-        Self { render_type: RenderType::Circle }
-    }
-
-    pub fn rectangle() -> Self {
-        Self { render_type: RenderType::Rectangle }
-    }
-
-    pub fn text() -> Self {
-        Self { render_type: RenderType::Text }
-    }
-}
 
 
 #[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]

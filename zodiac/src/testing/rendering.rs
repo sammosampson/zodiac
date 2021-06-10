@@ -5,9 +5,11 @@ use log::debug;
 use shrev::EventChannel;
 use zodiac_entities::*;
 use zodiac_rendering::*;
+use super::*;
+use super::systems::rendering::*;
 
-pub fn standard_test_rendering() -> RendereringBuilder<TestRenderer, TestRenderQueue> {
-    RendereringBuilder::<TestRenderer, TestRenderQueue>::new()
+pub fn standard_test_rendering() -> RendereringBuilder<TestRenderer> {
+    RendereringBuilder::<TestRenderer>::new()
 }
 
 
@@ -68,8 +70,8 @@ impl TestRenderQueue {
     }
 }
 
-impl RenderQueue for TestRenderQueue {
-    fn queue_rectangle_for_render(
+impl TestRenderQueue {
+    pub fn queue_rectangle_for_render(
         &mut self,
         command_buffer: &mut CommandBuffer,
         entity: &Entity,
@@ -91,7 +93,7 @@ impl RenderQueue for TestRenderQueue {
                 corner_radii));
     }
 
-    fn queue_circle_for_render(
+    pub fn queue_circle_for_render(
         &mut self,
         command_buffer: &mut CommandBuffer,
         entity: &Entity,
@@ -111,7 +113,7 @@ impl RenderQueue for TestRenderQueue {
                 stroke_width));
     }
     
-    fn queue_text_for_render(
+    pub fn queue_text_for_render(
         &mut self,
         command_buffer: &mut CommandBuffer,
         entity: &Entity,
@@ -160,7 +162,11 @@ impl ApplicationBundleBuilder for TestRendererBuilder {
     fn setup_layout_systems(&self, _: &mut Builder) {
     }
 
-    fn setup_rendering_systems(&self, _: &mut Builder) {
+    fn setup_rendering_systems(&self, builder: &mut Builder) {
+        builder
+            .add_thread_local(queue_render_rectangle_primitives_system())
+            .add_thread_local(queue_render_circle_primitives_system())
+            .add_thread_local(queue_render_text_primitives_system());
     }
 
     fn setup_cleanup_systems(&self, _: &mut Builder) {
@@ -174,6 +180,12 @@ impl ApplicationBundleBuilder for TestRendererBuilder {
         resources.insert(create_test_render_queue());
 
         Ok(())
+    }
+
+    fn register_components_for_world_serializiation(&self, world_serializer: &mut WorldSerializer) {
+        world_serializer.register_component::<Circle>(stringify!(Circle));
+        world_serializer.register_component::<Rectangle>(stringify!(Rectangle));
+        world_serializer.register_component::<Text>(stringify!(Text));
     }
 }
 

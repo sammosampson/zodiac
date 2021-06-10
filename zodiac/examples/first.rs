@@ -1,7 +1,8 @@
 use mox::mox;
 use zodiac::initialisation::*;
-use zodiac_source::application_state::*;
-use zodiac_source::embedding::*;
+use zodiac_source::*;
+use zodiac_entities::*;
+use zodiac_rendering_pathfinder::*;
 
 #[derive(Default, Debug, Copy, Clone, PartialEq)]
 pub struct FirstState {
@@ -32,7 +33,6 @@ fn big_control() -> Node {
             colour=(255, 255, 255, 255)
             stroke_colour=(0, 200, 255, 255)
             stroke_width=5
-            corner_radii=(0, 0, 0, 0)
         />
     )
 }
@@ -77,7 +77,7 @@ fn main() {
     Application::new()
         .use_logging()
         .with_builders(&mut standard_builders(FirstState::default(), app_root))
-        //.with_builder(world_vision())
+        .with_builder(world_logging())
         .build()
         .unwrap()
         .run_until_closed();

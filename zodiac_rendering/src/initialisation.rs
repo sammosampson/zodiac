@@ -7,31 +7,26 @@ use zodiac_entities::*;
 use crate::*;
 
 #[derive(Default, Debug)]
-pub struct RendereringBuilder<TRenderer, TRenderQueue>
+pub struct RendereringBuilder<TRenderer>
 where 
-    TRenderer: Renderer + 'static,
-    TRenderQueue: RenderQueue + 'static {
-    renderer: PhantomData<TRenderer>,
-    render_queue: PhantomData<TRenderQueue>,
+    TRenderer: Renderer + 'static {
+    renderer: PhantomData<TRenderer>
 }
 
-impl<TRenderer, TRenderQueue> RendereringBuilder<TRenderer, TRenderQueue>
+impl<TRenderer> RendereringBuilder<TRenderer>
 where 
-    TRenderer: Renderer + 'static,
-    TRenderQueue: RenderQueue + 'static {
+    TRenderer: Renderer + 'static {
     pub fn new() -> Self {
         Self {
-            renderer: PhantomData::<TRenderer>::default(),
-            render_queue: PhantomData::<TRenderQueue>::default()
+            renderer: PhantomData::<TRenderer>::default()
         }
     }
 }
 
-impl<TRenderer, TRenderQueue> ApplicationBundleBuilder 
-for RendereringBuilder<TRenderer, TRenderQueue>
+impl<TRenderer> ApplicationBundleBuilder 
+for RendereringBuilder<TRenderer>
 where 
-    TRenderer: Renderer + 'static,
-    TRenderQueue: RenderQueue + 'static {
+    TRenderer: Renderer + 'static{
     fn description(&self) -> String {
         "standard rendering".to_string()
     }
@@ -43,11 +38,7 @@ where
     fn setup_layout_systems(&self, _: &mut Builder) {
     }
 
-    fn setup_rendering_systems(&self, builder: &mut Builder) {
-        builder
-            .add_thread_local(queue_render_rectangle_primitives_system::<TRenderQueue>())
-            .add_thread_local(queue_render_circle_primitives_system::<TRenderQueue>())
-            .add_thread_local(queue_render_text_primitives_system::<TRenderQueue>());
+    fn setup_rendering_systems(&self, _: &mut Builder) {
     }
 
     fn setup_cleanup_systems(&self, _: &mut Builder) {
@@ -58,5 +49,8 @@ where
 
     fn setup_resources(&self, _: &mut Resources, _: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
         Ok(())
+    }    
+    
+    fn register_components_for_world_serializiation(&self, _: &mut WorldSerializer) {
     }
 }
