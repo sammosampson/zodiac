@@ -77,7 +77,7 @@ fn main() {
     Application::new()
         .use_logging()
         .with_builders(&mut standard_builders(FirstState::default(), app_root))
-        .with_builder(world_logging())
+        //.with_builder(world_logging())
         .build()
         .unwrap()
         .run_until_closed();

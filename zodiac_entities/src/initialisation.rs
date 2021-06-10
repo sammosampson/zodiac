@@ -80,8 +80,7 @@ impl ApplicationBundleBuilder for EntitiesBuilder {
     fn setup_cleanup_systems(&self, _: &mut Builder) {            
     }
 
-    fn setup_final_functions(&self, builder: &mut Builder) {
-        builder.add_thread_local_fn(log_world_view);
+    fn setup_final_functions(&self, _: &mut Builder) {
     }
 
     fn setup_resources(&self, resources: &mut Resources, _: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
