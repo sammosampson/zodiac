@@ -1,33 +1,96 @@
-use std::collections::{ HashMap };
+use std::collections::HashMap;
 use legion::*;
+use legion::systems::*;
 use crate::*;
 
-pub type RelationshipMap = HashMap<Entity, Relationship>;
+#[derive(Default)]
+pub struct RelationshipMap(HashMap<Entity, Relationship>);
 
 pub fn create_relationship_map() -> RelationshipMap {
-    RelationshipMap::new()
+    RelationshipMap::default()
 }
 
-pub trait ParentRetrieval {
-    fn get_parent(&self, entity: &Entity) -> Option<Entity>;
-}
+impl RelationshipMap {
+    fn get(&self, entity: &Entity) -> Option<&Relationship> {
+        self.0.get(entity)
+    }
 
-pub trait ChildrenRetrieval {
-    fn get_children(&self, entity: &Entity) -> ChildrenRelationshipIterator;
-}
+    fn remove(&mut self, entity: &Entity) -> Option<Relationship> {
+        self.0.remove(entity)
+    }
 
-impl ParentRetrieval for RelationshipMap {
-    fn get_parent(&self, entity: &Entity) -> Option<Entity> {
+    pub fn insert(&mut self, entity: Entity, relationship: Relationship) {
+        self.0.insert(entity, relationship);
+    }
+
+    pub fn get_parent(&self, entity: &Entity) -> Option<Entity> {
         if let Some(relationship) = self.get(entity) {
             return relationship.parent;
         }
         None
     }
-}
 
-impl ChildrenRetrieval for RelationshipMap {
-    fn get_children(&self, parent: &Entity) -> ChildrenRelationshipIterator {
+    pub fn get_children(&self, parent: &Entity) -> ChildrenRelationshipIterator {
         ChildrenRelationshipIterator::new(self, *parent)
+    }
+
+    pub fn add_entity(&mut self, parent: Entity, entity: Entity, command_buffer: &mut CommandBuffer) {
+        let mut parent_relationship = *self.get(&parent).unwrap();
+        let mut child_relationship = *self.get(&entity).unwrap();
+
+        if parent_relationship.last_child == None {
+            parent_relationship.first_child = Some(entity);
+        } else {
+            let previous_child = parent_relationship.last_child.unwrap();
+            child_relationship.previous_sibling = Some(previous_child);
+            let mut previous_child_relationship = *self.get(&previous_child).unwrap();
+            previous_child_relationship.next_sibling = Some(entity);
+            command_buffer.add_component(previous_child, previous_child_relationship);
+            self.insert(previous_child, previous_child_relationship);        
+        }
+
+        parent_relationship.last_child = Some(entity);
+        command_buffer.add_component(parent, parent_relationship);
+        self.insert(parent, parent_relationship);
+
+        child_relationship.parent = Some(parent);
+        command_buffer.add_component(entity, child_relationship);
+        self.insert(entity, child_relationship);
+    }
+    
+    pub fn remove_entity(&mut self, entity: Entity, command_buffer: &mut CommandBuffer) {
+        let relationship = self.remove(&entity).unwrap();
+        let parent = relationship.parent;
+        
+        if let Some(previous_child) = relationship.previous_sibling {
+            let mut previous_child_relationship = *self.get(&previous_child).unwrap();
+            previous_child_relationship.next_sibling = relationship.next_sibling;
+            command_buffer.add_component(previous_child, previous_child_relationship);
+            self.insert(previous_child, previous_child_relationship);
+        }
+
+        if let Some(next_child) = relationship.next_sibling {
+            let mut next_child_relationship = *self.get(&next_child).unwrap();
+            next_child_relationship.previous_sibling = relationship.previous_sibling;
+            command_buffer.add_component(next_child, next_child_relationship);
+            self.insert(next_child, next_child_relationship);
+        }   
+
+        if let Some(parent) = parent {
+            let mut parent_relationship = *self.get(&parent).unwrap();
+    
+            if parent_relationship.first_child.unwrap() == entity {
+                parent_relationship.first_child = relationship.next_sibling;
+                command_buffer.add_component(parent, parent_relationship);
+                self.insert(parent, parent_relationship);
+            }
+            
+            if parent_relationship.last_child.unwrap() == entity {
+                parent_relationship.last_child = relationship.previous_sibling;
+                command_buffer.add_component(parent, parent_relationship);
+                self.insert(parent, parent_relationship);
+            }
+        }
     }
 }
 

@@ -108,6 +108,6 @@ impl<TState: State> SourceBuildChange for RootChange<TState> {
         let parent = command_buffer.get_or_create(self.node_id, || Root::default(), maps);
         command_buffer.add_component(parent, LayoutContent::canvas());
         self.child_changes.process_additions(&mut |child_id| command_buffer.add_child(parent, child_id, maps));    
-        self.child_changes.process_removals(&mut |child_id| command_buffer.remove_child(parent, child_id, maps));
+        self.child_changes.process_removals(&mut |child_id| command_buffer.remove_child(child_id, maps));
     }
 }

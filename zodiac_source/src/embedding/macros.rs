@@ -118,7 +118,7 @@ macro_rules! element {
                     )*)?
                     
                     self.child_changes.process_additions(&mut |child_id| command_buffer.add_child(parent, child_id, maps));    
-                    self.child_changes.process_removals(&mut |child_id| command_buffer.remove_child(parent, child_id, maps));
+                    self.child_changes.process_removals(&mut |child_id| command_buffer.remove_child(child_id, maps));
                     
                     self.attribute_changes.process_additions(&mut |attribute| {
                         match attribute {
