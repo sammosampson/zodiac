@@ -76,7 +76,6 @@ fn main() {
     Application::new(FirstState::default(), app_root)
         .use_logging()
         .with_builder(standard_layout())
-        .with_builder(standard_pathfinder_rendering())
         .with_builder(pathfinder_renderer())
         //.with_builder(world_logging())
         .build()

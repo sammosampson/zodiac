@@ -27,5 +27,4 @@ pathfinder_gpu = "0.5.0"
 pathfinder_renderer = "0.5.0"
 pathfinder_resources = "0.5.0"
 zodiac = {path = "../zodiac", version = "0.1.0"}
-zodiac_rendering = {path = "../zodiac_rendering", version = "0.1.0"}
 

@@ -4,7 +4,6 @@ use glium::*;
 use glium::index::*;
 use glium::glutin::event_loop::*;
 use zodiac::*;
-use zodiac_rendering::*;
 
 use crate::primitives::*;
 use crate::shaders::*;

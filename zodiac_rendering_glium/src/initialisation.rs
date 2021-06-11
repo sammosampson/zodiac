@@ -2,14 +2,8 @@ use shrev::*;
 use legion::*;
 use legion::systems::*;
 use zodiac::*;
-use zodiac_rendering::*;
 use crate::components::*;
 use crate::*;
-
-pub fn standard_glium_rendering() ->
-    RendereringBuilder<GliumRenderer> {
-    RendereringBuilder::<GliumRenderer>::new()
-}
 
 pub fn glium_renderer() -> GliumRendererBuilder {
     GliumRendererBuilder::default()
@@ -23,8 +17,11 @@ impl ApplicationBundleBuilder for GliumRendererBuilder {
     fn description(&self) -> String {
         "Glium rendering".to_string()
     }
+
     fn setup_build_systems(&self, builder: &mut Builder) {
         builder
+            .add_thread_local(initial_window_size_notification_system::<GliumRenderer>())
+            .flush()
             .add_thread_local(event_loop_system())
             .flush();
     }

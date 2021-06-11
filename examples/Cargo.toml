@@ -20,5 +20,4 @@ illicit = "*"
 moxie = "*"
 zodiac = {path = "../zodiac", version = "0.1.0"}
 zodiac_layout = {path = "../zodiac_layout", version = "0.1.0"}
-zodiac_rendering = {path = "../zodiac_rendering", version = "0.1.0"}
 zodiac_rendering_pathfinder = {path = "../zodiac_rendering_pathfinder", version = "0.1.0"}

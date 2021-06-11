@@ -3049,7 +3049,6 @@ dependencies = [
  "topo",
  "zodiac",
  "zodiac_layout",
- "zodiac_rendering",
  "zodiac_rendering_pathfinder",
 ]
 
@@ -3064,16 +3063,6 @@ dependencies = [
 
 [[package]]
 name = "zodiac_layout"
-version = "0.1.0"
-dependencies = [
- "legion",
- "log",
- "shrev",
- "zodiac",
-]
-
-[[package]]
-name = "zodiac_rendering"
 version = "0.1.0"
 dependencies = [
  "legion",
@@ -3099,7 +3088,6 @@ dependencies = [
  "topo",
  "winit 0.21.0",
  "zodiac",
- "zodiac_rendering",
 ]
 
 [[package]]
@@ -3126,7 +3114,6 @@ dependencies = [
  "topo",
  "winit 0.21.0",
  "zodiac",
- "zodiac_rendering",
 ]
 
 [[package]]
@@ -3145,5 +3132,4 @@ dependencies = [
  "topo",
  "zodiac",
  "zodiac_layout",
- "zodiac_rendering",
 ]

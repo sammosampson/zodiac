@@ -2,14 +2,8 @@ use shrev::*;
 use legion::*;
 use legion::systems::*;
 use zodiac::*;
-use zodiac_rendering::*;
 use crate::*;
 use crate::components::*;
-
-pub fn standard_pathfinder_rendering() ->
-    RendereringBuilder<PathFinderRenderer> {
-    RendereringBuilder::<PathFinderRenderer>::new()
-}
 
 pub fn pathfinder_renderer() -> PathFinderRendererBuilder {
     PathFinderRendererBuilder::default()
@@ -25,6 +19,8 @@ impl ApplicationBundleBuilder for PathFinderRendererBuilder {
     }
     fn setup_build_systems(&self, builder: &mut Builder) {
         builder
+            .add_thread_local(initial_window_size_notification_system::<PathFinderRenderer>())
+            .flush()
             .add_thread_local(event_loop_system())
             .flush();
     }

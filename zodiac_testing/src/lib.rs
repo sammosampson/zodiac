@@ -23,6 +23,5 @@ pub fn root() -> RootBuilder<TestState> {
 pub fn test_builders(dimensions: Dimensions) -> Vec::<Box::<dyn ApplicationBundleBuilder>> {
     vec!(
         Box::new(standard_layout()),
-        Box::new(standard_test_rendering()),
         Box::new(test_renderer(dimensions)))
 }

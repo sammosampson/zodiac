@@ -4,14 +4,8 @@ use legion::systems::*;
 use log::debug;
 use shrev::EventChannel;
 use zodiac::*;
-use zodiac_rendering::*;
 use super::*;
 use super::systems::rendering::*;
-
-pub fn standard_test_rendering() -> RendereringBuilder<TestRenderer> {
-    RendereringBuilder::<TestRenderer>::new()
-}
-
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct RenderPrimitive {
@@ -156,7 +150,9 @@ impl ApplicationBundleBuilder for TestRendererBuilder {
     fn description(&self) -> String {
         "test rendering".to_string()
     }
-    fn setup_build_systems(&self, _: &mut Builder) {
+    fn setup_build_systems(&self, builder: &mut Builder) {
+        builder
+            .add_thread_local(initial_window_size_notification_system::<TestRenderer>());
     }
 
     fn setup_layout_systems(&self, _: &mut Builder) {
