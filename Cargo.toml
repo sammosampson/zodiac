@@ -6,6 +6,7 @@ members = [
     "zodiac_hotloading",
     "zodiac_rendering_glium",
     "zodiac_rendering_pathfinder",
+    "zodiac_rendering_webrender",
     "zodiac_testing",
     "examples\\hotloading\\app_runner",
     "examples\\hotloading\\app",

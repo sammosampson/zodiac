@@ -3134,6 +3134,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "zodiac_rendering_webrender"
+version = "0.1.0"
+dependencies = [
+ "illicit",
+ "legion",
+ "log",
+ "moxie",
+ "paste",
+ "serde",
+ "shrev",
+ "topo",
+ "winit 0.21.0",
+ "zodiac",
+]
+
+[[package]]
 name = "zodiac_testing"
 version = "0.1.0"
 dependencies = [
