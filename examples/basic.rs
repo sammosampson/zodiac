@@ -72,11 +72,13 @@ fn app_root() -> RootNode<FirstState> {
         </root>
     )
 }
-fn first() {
+fn main() {
     std::env::set_var("RUST_LOG", "info");
     Application::<FirstState>::new()
         .use_logging()
         .with_builders(&mut standard_builders(FirstState::default(), app_root))
+        .with_builder(standard_pathfinder_rendering())
+        .with_builder(pathfinder_renderer())
         //.with_builder(world_logging())
         .build()
         .unwrap()

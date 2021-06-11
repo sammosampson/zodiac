@@ -3053,7 +3053,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "zodiac_examples_basic"
+name = "zodiac_examples"
 version = "0.1.0"
 dependencies = [
  "illicit",

@@ -10,5 +10,5 @@ members = [
     "zodiac_rendering_glium",
     "zodiac_rendering",
     "zodiac_rendering_pathfinder",
-    "examples//zodiac_examples_basic"
+    "examples"
 ]

@@ -37,11 +37,13 @@ fn app_root() -> RootNode<WorldViewerState> {
     )
 }
 
-fn ecs_world_viewer() {
+fn main() {
     std::env::set_var("RUST_LOG", "info");
     Application::<WorldViewerState>::new()
         .use_logging()
         .with_builders(&mut standard_builders(WorldViewerState::default(), app_root))
+        .with_builder(standard_pathfinder_rendering())
+        .with_builder(pathfinder_renderer())
         //.with_builder(world_logging())
         .build()
         .unwrap()
