@@ -1,3 +1,4 @@
+use std::marker::PhantomData;
 use log::info;
 use shrev::*;
 use legion::*;
@@ -123,13 +124,14 @@ impl ApplicationBundleBuilder for EntitiesBuilder {
     }
 }
 
-pub struct Application {
+pub struct Application<TState: State> {
     resources: Resources,
     schedule_builder: Builder,
-    builders: Vec::<Box::<dyn ApplicationBundleBuilder>>
+    builders: Vec::<Box::<dyn ApplicationBundleBuilder>>,
+    _marker: PhantomData<TState>
 }
 
-impl Application {
+impl<TState: State> Application<TState> {
     pub fn new() -> Self {
         let resources = Resources::default();
         let schedule_builder = Schedule::builder();
@@ -137,7 +139,8 @@ impl Application {
         Self {
             resources,
             schedule_builder,
-            builders: vec!(Box::new(entities()))
+            builders: vec!(Box::new(entities())),
+            _marker: PhantomData::<TState>::default()
         }
     }
 
@@ -158,7 +161,7 @@ impl Application {
         self
     }
 
-    pub fn build(mut self) -> Result<ApplicationRunner, ZodiacError> {        
+    pub fn build(mut self) -> Result<ApplicationRunner<TState>, ZodiacError> {        
         for builder in &self.builders {
             info!("setup_build_systems: {:?}", builder.description());
             builder.setup_build_systems(&mut self.schedule_builder);
@@ -216,41 +219,56 @@ impl Application {
         &mut self.resources.insert(event_channel);
         &mut self.resources.insert(world_serializer);
 
-        Ok(ApplicationRunner::new(self.schedule_builder.build(), self.resources))
+        Ok(ApplicationRunner::<TState>::new(self.schedule_builder.build(), self.resources))
     }
 }
 
-pub struct ApplicationRunner {
+pub struct ApplicationRunner<TState: State> {
     world: World, 
     resources: Resources,
-    schedule: Schedule
+    schedule: Schedule,
+    main_reader_id: ReaderId<SystemEvent>,
+    _marker: PhantomData<TState>
 }
 
-impl ApplicationRunner {
+impl<TState: State> ApplicationRunner<TState> {
     fn new(schedule: Schedule, resources: Resources) -> Self {
+        let main_reader_id = resources
+            .get_mut::<EventChannel<SystemEvent>>()
+            .unwrap()
+            .register_reader();
+
         Self {
             world: World::default(),
             schedule,
             resources,
+            main_reader_id,
+            _marker: PhantomData::<TState>::default()
         }
     }
 
-    pub fn run_until_closed(&mut self) {
-        let mut main_reader_id = &mut self.resources
-            .get_mut::<EventChannel<SystemEvent>>()
-            .unwrap()
-            .register_reader();
-            
+    pub fn run_until_closed(&mut self) {           
         loop {
-            &mut self.schedule.execute(&mut self.world, &mut self.resources);
+            &mut self.execute();
+            
             let event_channel = self.resources.get::<EventChannel<SystemEvent>>().unwrap();
-            for event in event_channel.read(&mut main_reader_id) {
+            for event in event_channel.read(&mut self.main_reader_id) {
                 match event {
                     SystemEvent::Window(SystemWindowEventType::CloseRequested) => return,
                     _ => {}
                 }
             }
         }
+    }
+
+    pub fn run_once(&mut self) -> TState {
+        &mut self.execute();
+        self.get_state()
+    }
+
+    pub fn get_state(&mut self) -> TState {
+        let repository = self.resources_mut().get::<StateRepository<TState>>().unwrap();
+        repository.get()
     }
 
     pub fn resources_mut(&mut self) -> &mut Resources {
@@ -261,7 +279,7 @@ impl ApplicationRunner {
         &mut self.world
     }
 
-    pub fn run_once(&mut self) {
+    fn execute(&mut self) {
         &mut self.schedule.execute(&mut self.world, &mut self.resources);
     }
 }

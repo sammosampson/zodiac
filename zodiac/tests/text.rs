@@ -15,7 +15,7 @@ fn text_gets_output_app_root() -> RootNode<TestState> {
 
 #[test]
 fn text_gets_output() {
-    let mut runner = Application::new()
+    let mut runner = Application::<TestState>::new()
         .with_builders(&mut test_builders(text_gets_output_app_root, Dimensions::new(100, 110)))
         .with_builder(world_logging())
         .build()
@@ -45,7 +45,7 @@ fn text_gets_output_in_stack_app_root() -> RootNode<TestState> {
 
 #[test]
 fn text_gets_output_in_stack() {
-    let mut runner = Application::new()
+    let mut runner = Application::<TestState>::new()
         .with_builders(&mut test_builders(text_gets_output_in_stack_app_root, Dimensions::new(100, 110)))
         .with_builder(world_logging())
         .build()

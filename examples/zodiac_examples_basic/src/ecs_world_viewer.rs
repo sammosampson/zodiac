@@ -37,9 +37,9 @@ fn app_root() -> RootNode<WorldViewerState> {
     )
 }
 
-fn main() {
+fn ecs_world_viewer() {
     std::env::set_var("RUST_LOG", "info");
-    Application::new()
+    Application::<WorldViewerState>::new()
         .use_logging()
         .with_builders(&mut standard_builders(WorldViewerState::default(), app_root))
         //.with_builder(world_logging())

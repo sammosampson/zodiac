@@ -4,7 +4,6 @@ pub fn create_state_repository<TState: State>() -> StateRepository<TState> {
     StateRepository::default()
 }
 
-
 #[derive(Default)]
 pub struct StateRepository<TState: State>(TState);
 

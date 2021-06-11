@@ -2,9 +2,9 @@
 use moxie::*;
 use moxie::runtime::Runtime as MoxieRuntime;
 use illicit::*;
+use zodiac_entities::*;
 use crate::changes::*;
 use crate::embedding::*;
-use crate::application_state::*;
 
 pub fn create_moxie_runner<TState: State, TRootFunc: FnMut() -> RootNode<TState> +'static>(
     root_func: TRootFunc,

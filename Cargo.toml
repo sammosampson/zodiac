@@ -5,8 +5,10 @@ members = [
     "zodiac_layout",
     "zodiac_entities",
     "zodiac_source",
+    "zodiac_hotloading",
     "zodiac_rendering",
     "zodiac_rendering_glium",
     "zodiac_rendering",
-    "zodiac_rendering_pathfinder"
+    "zodiac_rendering_pathfinder",
+    "examples//zodiac_examples_basic"
 ]

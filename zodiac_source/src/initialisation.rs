@@ -3,8 +3,7 @@ use legion::*;
 use legion::systems::*;
 use zodiac_entities::*;
 use crate::*;
-use crate::application_state::*;
-use crate::building::create_entity_map;
+use crate::building::*;
 use crate::embedding::*;
 use crate::running::*;
 

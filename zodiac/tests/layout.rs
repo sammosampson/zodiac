@@ -42,7 +42,7 @@ fn absolute_positioning_on_screen_app_root() -> RootNode<TestState> {
 
 #[test]
 fn absolute_positioning_on_screen() {
-    let mut runner = Application::new()
+    let mut runner = Application::<TestState>::new()
         .with_builders(&mut test_builders(absolute_positioning_on_screen_app_root, Dimensions::new(1024, 768)))
         .with_builder(world_logging())
         .build()
@@ -84,7 +84,7 @@ fn absolute_positioning_on_canvas_offset_from_screen_app_root() -> RootNode<Test
 
 #[test]
 fn absolute_positioning_on_canvas_offset_from_screen() {
-    let mut runner = Application::new()
+    let mut runner = Application::<TestState>::new()
         .with_builders(&mut test_builders(absolute_positioning_on_canvas_offset_from_screen_app_root, Dimensions::new(100, 110)))
         .with_builder(world_logging())
         .build()
@@ -119,7 +119,7 @@ fn dimensions_fit_parent_when_not_specified_app_root() -> RootNode<TestState> {
 
 #[test]
 fn dimensions_fit_parent_when_not_specified() {
-    let mut runner = Application::new()
+    let mut runner = Application::<TestState>::new()
         .with_builders(&mut test_builders(dimensions_fit_parent_when_not_specified_app_root, Dimensions::new(100, 110)))
         .with_builder(world_logging())
         .build()
@@ -160,7 +160,7 @@ fn horizontal_layout_for_none_sized_children_app_root() -> RootNode<TestState> {
 
 #[test]
 fn horizontal_layout_for_none_sized_children() {
-    let mut runner = Application::new()
+    let mut runner = Application::<TestState>::new()
         .with_builders(&mut test_builders(horizontal_layout_for_none_sized_children_app_root, Dimensions::new(100, 100)))
         .with_builder(world_logging())
         .build()
@@ -210,7 +210,7 @@ fn horizontal_layout_for_sized_children_app_root() -> RootNode<TestState> {
 
 #[test]
 fn horizontal_layout_for_sized_children() {
-    let mut runner = Application::new()
+    let mut runner = Application::<TestState>::new()
         .with_builders(&mut test_builders(horizontal_layout_for_sized_children_app_root, Dimensions::new(100, 100)))
         .with_builder(world_logging())
         .build()
@@ -253,7 +253,7 @@ fn vertical_layout_for_none_sized_children_app_root() -> RootNode<TestState> {
 
 #[test]
 fn vertical_layout_for_none_sized_children() {
-    let mut runner = Application::new()
+    let mut runner = Application::<TestState>::new()
         .with_builders(&mut test_builders(vertical_layout_for_none_sized_children_app_root, Dimensions::new(100, 100)))
         .with_builder(world_logging())
         .build()
@@ -304,7 +304,7 @@ fn vertical_layout_for_sized_children_app_root() -> RootNode<TestState> {
 
 #[test]
 fn vertical_layout_for_sized_children() {
-    let mut runner = Application::new()
+    let mut runner = Application::<TestState>::new()
         .with_builders(&mut test_builders(vertical_layout_for_sized_children_app_root, Dimensions::new(100, 100)))
         .with_builder(world_logging())
         .build()

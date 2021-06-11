@@ -4,7 +4,9 @@ mod systems;
 mod events;
 mod formatting;
 mod initialisation;
+mod application_state;
 
+pub use application_state::*;
 pub use formatting::*;
 pub use components::*;
 pub use relationships::*;
