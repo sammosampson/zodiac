@@ -1,8 +1,8 @@
 use legion::*;
 use legion::systems::*;
-use zodiac_entities::*;
-use crate::testing::TestRenderQueue;
-use crate::testing::components::*;
+use zodiac::*;
+use crate::TestRenderQueue;
+use crate::components::*;
 
 #[system(for_each)]
 #[filter(component::<Rectangle>())]

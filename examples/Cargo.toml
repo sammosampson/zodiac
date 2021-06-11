@@ -19,8 +19,6 @@ topo = "*"
 illicit = "*"
 moxie = "*"
 zodiac = {path = "../zodiac", version = "0.1.0"}
-zodiac_entities = {path = "../zodiac_entities", version = "0.1.0"}
-zodiac_source = {path = "../zodiac_source", version = "0.1.0"}
 zodiac_layout = {path = "../zodiac_layout", version = "0.1.0"}
 zodiac_rendering = {path = "../zodiac_rendering", version = "0.1.0"}
 zodiac_rendering_pathfinder = {path = "../zodiac_rendering_pathfinder", version = "0.1.0"}

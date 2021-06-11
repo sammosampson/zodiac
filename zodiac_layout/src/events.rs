@@ -1,6 +1,6 @@
 use log::info;
 use shrev::*;
-use zodiac_entities::*;
+use zodiac::*;
 
 pub fn create_layout_event_reader_registry(event_channel: &mut EventChannel::<SystemEvent>) -> LayoutEventReaderRegistry {
     LayoutEventReaderRegistry::register(event_channel)

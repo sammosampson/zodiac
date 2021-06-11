@@ -1,7 +1,7 @@
 
 use core::time;
 use std::thread;
-use zodiac_entities::*;
+use zodiac::*;
 use crate::*;
 
 pub struct HotLoadableApplication<TState: State> {

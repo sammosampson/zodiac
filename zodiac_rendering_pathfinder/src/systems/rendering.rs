@@ -1,6 +1,6 @@
 use legion::*;
 use legion::systems::*;
-use zodiac_entities::*;
+use zodiac::*;
 use crate::PathFinderRenderQueue;
 use crate::components::*;
 

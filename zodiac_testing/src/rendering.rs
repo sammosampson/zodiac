@@ -3,7 +3,7 @@ use serde::*;
 use legion::systems::*;
 use log::debug;
 use shrev::EventChannel;
-use zodiac_entities::*;
+use zodiac::*;
 use zodiac_rendering::*;
 use super::*;
 use super::systems::rendering::*;

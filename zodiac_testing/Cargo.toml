@@ -1,5 +1,5 @@
 [package]
-name = "zodiac_rendering_pathfinder"
+name = "zodiac_testing"
 version = "0.1.0"
 authors = ["sammosampson <sammosampson@gmail.com>"]
 edition = "2018"
@@ -8,24 +8,15 @@ edition = "2018"
 
 [dependencies]
 log = "0.4.14"
+pretty_env_logger = "*"
 legion = "0.3.1"
 serde = "1.0.125"
-gl = "0.14"
-glutin = "0.23"
-winit = "0.21"
 shrev = "1.1.1"
+mox = "*"
 paste = "1.0.5"
 topo = "*"
 illicit = "*"
 moxie = "*"
-pathfinder_canvas = { version = "0.5.0", features = ["pf-text"] }
-pathfinder_color = "0.5.0"
-pathfinder_content = "0.5.0"
-pathfinder_geometry = "0.5.1"
-pathfinder_gl = "0.5.0"
-pathfinder_gpu = "0.5.0"
-pathfinder_renderer = "0.5.0"
-pathfinder_resources = "0.5.0"
 zodiac = {path = "../zodiac", version = "0.1.0"}
+zodiac_layout = {path = "../zodiac_layout", version = "0.1.0"}
 zodiac_rendering = {path = "../zodiac_rendering", version = "0.1.0"}
-

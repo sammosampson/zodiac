@@ -2,9 +2,7 @@ use std::collections::HashMap;
 
 use legion::Entity;
 use legion::systems::CommandBuffer;
-use zodiac_entities::*;
-
-use crate::changes::SourceBuildMaps;
+use crate::*;
 
 pub type EntityMap = HashMap<u64, Entity>;
 

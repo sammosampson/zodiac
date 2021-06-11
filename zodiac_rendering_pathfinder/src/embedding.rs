@@ -1,5 +1,4 @@
-use zodiac_source::*;
-use zodiac_entities::*;
+use zodiac::*;
 use crate::components::*;
 
 element! {

@@ -1,8 +1,6 @@
 
 use legion::systems::CommandBuffer;
-use zodiac_entities::*;
-use crate::changes::*;
-use crate::running::MoxieRunner;
+use crate::*;
 
 #[legion::system(simple)]
 #[read_component(Relationship)]

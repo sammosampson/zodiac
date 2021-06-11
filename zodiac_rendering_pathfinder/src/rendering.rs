@@ -1,7 +1,7 @@
 use log::*;
 use glutin::event_loop::*;
 use pathfinder_canvas::*;
-use zodiac_entities::*;
+use zodiac::*;
 use zodiac_rendering::*;
 
 use crate::*;

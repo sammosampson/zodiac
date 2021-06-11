@@ -1,7 +1,7 @@
 use legion::*;
 use legion::world::SubWorld;
 use shrev::*;
-use zodiac_entities::*;
+use zodiac::*;
 
 use crate::*;
 

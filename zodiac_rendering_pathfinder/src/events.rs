@@ -2,7 +2,7 @@ use log::*;
 use glutin::{dpi::PhysicalSize, event_loop::*};
 use pathfinder_canvas::*;
 use shrev::*;
-use zodiac_entities::*;
+use zodiac::*;
 
 pub fn create_pathfinder_event_reader_registry(event_channel: &mut EventChannel::<SystemEvent>) -> PathFinderEventReaderRegistry {
     PathFinderEventReaderRegistry::register(event_channel)

@@ -2,7 +2,7 @@ use legion::*;
 use log::{debug};
 use legion::world::*;
 use legion::systems::*;
-use zodiac_entities::*;
+use zodiac::*;
 use crate::constraints::*;
 use crate::positioning::*;
 use crate::measurement::*;

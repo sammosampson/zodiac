@@ -1,7 +1,7 @@
 use legion::*;
 use log::{debug};
 use legion::world::*;
-use zodiac_entities::*;
+use zodiac::*;
 
 use crate::GliumRenderer;
 use crate::RenderPrimitive;

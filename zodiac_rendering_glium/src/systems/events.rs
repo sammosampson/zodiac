@@ -2,7 +2,7 @@
 use legion::*;
 use glium::glutin::{event_loop::*, platform::run_return::EventLoopExtRunReturn};
 use glium::glutin::event::{Event, WindowEvent, DeviceEvent};
-use zodiac_entities::*;
+use zodiac::*;
 use shrev::*;
 
 use crate::*;

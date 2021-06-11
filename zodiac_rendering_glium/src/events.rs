@@ -1,6 +1,6 @@
 use glium::glutin::{dpi::PhysicalSize};
 use glium::glutin::event_loop::*;
-use zodiac_entities::*;
+use zodiac::*;
 
 #[derive(Copy, Clone, Debug)]
 pub struct WrappedDimensions(Dimensions);

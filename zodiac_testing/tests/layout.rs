@@ -1,8 +1,7 @@
 use legion::*;
 use mox::mox;
-use zodiac::testing::*;
-use zodiac_entities::*;
-use zodiac_source::*;
+use zodiac_testing::*;
+use zodiac::*;
 
 #[topo::nested]
 fn absolute_positioning_on_screen_app_root() -> RootNode<TestState> {
@@ -42,8 +41,8 @@ fn absolute_positioning_on_screen_app_root() -> RootNode<TestState> {
 
 #[test]
 fn absolute_positioning_on_screen() {
-    let mut runner = Application::<TestState>::new()
-        .with_builders(&mut test_builders(absolute_positioning_on_screen_app_root, Dimensions::new(1024, 768)))
+    let mut runner = Application::new(TestState::default(), absolute_positioning_on_screen_app_root)
+        .with_builders(&mut test_builders(Dimensions::new(1024, 768)))
         .with_builder(world_logging())
         .build()
         .unwrap();
@@ -84,8 +83,8 @@ fn absolute_positioning_on_canvas_offset_from_screen_app_root() -> RootNode<Test
 
 #[test]
 fn absolute_positioning_on_canvas_offset_from_screen() {
-    let mut runner = Application::<TestState>::new()
-        .with_builders(&mut test_builders(absolute_positioning_on_canvas_offset_from_screen_app_root, Dimensions::new(100, 110)))
+    let mut runner = Application::new(TestState::default(), absolute_positioning_on_canvas_offset_from_screen_app_root)
+        .with_builders(&mut test_builders(Dimensions::new(100, 110)))
         .with_builder(world_logging())
         .build()
         .unwrap();
@@ -119,8 +118,8 @@ fn dimensions_fit_parent_when_not_specified_app_root() -> RootNode<TestState> {
 
 #[test]
 fn dimensions_fit_parent_when_not_specified() {
-    let mut runner = Application::<TestState>::new()
-        .with_builders(&mut test_builders(dimensions_fit_parent_when_not_specified_app_root, Dimensions::new(100, 110)))
+    let mut runner = Application::new(TestState::default(), dimensions_fit_parent_when_not_specified_app_root)
+        .with_builders(&mut test_builders(Dimensions::new(100, 110)))
         .with_builder(world_logging())
         .build()
         .unwrap();
@@ -160,8 +159,8 @@ fn horizontal_layout_for_none_sized_children_app_root() -> RootNode<TestState> {
 
 #[test]
 fn horizontal_layout_for_none_sized_children() {
-    let mut runner = Application::<TestState>::new()
-        .with_builders(&mut test_builders(horizontal_layout_for_none_sized_children_app_root, Dimensions::new(100, 100)))
+    let mut runner = Application::new(TestState::default(), horizontal_layout_for_none_sized_children_app_root)
+        .with_builders(&mut test_builders(Dimensions::new(100, 100)))
         .with_builder(world_logging())
         .build()
         .unwrap();
@@ -210,8 +209,8 @@ fn horizontal_layout_for_sized_children_app_root() -> RootNode<TestState> {
 
 #[test]
 fn horizontal_layout_for_sized_children() {
-    let mut runner = Application::<TestState>::new()
-        .with_builders(&mut test_builders(horizontal_layout_for_sized_children_app_root, Dimensions::new(100, 100)))
+    let mut runner = Application::new(TestState::default(), horizontal_layout_for_sized_children_app_root)
+        .with_builders(&mut test_builders(Dimensions::new(100, 100)))
         .with_builder(world_logging())
         .build()
         .unwrap();
@@ -253,8 +252,8 @@ fn vertical_layout_for_none_sized_children_app_root() -> RootNode<TestState> {
 
 #[test]
 fn vertical_layout_for_none_sized_children() {
-    let mut runner = Application::<TestState>::new()
-        .with_builders(&mut test_builders(vertical_layout_for_none_sized_children_app_root, Dimensions::new(100, 100)))
+    let mut runner = Application::new(TestState::default(), vertical_layout_for_none_sized_children_app_root)
+        .with_builders(&mut test_builders(Dimensions::new(100, 100)))
         .with_builder(world_logging())
         .build()
         .unwrap();
@@ -304,8 +303,8 @@ fn vertical_layout_for_sized_children_app_root() -> RootNode<TestState> {
 
 #[test]
 fn vertical_layout_for_sized_children() {
-    let mut runner = Application::<TestState>::new()
-        .with_builders(&mut test_builders(vertical_layout_for_sized_children_app_root, Dimensions::new(100, 100)))
+    let mut runner = Application::new(TestState::default(), vertical_layout_for_sized_children_app_root)
+        .with_builders(&mut test_builders(Dimensions::new(100, 100)))
         .with_builder(world_logging())
         .build()
         .unwrap();

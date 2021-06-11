@@ -1,6 +1,6 @@
 use std::collections::{ HashMap };
 use legion::*;
-use zodiac_entities::*;
+use zodiac::*;
 
 pub type TextColourMap = HashMap<Entity, Colour>;
 

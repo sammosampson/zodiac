@@ -1,7 +1,6 @@
 use mox::mox;
-use zodiac::initialisation::*;
-use zodiac_source::*;
-use zodiac_entities::*;
+use zodiac_layout::*;
+use zodiac::*;
 use zodiac_rendering_pathfinder::*;
 
 #[derive(Default, Debug, Copy, Clone, PartialEq)]
@@ -74,9 +73,9 @@ fn app_root() -> RootNode<FirstState> {
 }
 fn main() {
     std::env::set_var("RUST_LOG", "info");
-    Application::<FirstState>::new()
+    Application::new(FirstState::default(), app_root)
         .use_logging()
-        .with_builders(&mut standard_builders(FirstState::default(), app_root))
+        .with_builder(standard_layout())
         .with_builder(standard_pathfinder_rendering())
         .with_builder(pathfinder_renderer())
         //.with_builder(world_logging())

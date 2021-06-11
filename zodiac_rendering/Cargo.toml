@@ -10,4 +10,4 @@ edition = "2018"
 legion = "0.3.1"
 shrev = "1.1.1"
 log = "0.4.14"
-zodiac_entities = {path = "../zodiac_entities", version = "0.1.0"}
+zodiac = {path = "../zodiac", version = "0.1.0"}

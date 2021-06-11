@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 use shrev::*;
 use legion::*;
 use legion::systems::*;
-use zodiac_entities::*;
+use zodiac::*;
 use crate::*;
 
 #[derive(Default, Debug)]

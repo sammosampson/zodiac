@@ -1,7 +1,7 @@
 
 use legion::*;
 use log::{debug};
-use zodiac_entities::*;
+use zodiac::*;
 use crate::measurement::*;
 
 #[system(for_each)]

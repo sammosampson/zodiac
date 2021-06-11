@@ -3,7 +3,7 @@ use legion::*;
 use glutin::{platform::desktop::EventLoopExtDesktop};
 use glutin::event_loop::*;
 use winit::event::{Event, WindowEvent, DeviceEvent};
-use zodiac_entities::*;
+use zodiac::*;
 use shrev::*;
 use log::*;
 

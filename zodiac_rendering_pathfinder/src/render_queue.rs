@@ -1,7 +1,7 @@
 use log::{debug};
 use legion::*;
 use legion::systems::*;
-use zodiac_entities::*;
+use zodiac::*;
 use pathfinder_canvas::*;
 
 #[derive(Clone, Debug, PartialEq)]

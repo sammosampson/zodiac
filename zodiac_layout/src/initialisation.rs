@@ -1,7 +1,7 @@
 use shrev::*;
 use legion::*;
 use legion::systems::*;
-use zodiac_entities::*;
+use zodiac::*;
 use crate::*;
 
 pub fn standard_layout() -> LayoutBundleBuilder {
@@ -72,6 +72,6 @@ impl ApplicationBundleBuilder for LayoutBundleBuilder {
         Ok(())
     }    
     
-    fn register_components_for_world_serializiation(&self, _: &mut zodiac_entities::WorldSerializer) {
+    fn register_components_for_world_serializiation(&self, _: &mut zodiac::WorldSerializer) {
     }
 }

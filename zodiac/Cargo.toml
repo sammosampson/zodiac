@@ -8,16 +8,14 @@ edition = "2018"
 
 [dependencies]
 log = "0.4.14"
-pretty_env_logger = "*"
 legion = "0.3.1"
 serde = "1.0.125"
+serde_json = "1.0.64"
+pretty_env_logger = "*"
 shrev = "1.1.1"
+moxie = "*"
 mox = "*"
-paste = "1.0.5"
 topo = "*"
 illicit = "*"
-moxie = "*"
-zodiac_entities = {path = "../zodiac_entities", version = "0.1.0"}
-zodiac_source = {path = "../zodiac_source", version = "0.1.0"}
-zodiac_layout = {path = "../zodiac_layout", version = "0.1.0"}
-zodiac_rendering = {path = "../zodiac_rendering", version = "0.1.0"}
+dyn-cache = "*"
+paste = "1.0.5"

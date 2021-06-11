@@ -2,8 +2,7 @@ use std::marker::PhantomData;
 use illicit::from_env;
 use legion::systems::*;
 use moxie::*;
-use zodiac_entities::*;
-use crate::{building::*, changes::*};
+use crate::*;
 use super::nodes::*;
 
 #[derive(Default)]

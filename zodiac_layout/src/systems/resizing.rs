@@ -4,7 +4,7 @@ use log::{debug};
 use legion::systems::*;
 use legion::world::*;
 use shrev::EventChannel;
-use zodiac_entities::*;
+use zodiac::*;
 
 use crate::events::*;
 use crate::measurement::*;

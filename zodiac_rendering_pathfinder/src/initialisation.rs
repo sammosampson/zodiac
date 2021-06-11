@@ -1,7 +1,7 @@
 use shrev::*;
 use legion::*;
 use legion::systems::*;
-use zodiac_entities::*;
+use zodiac::*;
 use zodiac_rendering::*;
 use crate::*;
 use crate::components::*;

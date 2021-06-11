@@ -9,4 +9,4 @@ edition = "2018"
 [dependencies]
 libloading = "0.7.0"
 notify = "4.0.0"
-zodiac_entities = {path = "../zodiac_entities", version = "0.1.0"}
+zodiac = {path = "../zodiac", version = "0.1.0"}
