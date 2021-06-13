@@ -87,6 +87,37 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "000444226fcff248f2bc4c7625be32c63caccfecc2723a2b9f78a7487a49c407"
 
 [[package]]
+name = "app"
+version = "0.1.0"
+dependencies = [
+ "app_state",
+ "illicit",
+ "mox",
+ "moxie",
+ "topo",
+ "zodiac",
+ "zodiac_hotloading",
+ "zodiac_layout",
+ "zodiac_rendering_glium",
+]
+
+[[package]]
+name = "app_runner"
+version = "0.1.0"
+dependencies = [
+ "app_state",
+ "zodiac",
+ "zodiac_hotloading",
+]
+
+[[package]]
+name = "app_state"
+version = "0.1.0"
+dependencies = [
+ "zodiac",
+]
+
+[[package]]
 name = "approx"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3036,20 +3067,6 @@ dependencies = [
  "serde_json",
  "shrev",
  "topo",
-]
-
-[[package]]
-name = "zodiac_examples"
-version = "0.1.0"
-dependencies = [
- "illicit",
- "mox",
- "moxie",
- "paste",
- "topo",
- "zodiac",
- "zodiac_layout",
- "zodiac_rendering_pathfinder",
 ]
 
 [[package]]

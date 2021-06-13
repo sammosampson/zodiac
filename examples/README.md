@@ -1,8 +1,15 @@
 # Examples
 
-This directory contains a collection of examples which use Zodiac.
+This directory contains the hotloadable examples which use Zodiac:
 
-To run an example e.g. `basic`, try:
+run the app with
 ```
-cargo run --bin basic
+run-app.sh
 ```
+
+and monitor changes to the source code by running the following from a separate terminal session:
+```
+rebuild-app-on-change.sh
+```
+
+make all your changes to the app package and it will be recompiled and reload as long as app-runner stays alive

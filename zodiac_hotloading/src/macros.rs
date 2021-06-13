@@ -5,8 +5,8 @@ macro_rules! zod_hotload_client {
         [$state_ty:ty]
     ) => {        
         #[no_mangle]
-        pub extern "C" fn initialise<'a>() -> *mut engine::hotloading::HotLoadableApplicationState<$state_ty> {
-            let application_state  = engine::hotloading::HotLoadableApplicationState {
+        pub extern "C" fn initialise<'a>() -> *mut zodiac_hotloading::HotLoadableApplicationState<$state_ty> {
+            let application_state  = zodiac_hotloading::HotLoadableApplicationState {
                 state: <$state_ty>::default(),
                 application: $initialisation(<$state_ty>::default())
             };
@@ -15,7 +15,7 @@ macro_rules! zod_hotload_client {
         }
 
         #[no_mangle]
-        pub unsafe extern "C" fn update(application_state: *mut engine::hotloading::HotLoadableApplicationState<$state_ty>) -> bool {
+        pub unsafe extern "C" fn update(application_state: *mut zodiac_hotloading::HotLoadableApplicationState<$state_ty>) -> bool {
             if application_state.is_null() {
                 panic!("[ FATAL ] game_update: game state is null!");
             }
@@ -26,17 +26,17 @@ macro_rules! zod_hotload_client {
         }
         
         #[no_mangle]
-        pub unsafe extern "C" fn shutdown(application_state: *mut engine::hotloading::HotLoadableApplicationState<$state_ty>) {
+        pub unsafe extern "C" fn shutdown(application_state: *mut zodiac_hotloading::HotLoadableApplicationState<$state_ty>) {
             std::ptr::drop_in_place(application_state);
-            std::alloc::dealloc(application_state as *mut u8, std::alloc::Layout::new::<engine::hotloading::HotLoadableApplicationState<$state_ty>>());
+            std::alloc::dealloc(application_state as *mut u8, std::alloc::Layout::new::<zodiac_hotloading::HotLoadableApplicationState<$state_ty>>());
         }
 
         #[no_mangle]
-        pub unsafe extern "C" fn unload(_application_state: *mut engine::hotloading::HotLoadableApplicationState<$state_ty>) {
+        pub unsafe extern "C" fn unload(application_state: *mut zodiac_hotloading::HotLoadableApplicationState<$state_ty>) {
         }
 
         #[no_mangle]
-        pub unsafe extern "C" fn reload(application_state: *mut engine::hotloading::HotLoadableApplicationState<$state_ty>) {
+        pub unsafe extern "C" fn reload(application_state: *mut zodiac_hotloading::HotLoadableApplicationState<$state_ty>) {
             println!("reloading app");
 
             if application_state.is_null() {

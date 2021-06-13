@@ -1,0 +1,12 @@
+[package]
+name = "app_runner"
+version = "0.1.0"
+authors = ["Chris Sampson <csampson@appliedsystems.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+app_state = {path = "../app_state", version = "0.1.0"}
+zodiac = {path = "../../../zodiac", version = "0.1.0"}
+zodiac_hotloading = {path = "../../../zodiac_hotloading", version = "0.1.0"}

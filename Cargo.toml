@@ -7,5 +7,7 @@ members = [
     "zodiac_rendering_glium",
     "zodiac_rendering_pathfinder",
     "zodiac_testing",
-    "examples"
+    "examples\\hotloading\\app_runner",
+    "examples\\hotloading\\app",
+    "examples\\hotloading\\app_state"
 ]

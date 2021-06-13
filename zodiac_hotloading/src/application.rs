@@ -1,6 +1,4 @@
 
-use core::time;
-use std::thread;
 use zodiac::*;
 use crate::*;
 
@@ -26,8 +24,6 @@ impl<TState: State> HotLoadableApplication<TState> {
             }
     
             self.reload_app_library_if_changed();
-            
-            thread::sleep(time::Duration::from_millis(200));
         }
     
         self.shutdown();
