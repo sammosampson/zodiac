@@ -1,25 +1,21 @@
-       | width | height |
-screen | 3738  | 2356   |
-res    | 3200  | 2400   |
-scale  | 0.86  | 1.02   | 
+fn text_medium() {
+   ..
+   <style
+      text_size=px(25)
+      padding=px(10)
+      direction=TextDirection::Horizontal
+      background_color=rgb(66, 135, 245),
+      text_color=rgb(255, 255, 255),
+   >
+      <state type=StateType::Hover>
+         <style
+            text_color=rgb(112, 167, 255)
+         />
+      </state>
+   </style>
+   ...
+}
 
-
-(orthographic_camera_matrix) aspect_ratio = 
-   res.height / res.width
-   1200       / 1600
-   ----------------------
-   0.75
-
-let scale_width = 
-   resolution_width as f32 / screen_width as f32
-   3200 / 3738
-   -----------
-   0.86
-
-let scale_height = 
-   resolution_height as f32 / screen_height as f32;
-   2400 / 2356
-   -----------
-   1.02
+<span style=text_medium()>Some text here</span> 
 
 
