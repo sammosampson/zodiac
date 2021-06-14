@@ -11,3 +11,8 @@ element! {
         text_colour(Colour)
     }
 }
+
+element! {
+    <span>
+    [Span::default()]
+}

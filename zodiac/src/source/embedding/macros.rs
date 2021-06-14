@@ -83,6 +83,10 @@ macro_rules! element {
                     self
                 }
 
+                pub fn style(self, value: Node) -> Self {
+                    self.child(value)
+                }
+
                 $($(
                 pub fn $attr(mut self, value: $($attr_ty)?) -> Self {
                     self.attributes.push([<$name:camel Attribute>]::[<$attr:camel>](value));
