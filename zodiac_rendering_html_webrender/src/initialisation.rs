@@ -3,17 +3,17 @@ use legion::*;
 use legion::systems::*;
 use zodiac::*;
 
-pub fn webrender_renderer() -> WebRenderRendererBuilder {
-    WebRenderRendererBuilder::default()
+pub fn html_webrender_renderer() -> HtmlWebRenderRendererBuilder {
+    HtmlWebRenderRendererBuilder::default()
 }
 
 #[derive(Default, Debug)]
-pub struct WebRenderRendererBuilder {
+pub struct HtmlWebRenderRendererBuilder {
 }
 
-impl ApplicationBundleBuilder for WebRenderRendererBuilder {
+impl ApplicationBundleBuilder for HtmlWebRenderRendererBuilder {
     fn description(&self) -> String {
-        "webrender rendering".to_string()
+        "html webrender rendering".to_string()
     }
 
     fn setup_build_systems(&self, _: &mut Builder) {

@@ -91,7 +91,8 @@ dependencies = [
  "topo",
  "zodiac",
  "zodiac_hotloading",
- "zodiac_rendering_glium",
+ "zodiac_html",
+ "zodiac_rendering_html_webrender",
 ]
 
 [[package]]
@@ -2545,6 +2546,18 @@ version = "0.1.0"
 dependencies = [
  "libloading 0.7.0",
  "notify",
+ "zodiac",
+]
+
+[[package]]
+name = "zodiac_html"
+version = "0.1.0"
+dependencies = [
+ "illicit",
+ "legion",
+ "moxie",
+ "paste",
+ "serde",
  "zodiac",
 ]
 

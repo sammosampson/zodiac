@@ -17,4 +17,5 @@ illicit = "*"
 app_state = {path = "../app_state", version = "0.1.0"}
 zodiac = {path = "../../../zodiac", version = "0.1.0"}
 zodiac_hotloading = {path = "../../../zodiac_hotloading", version = "0.1.0"}
-zodiac_rendering_glium = {path = "../../../zodiac_rendering_glium", version = "0.1.0"}
+zodiac_html = {path = "../../../zodiac_html", version = "0.1.0"}
+zodiac_rendering_html_webrender = {path = "../../../zodiac_rendering_html_webrender", version = "0.1.0"}

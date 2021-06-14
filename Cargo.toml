@@ -2,9 +2,10 @@
 
 members = [
     "zodiac",
-    "zodiac_hotloading",
-    "zodiac_rendering_glium",
+    "zodiac_html",
     "zodiac_rendering_html_webrender",
+    "zodiac_rendering_glium",
+    "zodiac_hotloading",
     "examples\\hotloading\\app_runner",
     "examples\\hotloading\\app",
     "examples\\hotloading\\app_state"
