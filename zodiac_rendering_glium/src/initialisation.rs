@@ -26,7 +26,9 @@ impl ApplicationBundleBuilder for GliumRendererBuilder {
             .flush();
     }
 
-    fn setup_layout_systems(&self, _: &mut Builder) {
+    fn setup_layout_systems(&self, builder: &mut Builder) {
+        builder
+            .add_system(build_width_and_height_maps_from_radius_system());
     }
 
     fn setup_rendering_systems(&self, builder: &mut Builder) {
@@ -53,6 +55,12 @@ impl ApplicationBundleBuilder for GliumRendererBuilder {
     }
 
     fn register_components_for_world_serializiation(&self, world_serializer: &mut WorldSerializer) {
+        world_serializer.register_component::<Content>(stringify!(Content));
+        world_serializer.register_component::<Radius>(stringify!(Radius));
+        world_serializer.register_component::<Colour>(stringify!(Colour));
+        world_serializer.register_component::<StrokeWidth>(stringify!(StrokeWidth));
+        world_serializer.register_component::<StrokeColour>(stringify!(StrokeColour));
+        world_serializer.register_component::<CornerRadii>(stringify!(CornerRadii));  
         world_serializer.register_component::<RenderPrimitive>(stringify!(RenderPrimitive));
         world_serializer.register_component::<Circle>(stringify!(Circle));
         world_serializer.register_component::<Rectangle>(stringify!(Rectangle));
