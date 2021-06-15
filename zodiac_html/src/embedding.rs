@@ -16,3 +16,8 @@ element! {
     <span>
     [Span::default()]
 }
+
+element! {
+    <div>
+    [LayoutContent::vertical()]
+}

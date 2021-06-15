@@ -1,7 +1,7 @@
 use log::{debug};
 use legion::*;
 use legion::systems::*;
-use crate::components::*;
+use zodiac_zoml::*;
 use crate::primitives::*;
 
 pub fn create_glium_render_queue() -> GliumRenderQueue {

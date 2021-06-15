@@ -13,7 +13,7 @@ fn initialise_application(state: TestState) -> ApplicationRunner<TestState> {
     std::env::set_var("RUST_LOG", "info");
     Application::new(state, app_root)
         .use_logging()
-        .with_builder(html_webrender_renderer())
+        .with_builders(&mut html_webrender_rendering())
         //.with_builder(world_logging())
         .build()
         .unwrap()

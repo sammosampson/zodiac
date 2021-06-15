@@ -11,6 +11,10 @@ pub struct Style {
 pub struct Span {
 }
 
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Div {
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct TextSize {
     size: FontSize

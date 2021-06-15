@@ -2,7 +2,7 @@ use legion::*;
 use legion::systems::*;
 use zodiac::*;
 use crate::GliumRenderQueue;
-use crate::components::*;
+use zodiac_zoml::*;
 
 #[system(for_each)]
 #[filter(component::<Rectangle>())]

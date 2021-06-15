@@ -1,5 +1,5 @@
 [package]
-name = "zodiac_rendering_glium"
+name = "zodiac_rendering_glium_zoml"
 version = "0.1.0"
 authors = ["sammosampson <sammosampson@gmail.com>"]
 edition = "2018"
@@ -20,6 +20,7 @@ topo = "*"
 illicit = "*"
 moxie = "*"
 zodiac = {path = "../zodiac", version = "0.1.0"}
+zodiac_zoml = {path = "../zodiac_zoml", version = "0.1.0"}
 
 [features]
 default = ["no_font_image_load"]

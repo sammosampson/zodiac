@@ -33,6 +33,10 @@ impl Node {
     pub fn build(self) -> Node {
         self
     }
+
+    pub fn into_child(self) -> Node {
+        self
+    }
 }
 
 pub trait NodeBuilder {

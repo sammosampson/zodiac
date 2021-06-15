@@ -1,6 +1,7 @@
 use app_state::*;
 use mox::mox;
 use zodiac::*;
+use zodiac_html::*;
 
 use crate::small_control::*;
 use crate::other_control::*;
@@ -10,7 +11,7 @@ use crate::other_control::*;
 pub fn app_root() -> RootNode<TestState> {
     mox!(
         <root>
-            <vertical_stack>
+            <div>
                 <small_control />
                 <other_control/>
                 <other_control/>
@@ -22,7 +23,7 @@ pub fn app_root() -> RootNode<TestState> {
                 <other_control/>
                 <other_control/>
                 <other_control/>
-            </vertical_stack>
+            </div>
         </root>
     )
 }
