@@ -5,8 +5,10 @@ use legion::*;
 use legion::systems::*;
 use zodiac::*;
 use zodiac_html::*;
+
 use crate::events::*;
 use crate::rendering::*;
+use crate::systems::*;
 
 pub fn html_webrender_rendering() -> Vec::<Box::<dyn ApplicationBundleBuilder>> {
     vec!(
@@ -31,13 +33,15 @@ impl ApplicationBundleBuilder for HtmlWebRenderRendererBuilder {
     fn setup_build_systems(&self, builder: &mut Builder) {
         builder
             .add_thread_local(initial_window_size_notification_system::<HtmlWebRenderRenderer>())
-            .flush();
+            .flush()
+            .add_thread_local(event_loop_system());
     }
 
     fn setup_layout_systems(&self, _: &mut Builder) {
     }
 
-    fn setup_rendering_systems(&self, _: &mut Builder) {
+    fn setup_rendering_systems(&self, builder: &mut Builder) {
+        builder.add_thread_local_fn(render_primitives);
     }
 
     fn setup_cleanup_systems(&self, _: &mut Builder) {
@@ -48,7 +52,6 @@ impl ApplicationBundleBuilder for HtmlWebRenderRendererBuilder {
 
     fn setup_resources(&self, resources: &mut Resources, _: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
         let event_loop = create_system_event_loop();
-
         resources.insert(create_webrender_renderer(&event_loop)?);
         resources.insert(event_loop);
         
