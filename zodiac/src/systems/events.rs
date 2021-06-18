@@ -1,5 +1,5 @@
 
-use log::{debug};
+use log::{info};
 use legion::*;
 use legion::systems::*;
 use crate::*;
@@ -13,7 +13,7 @@ pub fn initial_window_size_notification<TRenderer: Renderer + 'static> (
     command_buffer: &mut CommandBuffer,
     #[resource] event_channel: &mut EventChannel::<SystemEvent>,
     #[resource] renderer: &mut TRenderer) {
-        debug!("sending initial root window resize");
+        info!("sending initial root window resize");
         event_channel.single_write(SystemEvent::Window(SystemWindowEventType::RootWindowResize(renderer.get_window_dimensions())));
         command_buffer.add_component(*entity, RootWindowResized::default());
 }

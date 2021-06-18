@@ -1,10 +1,11 @@
-use std::{marker::PhantomData, rc::Rc, sync::mpsc};
+use std::{rc::Rc, sync::mpsc};
 use log::{info, debug};
 use webrender::api::units::DeviceIntRect;
 use glium::glutin::*;
 use gleam::*;
 use zodiac::*;
 use crate::notification::*;
+use crate::render_primitive::*;
 
 pub fn create_webrender_renderer(event_loop: &event_loop::EventLoop<()>) -> Result<HtmlWebRenderRenderer, RendererError> {
     HtmlWebRenderRenderer::new(event_loop)
@@ -65,56 +66,7 @@ impl HtmlWebRenderRenderer {
         )
     }
 
-    pub fn render(&mut self) {
-        let dimensions =  webrender::euclid::Rect::new(
-            webrender::euclid::point2(50.0, 50.0),
-            webrender::euclid::size2(50.0, 50.0),
-        );
-
-        let border_radius = webrender::api::BorderRadius {
-            top_left: webrender::euclid::size2(10.0, 10.0),
-            top_right: webrender::euclid::size2(10.0, 10.0),
-            bottom_left: webrender::euclid::size2(10.0, 10.0),
-            bottom_right: webrender::euclid::size2(10.0, 10.0),
-        };
-
-        let border_widths = webrender::api::units::LayoutSideOffsets {
-            top: 10.0,
-            right: 10.0,
-            bottom: 10.0,
-            left: 10.0,
-            _unit: PhantomData::<webrender::api::units::LayoutPixel>::default(),
-        };
-
-        let border_side = webrender::api::BorderSide {
-            color: webrender::api::ColorF::new(1.0, 1.0, 0.0, 1.0),
-            style: webrender::api::BorderStyle::Double,
-        };
-
-        let border_details =  webrender::api::BorderDetails::Normal(
-            webrender::api::NormalBorder {
-                left: border_side,
-                right: border_side,
-                top: border_side,
-                bottom: border_side,
-                radius: border_radius,
-                do_aa: true
-            });
-
-        let border = RenderPrimitiveBorder {
-            radius: border_radius,
-            widths: border_widths,
-            details: border_details,
-        };
-
-        let primitive = RenderPrimitive {
-            id: 1, 
-            dimensions,
-            border: Some(border),
-            background_colour: webrender::api::ColorF::new(1.0, 0.0, 0.0, 1.0),
-            is_interactive: false
-        };
-
+    pub fn render(&mut self, primitives: Vec::<RenderPrimitive>) {
         let client_size = self.client_size();
         debug!("{:?}", client_size);
 
@@ -127,11 +79,13 @@ impl HtmlWebRenderRenderer {
         let mut builder = webrender::api::DisplayListBuilder::new(pipeline_id);
         let mut transaction = webrender::api::Transaction::new();
 
-        self.render_primitive(
-            primitive, 
-            pipeline_id,
-            &mut builder
-        );
+        for primitive in primitives {
+            self.render_primitive(
+                primitive, 
+                pipeline_id,
+                &mut builder
+            );
+        }
 
         transaction.set_display_list(webrender::api::Epoch(0), None, content_size, builder.finalize(), true);
         transaction.set_root_pipeline(pipeline_id);
@@ -215,19 +169,6 @@ impl HtmlWebRenderRenderer {
             inner_size.width as i32, 
             inner_size.height as i32)
     }
-}
-struct RenderPrimitive {
-    id: u64,
-    dimensions: webrender::euclid::Rect<f32, webrender::api::units::LayoutPixel>,
-    border: Option<RenderPrimitiveBorder>,
-    background_colour: webrender::api::ColorF,
-    is_interactive: bool
-}
-
-struct RenderPrimitiveBorder {
-    radius: webrender::api::BorderRadius,
-    widths: webrender::api::units::LayoutSideOffsets,
-    details: webrender::api::BorderDetails
 }
 
 impl zodiac::Renderer for HtmlWebRenderRenderer {

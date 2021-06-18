@@ -10,25 +10,39 @@ pub fn create_world_serializer() -> WorldSerializer {
 }
 
 #[derive(Default)]
-pub struct WorldSerializer(Registry::<String>);
+pub struct WorldSerializer { 
+    registry: Registry::<String>,
+    last_result: Option<Value>
+}
 
 impl WorldSerializer {
     pub fn new() -> Self {
-        let mut inner = Registry::<String>::default();
-        inner.on_unknown(UnknownType::Ignore);
+        let mut registry = Registry::<String>::default();
+        registry.on_unknown(UnknownType::Ignore);
         
-        Self(inner)
+        Self {
+            registry,
+            last_result: None
+        }
     }
     
     pub fn register_component<C: Component + Serialize + for<'de> serde::Deserialize<'de>>(&mut self, mapped_type_id: &'static str) {
-        self.0.register::<C>(mapped_type_id.to_string());
+        self.registry.register::<C>(mapped_type_id.to_string());
     }
 
     pub fn serialize_world(&mut self, world: &World) -> Result<Value> {
-        serde_json::to_value(world.as_serializable(passthrough(), &self.0))
+        serde_json::to_value(world.as_serializable(passthrough(), &self.registry))
     }
 
     pub fn log_world(&mut self, world: &World) {
-        info!("{:#}", self.serialize_world(world).unwrap());
+        let result = self.serialize_world(world).unwrap();
+        
+        if self.last_result == None {
+            info!("{:#}", result);
+        } else if result != self.last_result.take().unwrap() {
+            info!("{:#}", result);
+        }
+
+        self.last_result = Some(result);
     }
 }

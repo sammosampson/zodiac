@@ -42,5 +42,11 @@ You can find a paper describing this technique at http://jcgt.org/published/0006
 
 drawing shapes with shaders https://mortoray.com/2015/06/05/quickly-drawing-a-rounded-rectangle-with-a-gl-shader/
 
+CSS Ref:
+https://www.w3schools.com/css/
+
+Next goal is to achieve:
+https://www.w3schools.com/css/tryit.asp?filename=trycss_inline-block_span1
+
 
 

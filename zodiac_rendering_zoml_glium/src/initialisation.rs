@@ -54,7 +54,6 @@ impl ApplicationBundleBuilder for GliumRendererBuilder {
         
         resources.insert(create_glium_renderer(&mut event_loop)?);
         resources.insert(event_loop);
-        resources.insert(create_glium_render_queue());
         
         Ok(())
     }

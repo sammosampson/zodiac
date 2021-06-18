@@ -12,6 +12,6 @@ pub fn big_control(size: u8) -> Node {
 #[topo::nested]
 pub fn big_control_style(size: u8) -> Node {
     mox!(
-        <style text_size=px(size) text_colour=rgb(255, 255, 255) />
+        <style border_width=px(size) background_colour=rgb(100, 255, 255) />
     )
 }

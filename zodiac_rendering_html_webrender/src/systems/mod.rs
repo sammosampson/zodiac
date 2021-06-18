@@ -1,4 +1,7 @@
-mod render_primitives;
 mod events;
-pub use render_primitives::*;
+mod queue_primitives;
+mod render_primitives;
+
 pub use events::*;
+pub use queue_primitives::*;
+pub use render_primitives::*;

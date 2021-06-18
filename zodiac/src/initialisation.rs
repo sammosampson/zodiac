@@ -108,6 +108,7 @@ impl<TState: State, TRootFunc: FnMut() -> RootNode<TState> + Copy + Clone + 'sta
     }
 
     fn register_components_for_world_serializiation(&self, world_serializer: &mut WorldSerializer) {
+        world_serializer.register_component::<ComponentId>(stringify!(ComponentId));
         world_serializer.register_component::<Dimensions>(stringify!(Dimensions));
         world_serializer.register_component::<RootWindowResized>(stringify!(RootWindowResized));
         world_serializer.register_component::<Removed>(stringify!(Removed));

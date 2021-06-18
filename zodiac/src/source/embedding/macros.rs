@@ -121,6 +121,8 @@ macro_rules! element {
                     command_buffer.add_component(parent, $extra_component);
                     )*)?
                     
+                    command_buffer.add_component(parent, Rebuild::default());
+                    
                     self.child_changes.process_additions(&mut |child_id| command_buffer.add_child(parent, child_id, maps));    
                     self.child_changes.process_removals(&mut |child_id| command_buffer.remove_child(child_id, maps));
                     

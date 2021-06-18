@@ -5,6 +5,7 @@ use glium::glutin::event::{Event, WindowEvent, DeviceEvent};
 use zodiac::*;
 use shrev::*;
 
+use crate::dimensions::WrappedDimensions;
 use crate::events::*;
 
 #[system(simple)]

@@ -1,5 +1,5 @@
 use legion::*;
-use log::{debug};
+use log::info;
 use legion::world::*;
 use legion::systems::*;
 use crate::*;
@@ -21,6 +21,7 @@ pub fn perform_resize(
     command_buffer: &mut CommandBuffer,
     entity: &Entity, 
     constraints: &LayoutConstraints) {
+        info!("perform_resize: {:?}", constraints);
         command_buffer.add_component(*entity, Width { width: constraints.width });
         command_buffer.add_component(*entity, Height { height: constraints.height });
         command_buffer.add_component(*entity, Resized::default());
@@ -117,6 +118,6 @@ fn layout_renderable(
         if let Some(height) = maps.height_map.get(entity) {
             layout_change.height = height.height;
         }
-        debug!("Layout change for {:?} {:?}", entity, layout_change);
+        info!("Layout change for {:?} {:?}", entity, layout_change);
         command_buffer.add_component(*entity, layout_change);
 }

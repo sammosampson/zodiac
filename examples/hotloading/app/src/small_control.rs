@@ -12,6 +12,11 @@ pub fn small_control() -> Node {
 #[topo::nested]
 pub fn small_control_style() -> Node {
     mox!(
-        <style text_size=px(10) text_colour=rgb(255, 255, 255) />
+        <style
+            border_width=px(5)
+            border_colour=rgb(200, 200, 200)
+            border_radius=px(6)
+            background_colour=rgb(100, 100, 200)
+        />
     )
 }

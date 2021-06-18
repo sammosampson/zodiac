@@ -22,7 +22,7 @@ impl EntityCreator for CommandBuffer {
             Some(entity) => *entity,
             None => {
                 let relationship = Relationship::default();
-                let entity = self.push((relationship, creation_func()));
+                let entity = self.push((relationship, ComponentId::from(id), creation_func()));
                 maps.entity_map.insert(id, entity);
                 maps.relationship_map.insert(entity, relationship);
                 entity

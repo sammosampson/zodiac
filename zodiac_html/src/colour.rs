@@ -8,7 +8,7 @@ pub fn rgba(r: u8, g: u8, b: u8, a: u8) -> Colour {
     Colour::from((r, g, b, a))
 }
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Ord, PartialOrd)]
+#[derive(Default, Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Ord, PartialOrd)]
 pub struct Colour {
     pub r: u8,
     pub g: u8,
@@ -24,5 +24,14 @@ impl From<(u8, u8, u8, u8)> for Colour {
             b: colour.2,
             a: colour.3,
         }
+    }
+}
+
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct BackgroundColour(pub Colour);
+
+impl From<Colour> for BackgroundColour {
+    fn from(colour: Colour) -> Self {
+        Self(colour)
     }
 }

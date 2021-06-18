@@ -23,11 +23,11 @@ impl From<String> for Content {
 }
 
 #[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct FontSize { 
+pub struct Size { 
     pub size: u8
 }
 
-impl From<u8> for FontSize {
+impl From<u8> for Size {
     fn from(size: u8) -> Self {
         Self {
             size
@@ -94,7 +94,7 @@ impl From<(u8, u8, u8, u8)> for Colour {
     }
 }
 
-impl Into<[f32;4]> for Colour {
+impl Into<[f32;4]> for &Colour {
     fn into(self) -> ([f32;4]) {
         [
             self.r as f32 / 255.0,
@@ -105,7 +105,7 @@ impl Into<[f32;4]> for Colour {
     }
 }
 
-impl Into<[u8;4]> for Colour {
+impl Into<[u8;4]> for &Colour {
     fn into(self) -> ([u8;4]) {
         [
             self.r,
@@ -148,7 +148,7 @@ impl From<(u8, u8, u8, u8)> for StrokeColour {
     }
 }
 
-impl Into<[f32;4]> for StrokeColour {
+impl Into<[f32;4]> for &StrokeColour {
     fn into(self) -> ([f32;4]) {
         [
             self.r as f32 / 255.0,
@@ -159,7 +159,7 @@ impl Into<[f32;4]> for StrokeColour {
     }
 }
 
-impl Into<[u8;4]> for StrokeColour {
+impl Into<[u8;4]> for &StrokeColour {
     fn into(self) -> ([u8;4]) {
         [
             self.r,

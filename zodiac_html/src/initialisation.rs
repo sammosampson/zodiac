@@ -3,6 +3,7 @@ use legion::*;
 use legion::systems::*;
 use zodiac::*;
 use crate::*;
+use crate::systems::*;
 
 pub fn html_builder() -> HtmlBuilder {
     HtmlBuilder::default()
@@ -20,7 +21,11 @@ impl ApplicationBundleBuilder for HtmlBuilder {
     fn setup_build_systems(&self, _: &mut Builder) {
     }
 
-    fn setup_layout_systems(&self, _: &mut Builder) {
+    fn setup_layout_systems(&self, builder: &mut Builder) {
+        builder
+            .add_system(compose_border_style_system())
+            .flush()
+            .add_system(compose_border_system());
     }
 
     fn setup_rendering_systems(&self, _: &mut Builder) {
@@ -39,9 +44,17 @@ impl ApplicationBundleBuilder for HtmlBuilder {
     fn register_components_for_world_serializiation(&self, world_serializer: &mut WorldSerializer) {
         world_serializer.register_component::<Style>(stringify!(Style));
         world_serializer.register_component::<Span>(stringify!(Span));
-        world_serializer.register_component::<TextSize>(stringify!(TextSize));
-        world_serializer.register_component::<TextColour>(stringify!(TextColour));
-        world_serializer.register_component::<FontSize>(stringify!(FontSize));
+        world_serializer.register_component::<BorderWidth>(stringify!(BorderWidth));
+        world_serializer.register_component::<BorderColour>(stringify!(BorderColour));
+        world_serializer.register_component::<BorderTopStyle>(stringify!(BorderTopStyle));
+        world_serializer.register_component::<BorderLeftStyle>(stringify!(BorderLeftStyle));
+        world_serializer.register_component::<BorderBottomStyle>(stringify!(BorderBottomStyle));
+        world_serializer.register_component::<BorderRightStyle>(stringify!(BorderRightStyle));
+        world_serializer.register_component::<BorderStyles>(stringify!(BorderStyle));
+        world_serializer.register_component::<BorderStyle>(stringify!(BorderStyles));
+        world_serializer.register_component::<Border>(stringify!(Border));
+        world_serializer.register_component::<BackgroundColour>(stringify!(BackgroundColour));
+        world_serializer.register_component::<Size>(stringify!(Size));
         world_serializer.register_component::<Colour>(stringify!(Colour));
     }
 }

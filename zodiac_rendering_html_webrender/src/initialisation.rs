@@ -9,6 +9,7 @@ use zodiac_html::*;
 use crate::events::*;
 use crate::rendering::*;
 use crate::systems::*;
+use crate::render_primitive::*;
 
 pub fn html_webrender_rendering() -> Vec::<Box::<dyn ApplicationBundleBuilder>> {
     vec!(
@@ -41,7 +42,10 @@ impl ApplicationBundleBuilder for HtmlWebRenderRendererBuilder {
     }
 
     fn setup_rendering_systems(&self, builder: &mut Builder) {
-        builder.add_thread_local_fn(render_primitives);
+        builder
+            .add_system(queue_render_primitives_system())
+            .flush()
+            .add_thread_local(render_primitives_system());
     }
 
     fn setup_cleanup_systems(&self, _: &mut Builder) {
@@ -58,6 +62,9 @@ impl ApplicationBundleBuilder for HtmlWebRenderRendererBuilder {
         Ok(())
     }
 
-    fn register_components_for_world_serializiation(&self, _: &mut WorldSerializer) {
+    fn register_components_for_world_serializiation(&self, world_serializer: &mut WorldSerializer) {
+        world_serializer.register_component::<RenderPrimitiveBorder>(stringify!(RenderPrimitiveBorder));
+        world_serializer.register_component::<RenderPrimitive>(stringify!(RenderPrimitive));
+        
     }
 }

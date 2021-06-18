@@ -20,6 +20,21 @@ pub struct Rebuild {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
+pub struct ComponentId(u64);
+
+impl From<u64> for ComponentId {
+    fn from(id: u64) -> Self {
+        Self(id)
+    }
+}
+
+impl Into<u64> for &ComponentId {
+    fn into(self) -> u64 { 
+        self.0
+     }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Mapped {
 }
 

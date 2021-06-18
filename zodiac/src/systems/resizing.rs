@@ -1,6 +1,6 @@
 
 use legion::*;
-use log::{debug};
+use log::{info};
 use legion::systems::*;
 use legion::world::*;
 use shrev::EventChannel;
@@ -11,6 +11,9 @@ pub fn request_root_layout(
     world: &mut SubWorld,
     command_buffer: &mut CommandBuffer,
     dimensions: &Dimensions) {
+    
+    info!("resize_screen: request_root_layout");
+
     for root in <Entity>::query()
         .filter(component::<Root>())
         .iter(world) {
@@ -30,8 +33,6 @@ pub fn resize_screen(
     for event in event_channel.read(&mut event_readers.resize_screen) {
         match event {
             SystemEvent::Window(SystemWindowEventType::RootWindowResize(dimensions)) => {
-                debug!("root window resize recieved");
-                debug!("requesting root layout");
                 request_root_layout(world, command_buffer, &dimensions);
             },
             _ => {}
@@ -47,7 +48,7 @@ pub fn resize_after_rebuild(
     entity: &Entity,
     current_layout_constraints: &CurrentLayoutConstraints
 ) {
-    debug!("source file change {:?}", current_layout_constraints);
+    info!("source change {:?}", current_layout_constraints);
     command_buffer.add_component(*entity, LayoutRequest::from(current_layout_constraints));
 }
 

@@ -13,16 +13,7 @@ pub fn app_root() -> RootNode<TestState> {
         <root>
             <div>
                 <small_control />
-                <other_control/>
-                <other_control/>
-                <other_control/>
-                <other_control/>
-                <other_control/>
-                <other_control/>
-                <other_control/>
-                <other_control/>
-                <other_control/>
-                <other_control/>
+                <other_control />
             </div>
         </root>
     )
