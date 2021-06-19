@@ -15,7 +15,7 @@ pub fn deconstruct_border(
 ) {
     if border.is_set() {
         info!("deconstruct_border: {:?}", border);
-        let (colour, width, style) = border.into();
+        let (width, style, colour) = border.into();
         command_buffer.remove_component::<Border>(*entity);
         command_buffer.add_component(*entity, BorderColour::from(colour));
         command_buffer.add_component(*entity, BorderWidth::from(width));
@@ -90,7 +90,7 @@ pub fn upconstruct_border_top(
     if !top.is_set() {
         info!("upconstruct_border_top");
         let width: Size = width.into();
-        command_buffer.add_component(*entity, BorderTop::from((width, style.into(), colour.into())));
+        command_buffer.add_component(*entity, BorderTop::from(BorderValues::from((width, style.into(), colour.into()))));
         command_buffer.remove_component::<BorderTopStyle>(*entity);
         command_buffer.remove_component::<BorderTopWidth>(*entity);
         command_buffer.remove_component::<BorderTopColour>(*entity);
@@ -110,7 +110,7 @@ pub fn upconstruct_border_left(
     if !left.is_set() {
         info!("upconstruct_border_left");
         let width: Size = width.into();
-        command_buffer.add_component(*entity, BorderLeft::from((width, style.into(), colour.into())));
+        command_buffer.add_component(*entity, BorderLeft::from(BorderValues::from((width, style.into(), colour.into()))));
         command_buffer.remove_component::<BorderLeftStyle>(*entity);
         command_buffer.remove_component::<BorderLeftWidth>(*entity);
         command_buffer.remove_component::<BorderLeftColour>(*entity);
@@ -130,7 +130,7 @@ pub fn upconstruct_border_bottom(
     if !top.is_set() {
         info!("upconstruct_border_bottom");
         let width: Size = width.into();
-        command_buffer.add_component(*entity, BorderBottom::from((width, style.into(), colour.into())));
+        command_buffer.add_component(*entity, BorderBottom::from(BorderValues::from((width, style.into(), colour.into()))));
         command_buffer.remove_component::<BorderBottomStyle>(*entity);
         command_buffer.remove_component::<BorderBottomWidth>(*entity);
         command_buffer.remove_component::<BorderBottomColour>(*entity);
@@ -150,7 +150,7 @@ pub fn upconstruct_border_right(
     if !right.is_set() {
         info!("upconstruct_border_right");
         let width: Size = width.into();
-        command_buffer.add_component(*entity, BorderRight::from((width, style.into(), colour.into())));
+        command_buffer.add_component(*entity, BorderRight::from(BorderValues::from((width, style.into(), colour.into()))));
         command_buffer.remove_component::<BorderRightStyle>(*entity);
         command_buffer.remove_component::<BorderRightWidth>(*entity);
         command_buffer.remove_component::<BorderRightColour>(*entity);

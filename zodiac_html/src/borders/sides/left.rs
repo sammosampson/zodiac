@@ -1,4 +1,5 @@
 use serde::*;
+use crate::BorderValues;
 use crate::borders::styles::*;
 use crate::colour::*;
 use crate::size::*;
@@ -54,56 +55,29 @@ impl Into<Size> for &BorderLeftWidth {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BorderLeft {
-    pub width: Size,
-    pub style: BorderStyles,
-    pub colour: Colour,
-    is_set: bool
-}
-
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct BorderLeft(BorderValues, bool);
 
 impl zodiac::PropertySetCheck for BorderLeft {
     fn is_set(&self) -> bool {
-        self.is_set
+        self.1
     }
 }
 
-impl Default for BorderLeft {
-    fn default() -> Self {
-        Self {
-            width: Size::default(),
-            style:BorderStyles::None,
-            colour: Colour::default(),
-            is_set: false
-        }
-    }
-}
-
-impl From<(Size, BorderStyles, Colour)> for BorderLeft {
-    fn from(props: (Size, BorderStyles, Colour)) -> Self {
-        Self {
-            width: props.0,
-            style: props.1,
-            colour: props.2,
-            is_set: true
-        }
+impl From<BorderValues> for BorderLeft {
+    fn from(side: BorderValues) -> Self {
+        Self(side, true)
     }
 }
 
 impl Into<(Size, BorderStyles, Colour)> for BorderLeft {
     fn into(self) -> (Size, BorderStyles, Colour) {
-        (self.width, self.style, self.colour)
+        self.0.into()
     }
 }
 
 impl From<(&BorderLeftWidth, &BorderLeftStyle, &BorderLeftColour)> for BorderLeft {
     fn from(props: (&BorderLeftWidth, &BorderLeftStyle, &BorderLeftColour)) -> Self {
-        Self {
-            width: props.0.0,
-            style: props.1.0,
-            colour: props.2.0,
-            is_set: true
-        }
+        Self((props.0.0, props.1.0, props.2.0).into(), true)
     }
 }

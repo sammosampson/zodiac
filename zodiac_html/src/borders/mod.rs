@@ -11,52 +11,49 @@ pub use width::*;
 
 use serde::*;
 use zodiac::PropertySetCheck;
-use crate::size::*;
-use crate::colour::*;
+use crate::{Colour, Size};
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Ord, PartialOrd)]
+pub struct BorderValues(Size, BorderStyles, Colour);
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Border {
-    colour: Colour,
-    width: Size,
-    style: BorderStyles,
-    is_set: bool
-}
-
-impl Default for Border {
+impl Default for BorderValues {
     fn default() -> Self {
-        Self {
-            colour: Colour::default(),
-            width: Size::default(),
-            style: BorderStyles::None,
-            is_set: false
-        }
+        Self(Size::default(), BorderStyles::None, Colour::default())
     }
 }
+
+impl From<(Size, BorderStyles, Colour)> for BorderValues {
+    fn from(props: (Size, BorderStyles, Colour)) -> Self {
+        Self(props.0, props.1, props.2)
+    }
+}
+
+impl Into<(Size, BorderStyles, Colour)> for BorderValues {
+    fn into(self) -> (Size, BorderStyles, Colour) {
+        (self.0, self.1, self.2)
+    }
+}
+
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Border(BorderValues, bool);
 
 impl zodiac::PropertySetCheck for Border {
     fn is_set(&self) -> bool {
-        self.is_set
+        self.1
     }
 }
 
-impl From<(Colour, Size, BorderStyles)> for Border {
-    fn from(props: (Colour, Size, BorderStyles)) -> Self {
-        Self {
-            colour: props.0,
-            width: props.1,
-            style: props.2,
-            is_set: true
-        }
+impl From<BorderValues> for Border {
+    fn from(values: BorderValues) -> Self {
+        Self(values, true)
     }
 }
 
-impl Into<(Colour, Size, BorderStyles)> for &Border {
-    fn into(self) -> (Colour, Size, BorderStyles) {
-        (self.colour, self.width, self.style)
+impl Into<(Size, BorderStyles, Colour)> for &Border {
+    fn into(self) -> (Size, BorderStyles, Colour) {
+        self.0.into()
     }
 }
-
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct FullBorder {

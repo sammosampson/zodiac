@@ -1,4 +1,5 @@
 use serde::*;
+use crate::BorderValues;
 use crate::borders::styles::*;
 use crate::colour::*;
 use crate::size::*;
@@ -54,55 +55,29 @@ impl Into<Size> for &BorderTopWidth {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BorderTop {
-    pub width: Size,
-    pub style: BorderStyles,
-    pub colour: Colour,
-    is_set: bool
-}
-
-impl Default for BorderTop {
-    fn default() -> Self {
-        Self {
-            width: Size::default(),
-            style:BorderStyles::None,
-            colour: Colour::default(),
-            is_set: false
-        }
-    }
-}
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct BorderTop(BorderValues, bool);
 
 impl zodiac::PropertySetCheck for BorderTop {
     fn is_set(&self) -> bool {
-        self.is_set
+        self.1
     }
 }
 
-impl From<(Size, BorderStyles, Colour)> for BorderTop {
-    fn from(props: (Size, BorderStyles, Colour)) -> Self {
-        Self {
-            width: props.0,
-            style: props.1,
-            colour: props.2,
-            is_set: true
-        }
+impl From<BorderValues> for BorderTop {
+    fn from(side: BorderValues) -> Self {
+        Self(side, true)
     }
 }
 
 impl Into<(Size, BorderStyles, Colour)> for BorderTop {
     fn into(self) -> (Size, BorderStyles, Colour) {
-        (self.width, self.style, self.colour)
+        self.0.into()
     }
 }
 
 impl From<(&BorderTopWidth, &BorderTopStyle, &BorderTopColour)> for BorderTop {
     fn from(props: (&BorderTopWidth, &BorderTopStyle, &BorderTopColour)) -> Self {
-        Self {
-            width: props.0.0,
-            style: props.1.0,
-            colour: props.2.0,
-            is_set: true
-        }
+        Self((props.0.0, props.1.0, props.2.0).into(), true)
     }
 }

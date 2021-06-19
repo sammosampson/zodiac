@@ -44,15 +44,15 @@ impl Into<webrender::api::BorderStyle> for WrappedBorderStyles {
     }
 }
 
-pub struct WrappedBorderSide(Colour, BorderStyles, Size);
+pub struct WrappedBorderValues(Colour, BorderStyles, Size);
 
-impl From<(Size, BorderStyles, Colour)> for WrappedBorderSide {
+impl From<(Size, BorderStyles, Colour)> for WrappedBorderValues {
     fn from(props: (Size, BorderStyles, Colour)) -> Self {
         Self(props.2, props.1, props.0)
     }
 }
 
-impl Into<webrender::api::BorderSide> for WrappedBorderSide {
+impl Into<webrender::api::BorderSide> for WrappedBorderValues {
     fn into(self) -> webrender::api::BorderSide {
         webrender::api::BorderSide {
             color: ColourF::from(self.0).into(),
@@ -110,10 +110,10 @@ impl Into<RenderPrimitiveBorder> for WrappedBorder {
 
         let details =  webrender::api::BorderDetails::Normal(
             webrender::api::NormalBorder {
-                left: WrappedBorderSide::from(left).into(),
-                right: WrappedBorderSide::from(right).into(),
-                top: WrappedBorderSide::from(top).into(),
-                bottom: WrappedBorderSide::from(bottom).into(),
+                left: WrappedBorderValues::from(left).into(),
+                right: WrappedBorderValues::from(right).into(),
+                top: WrappedBorderValues::from(top).into(),
+                bottom: WrappedBorderValues::from(bottom).into(),
                 radius,
                 do_aa: true
             });
