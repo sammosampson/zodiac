@@ -15,7 +15,7 @@ pub fn queue_render_primitives(
     layout_change: &LayoutChange, 
     id: &ComponentId,
     background_colour: &BackgroundColour,
-    border: &Border,
+    border: &FullBorder,
     command_buffer: &mut CommandBuffer) {
 
         info!("queuing primitive for {:?}", entity);

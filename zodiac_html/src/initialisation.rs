@@ -23,9 +23,19 @@ impl ApplicationBundleBuilder for HtmlBuilder {
 
     fn setup_layout_systems(&self, builder: &mut Builder) {
         builder
-            .add_system(compose_border_style_system())
+            .add_system(deconstruct_border_system())
             .flush()
-            .add_system(compose_border_system());
+            .add_system(deconstruct_border_colour_system())
+            .add_system(deconstruct_border_width_system())
+            .add_system(deconstruct_border_style_system())
+            .flush()
+            .add_system(upconstruct_border_top_system())
+            .add_system(upconstruct_border_left_system())
+            .add_system(upconstruct_border_bottom_system())
+            .add_system(upconstruct_border_right_system())
+            .flush()
+            .add_system(compose_full_border_system())
+            .flush();
     }
 
     fn setup_rendering_systems(&self, _: &mut Builder) {

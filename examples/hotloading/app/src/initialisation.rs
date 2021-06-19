@@ -14,7 +14,7 @@ fn initialise_application(state: TestState) -> ApplicationRunner<TestState> {
     Application::new(state, app_root)
         .use_logging()
         .with_builders(&mut html_webrender_rendering())
-        .with_builder(world_logging())
+        //.with_builder(world_logging())
         .build()
         .unwrap()
 }

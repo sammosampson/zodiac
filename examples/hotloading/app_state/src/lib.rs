@@ -1,10 +1,19 @@
-use std::fmt::Debug;
+use std::{fmt::Debug, time::Instant};
 use zodiac::*;
 
-#[derive(Default, Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct TestState {
-    pub test_control: i32,
-    pub control_count: usize
+    pub time: Instant,
+    pub border_size: u64
+}
+
+impl Default for TestState {
+    fn default() -> Self {
+        Self {
+            time: Instant::now(),
+            border_size: 0
+        }
+    }
 }
 
 impl State for TestState {

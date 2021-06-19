@@ -13,18 +13,6 @@ impl From<Size> for WrappedSize  {
     }
 }
 
-impl Into<webrender::api::units::LayoutSideOffsets> for WrappedSize {
-    fn into(self) -> webrender::api::units::LayoutSideOffsets {
-        webrender::api::units::LayoutSideOffsets {
-            top: self.0.into(),
-            right: self.0.into(),
-            bottom: self.0.into(),
-            left: self.0.into(),
-            _unit: PhantomData::<webrender::api::units::LayoutPixel>::default(),
-        }
-    }
-}
-
 impl Into<webrender::euclid::Size2D<f32, webrender::api::units::LayoutPixel>> for WrappedSize {
     fn into(self) -> webrender::euclid::Size2D<f32, webrender::api::units::LayoutPixel> {
         webrender::euclid::size2(self.0.into(), self.0.into())
@@ -56,14 +44,13 @@ impl Into<webrender::api::BorderStyle> for WrappedBorderStyles {
     }
 }
 
-pub struct WrappedBorderSide(Colour, BorderStyles);
+pub struct WrappedBorderSide(Colour, BorderStyles, Size);
 
-impl From<(&Border, BorderStyles)> for WrappedBorderSide {
-    fn from(props: (&Border, BorderStyles)) -> Self {
-        Self(props.0.colour, props.1)
+impl From<(Size, BorderStyles, Colour)> for WrappedBorderSide {
+    fn from(props: (Size, BorderStyles, Colour)) -> Self {
+        Self(props.2, props.1, props.0)
     }
 }
-
 
 impl Into<webrender::api::BorderSide> for WrappedBorderSide {
     fn into(self) -> webrender::api::BorderSide {
@@ -93,17 +80,17 @@ impl Into<webrender::api::BorderRadius> for WrappedBorderRadius {
     }
 }
 
-pub struct WrappedBorder(Border);
+pub struct WrappedBorder(FullBorder);
 
-impl From<&Border> for WrappedBorder {
-    fn from(border: &Border) -> Self {
+impl From<&FullBorder> for WrappedBorder {
+    fn from(border: &FullBorder) -> Self {
         WrappedBorder(*border)
     }
 }
 
 impl Into<Option<RenderPrimitiveBorder>> for WrappedBorder {
     fn into(self) -> Option<RenderPrimitiveBorder> {
-        if self.0.width.is_zero() {
+        if !self.0.is_visible() {
             None
         } else {
             Some(self.into())
@@ -114,20 +101,31 @@ impl Into<Option<RenderPrimitiveBorder>> for WrappedBorder {
 impl Into<RenderPrimitiveBorder> for WrappedBorder {
     fn into(self) -> RenderPrimitiveBorder {
 
-        let radius = WrappedBorderRadius::from(self.0.radius).into();
+        let (top, left, bottom, right, radius) = self.0.into();
+        let left: (Size, BorderStyles, Colour) = left.into();
+        let right: (Size, BorderStyles, Colour) = right.into();
+        let top: (Size, BorderStyles, Colour) = top.into();
+        let bottom: (Size, BorderStyles, Colour) = bottom.into();
+        let radius = WrappedBorderRadius::from(radius).into();
 
         let details =  webrender::api::BorderDetails::Normal(
             webrender::api::NormalBorder {
-                left: WrappedBorderSide::from((&self.0, self.0.style.left)).into(),
-                right: WrappedBorderSide::from((&self.0, self.0.style.right)).into(),
-                top: WrappedBorderSide::from((&self.0, self.0.style.top)).into(),
-                bottom: WrappedBorderSide::from((&self.0, self.0.style.bottom)).into(),
+                left: WrappedBorderSide::from(left).into(),
+                right: WrappedBorderSide::from(right).into(),
+                top: WrappedBorderSide::from(top).into(),
+                bottom: WrappedBorderSide::from(bottom).into(),
                 radius,
                 do_aa: true
             });
 
-        let widths  = WrappedSize::from(self.0.width).into();
-        
+        let widths = webrender::api::units::LayoutSideOffsets {
+            top: top.0.into(),
+            right: right.0.into(),
+            bottom: bottom.0.into(),
+            left: left.0.into(),
+            _unit: PhantomData::<webrender::api::units::LayoutPixel>::default(),
+        };
+
         RenderPrimitiveBorder {
             radius,
             widths,

@@ -86,6 +86,7 @@ version = "0.1.0"
 dependencies = [
  "app_state",
  "illicit",
+ "log",
  "mox",
  "moxie",
  "topo",
@@ -2910,6 +2911,7 @@ version = "0.1.0"
 dependencies = [
  "illicit",
  "legion",
+ "log",
  "moxie",
  "paste",
  "serde",

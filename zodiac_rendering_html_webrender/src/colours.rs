@@ -26,7 +26,8 @@ impl From<&BackgroundColour> for ColourF {
 
 impl From<&BorderColour> for ColourF {
     fn from(colour: &BorderColour) -> Self {
-        ColourF::from(colour.0)
+        let colour: Colour = colour.into();
+        ColourF::from(colour)
     }
 }
 
