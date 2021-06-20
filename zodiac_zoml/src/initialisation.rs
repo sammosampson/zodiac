@@ -19,7 +19,8 @@ impl ApplicationBundleBuilder for ZomlBuilder {
         "Html".to_string()
     }
 
-    fn setup_build_systems(&self, _: &mut Builder) {
+    fn setup_build_systems(&self, builder: &mut Builder) {
+        builder.add_system(add_root_canvas_system());
     }
 
     fn setup_layout_systems(&self, builder: &mut Builder) {
@@ -66,6 +67,8 @@ impl ApplicationBundleBuilder for ZomlBuilder {
     }
 
     fn register_components_for_world_serializiation(&self, world_serializer: &mut WorldSerializer) {
+        world_serializer.register_component::<LayoutType>(stringify!(LayoutType));
+        world_serializer.register_component::<LayoutContent>(stringify!(LayoutContent));
         world_serializer.register_component::<Content>(stringify!(Content));
         world_serializer.register_component::<Radius>(stringify!(Radius));
         world_serializer.register_component::<Colour>(stringify!(Colour));

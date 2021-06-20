@@ -4,6 +4,7 @@ use crate::components::*;
 use crate::size::*;
 use crate::colour::*;
 
+
 element! {
     <style>
     [Style::default()]
@@ -60,12 +61,9 @@ element! {
 element! {
     <span>
     [Span::default()]
-    extra_components {
-        [LayoutContent::canvas()]
-    }
 }
 
 element! {
     <div>
-    [LayoutContent::vertical()]
+    [Div::default()]
 }

@@ -1,6 +1,32 @@
 use serde::*;
 use zodiac::*;
 
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub enum LayoutType {
+    Horizontal,
+    Vertical,
+    Canvas,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct LayoutContent {
+    pub layout_type: LayoutType
+}
+
+impl LayoutContent {
+    pub fn canvas() -> Self {
+        Self { layout_type: LayoutType::Canvas }
+    }
+
+    pub fn horizontal() -> Self {
+        Self { layout_type: LayoutType::Horizontal }
+    }
+
+    pub fn vertical() -> Self {
+        Self { layout_type: LayoutType::Vertical }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Content { 
     pub text: String

@@ -1,8 +1,18 @@
 
-use legion::*;
+use legion::*; 
+use legion::systems::*;
 use log::{info};
 use zodiac::*;
-use crate::layout::*;
+use crate::{LayoutContent, layout::*};
+
+#[system(for_each)]
+#[filter(component::<Root>())]
+#[filter(!component::<LayoutContent>())]
+pub fn add_root_canvas(
+    command_buffer: &mut CommandBuffer,
+    entity: &Entity) {
+        command_buffer.add_component(*entity, LayoutContent::canvas());
+}
 
 #[system(for_each)]
 #[filter(!component::<Mapped>())]

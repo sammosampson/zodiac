@@ -1,5 +1,6 @@
 use legion::*;
 use mox::mox;
+use zodiac_zoml::*;
 use zodiac_zoml::testing::*;
 use zodiac::*;
 

@@ -4,6 +4,8 @@ use legion::world::*;
 use legion::systems::*;
 use zodiac::*;
 
+use crate::LayoutType;
+
 use super::*;
 
 pub struct LayoutMaps<'a> {

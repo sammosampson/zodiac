@@ -126,8 +126,6 @@ impl<TState: State, TRootFunc: FnMut() -> RootNode<TState> + Copy + Clone + 'sta
         world_serializer.register_component::<CurrentLayoutConstraints>(stringify!(CurrentLayoutConstraints));
         world_serializer.register_component::<Resized>(stringify!(Resized));
         world_serializer.register_component::<Mapped>(stringify!(Mapped));
-        world_serializer.register_component::<LayoutType>(stringify!(LayoutType));
-        world_serializer.register_component::<LayoutContent>(stringify!(LayoutContent));
         world_serializer.register_component::<LayoutRequest>(stringify!(LayoutRequest));
         world_serializer.register_component::<LayoutChange>(stringify!(LayoutChange));
         world_serializer.register_component::<Renderable>(stringify!(Renderable));
