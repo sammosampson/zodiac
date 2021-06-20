@@ -45,7 +45,3 @@ pub struct Removed {
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Renderable {
 }
-
-#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct OffsetsMapped {
-}

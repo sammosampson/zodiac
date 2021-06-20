@@ -1,6 +1,85 @@
+use std::ops::*;
 use serde::*;
 use zodiac::*;
 
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
+pub struct Left {
+    pub left: u16
+}
+
+impl From<u16> for Left {
+    fn from(left: u16) -> Self {
+        Self {
+            left
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
+pub struct Top {
+    pub top: u16
+}
+
+impl From<u16> for Top {
+    fn from(top: u16) -> Self {
+        Self {
+            top
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Width {
+    pub width: u16
+}
+
+impl From<u16> for Width {
+    fn from(width: u16) -> Self {
+        Self {
+            width
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MinimumWidth {
+    pub width: u16
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Height {
+    pub height: u16
+}
+
+
+impl From<u16> for Height {
+    fn from(height: u16) -> Self {
+        Self {
+            height
+        }
+    }
+}
+
+impl Add<Left> for LayoutChange {
+    type Output = Self;
+
+    fn add(self, other: Left) -> Self {
+        Self { left: self.left + other.left, top: self.top, width: self.width, height: self.height }
+    }
+}
+
+impl Add<Top> for LayoutChange {
+    type Output = Self;
+
+    fn add(self, other: Top) -> Self {
+        Self { left: self.left, top: self.top + other.top, width: self.width, height: self.height }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MinimumHeight {
+    pub height: u16
+}
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub enum LayoutType {
     Horizontal,

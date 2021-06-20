@@ -67,6 +67,12 @@ impl ApplicationBundleBuilder for ZomlBuilder {
     }
 
     fn register_components_for_world_serializiation(&self, world_serializer: &mut WorldSerializer) {
+        world_serializer.register_component::<Left>(stringify!(Left));
+        world_serializer.register_component::<Top>(stringify!(Top));
+        world_serializer.register_component::<Width>(stringify!(Width));
+        world_serializer.register_component::<MinimumWidth>(stringify!(MinimumWidth));
+        world_serializer.register_component::<Height>(stringify!(Height));
+        world_serializer.register_component::<MinimumHeight>(stringify!(MinimumHeight));
         world_serializer.register_component::<LayoutType>(stringify!(LayoutType));
         world_serializer.register_component::<LayoutContent>(stringify!(LayoutContent));
         world_serializer.register_component::<Content>(stringify!(Content));

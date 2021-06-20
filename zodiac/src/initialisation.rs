@@ -116,26 +116,19 @@ impl<TState: State, TRootFunc: FnMut() -> RootNode<TState> + Copy + Clone + 'sta
     }
 
     fn register_components_for_world_serializiation(&self, world_serializer: &mut WorldSerializer) {
-        world_serializer.register_component::<ComponentId>(stringify!(ComponentId));
-        world_serializer.register_component::<Dimensions>(stringify!(Dimensions));
-        world_serializer.register_component::<RootWindowResized>(stringify!(RootWindowResized));
-        world_serializer.register_component::<Removed>(stringify!(Removed));
-        world_serializer.register_component::<Relationship>(stringify!(Relationship));
         world_serializer.register_component::<Root>(stringify!(Root));
-        world_serializer.register_component::<Rebuild>(stringify!(Rebuild));
-        world_serializer.register_component::<CurrentLayoutConstraints>(stringify!(CurrentLayoutConstraints));
-        world_serializer.register_component::<Resized>(stringify!(Resized));
+        world_serializer.register_component::<ComponentId>(stringify!(ComponentId));
+        world_serializer.register_component::<Relationship>(stringify!(Relationship));
         world_serializer.register_component::<Mapped>(stringify!(Mapped));
+        world_serializer.register_component::<Removed>(stringify!(Removed));
+        world_serializer.register_component::<Rebuild>(stringify!(Rebuild));
+        world_serializer.register_component::<Dimensions>(stringify!(Dimensions));
+        world_serializer.register_component::<Resized>(stringify!(Resized));
+        world_serializer.register_component::<RootWindowResized>(stringify!(RootWindowResized));
+        world_serializer.register_component::<CurrentLayoutConstraints>(stringify!(CurrentLayoutConstraints));
         world_serializer.register_component::<LayoutRequest>(stringify!(LayoutRequest));
         world_serializer.register_component::<LayoutChange>(stringify!(LayoutChange));
         world_serializer.register_component::<Renderable>(stringify!(Renderable));
-        world_serializer.register_component::<Left>(stringify!(Left));
-        world_serializer.register_component::<Top>(stringify!(Top));
-        world_serializer.register_component::<OffsetsMapped>(stringify!(OffsetsMapped));
-        world_serializer.register_component::<Width>(stringify!(Width));
-        world_serializer.register_component::<MinimumWidth>(stringify!(MinimumWidth));
-        world_serializer.register_component::<Height>(stringify!(Height));
-        world_serializer.register_component::<MinimumHeight>(stringify!(MinimumHeight));
     }
 }
 

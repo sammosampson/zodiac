@@ -1,6 +1,6 @@
 use std::collections::{ HashMap };
 use legion::*;
-use zodiac::*;
+use crate::components::*;
 use crate::LayoutType;
 
 pub type LeftOffsetMap = HashMap<Entity, Left>;

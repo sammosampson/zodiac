@@ -1,6 +1,7 @@
 use std::ops::Add;
 use legion::*;
 use zodiac::*;
+use crate::components::*;
 use super::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]

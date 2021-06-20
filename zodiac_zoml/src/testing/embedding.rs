@@ -1,5 +1,6 @@
 use zodiac::*;
 use crate::testing::*;
+use crate::components::*;
 
 element! {
     <test_renderable>    

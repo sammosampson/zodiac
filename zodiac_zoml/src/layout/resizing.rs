@@ -3,9 +3,7 @@ use log::info;
 use legion::world::*;
 use legion::systems::*;
 use zodiac::*;
-
-use crate::LayoutType;
-
+use crate::components::*;
 use super::*;
 
 pub struct LayoutMaps<'a> {

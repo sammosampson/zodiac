@@ -3,7 +3,8 @@ use legion::*;
 use legion::systems::*;
 use log::{info};
 use zodiac::*;
-use crate::{LayoutContent, layout::*};
+use crate::layout::*;
+use crate::components::*;
 
 #[system(for_each)]
 #[filter(component::<Root>())]
