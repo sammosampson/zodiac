@@ -1,7 +1,7 @@
 use legion::*;
 use legion::systems::*;
+use zodiac::*;
 use crate::testing::*;
-use crate::components::*;
 
 #[system(for_each)]
 #[filter(component::<TestRenderable>())]

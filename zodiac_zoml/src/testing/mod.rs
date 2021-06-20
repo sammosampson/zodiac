@@ -7,7 +7,9 @@ pub use rendering::*;
 pub use embedding::*;
 pub use components::*;
 
-use crate::{ApplicationBundleBuilder, Dimensions, RootBuilder, State};
+use zodiac::{ApplicationBundleBuilder, Dimensions, RootBuilder, State};
+
+use crate::zoml_builder;
 
 #[derive(Default, Debug, Copy, Clone, PartialEq)]
 pub struct TestState {
@@ -21,5 +23,5 @@ pub fn root() -> RootBuilder<TestState> {
 }
 
 pub fn test_builders(dimensions: Dimensions) -> Vec::<Box::<dyn ApplicationBundleBuilder>> {
-    vec!(Box::new(test_renderer(dimensions)))
+    vec!(Box::new(test_renderer(dimensions)), Box::new(zoml_builder()))
 }

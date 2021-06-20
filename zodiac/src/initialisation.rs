@@ -6,6 +6,7 @@ use legion::systems::*;
 use crate::*;
 use crate::formatting::WorldSerializer;
 use crate::source::*;
+use crate::layout::*;
 
 pub trait ApplicationBundleBuilder {
     fn description(&self) -> String;
@@ -85,20 +86,27 @@ impl<TState: State, TRootFunc: FnMut() -> RootNode<TState> + Copy + Clone + 'sta
         builder.add_thread_local(run_moxie_system::<TState>());
     }
 
-    fn setup_layout_systems(&self, _: &mut Builder) {
+    fn setup_layout_systems(&self, builder: &mut Builder) {
+        builder
+            .add_system(resize_screen_system())
+            .add_system(resize_after_rebuild_system());
     }
 
     fn setup_rendering_systems(&self, _: &mut Builder) {
     }
 
     fn setup_cleanup_systems(&self, builder: &mut Builder) {            
-        builder.add_thread_local(remove_rebuild_system());
+        builder
+            .add_thread_local(remove_rebuild_system())
+            .add_thread_local(remove_layout_change_system())
+            .add_thread_local(remove_resized_system());
     }
 
     fn setup_final_functions(&self, _: &mut Builder) {
     }
 
-    fn setup_resources(&self, resources: &mut Resources, _: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
+    fn setup_resources(&self, resources: &mut Resources, event_channel: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
+        resources.insert(create_layout_event_reader_registry(event_channel));
         resources.insert(create_relationship_map());
         resources.insert(create_system_event_producer());     
         resources.insert(create_moxie_runner::<TState, TRootFunc>(self.root_func, self.state));
@@ -133,76 +141,6 @@ impl<TState: State, TRootFunc: FnMut() -> RootNode<TState> + Copy + Clone + 'sta
     }
 }
 
-fn standard_layout() -> LayoutBundleBuilder {
-    LayoutBundleBuilder::default()
-}
-
-#[derive(Default, Debug, Copy, Clone)]
-struct LayoutBundleBuilder {
-}
-
-impl ApplicationBundleBuilder for LayoutBundleBuilder {
-    fn description(&self) -> String {
-        "standard layout".to_string()
-    }
-    
-    fn setup_build_systems(&self, _: &mut Builder) {
-    }
-
-    fn setup_layout_systems(&self, builder: &mut Builder) {
-        builder
-            .add_system(resize_screen_system())
-            .add_system(resize_after_rebuild_system())
-            .flush()
-            .add_system(remove_from_left_offset_map_system())
-            .add_system(build_left_offset_map_system())
-            .add_system(remove_from_top_offset_map_system())
-            .add_system(build_top_offset_map_system())
-            .add_system(remove_from_minimum_width_map_system())
-            .add_system(remove_from_width_map_system())
-            .add_system(build_width_map_system())
-            .add_system(remove_from_minimum_height_map_system())
-            .add_system(remove_from_height_map_system())
-            .add_system(build_height_map_system())
-            .add_system(remove_from_layout_type_map_system())
-            .add_system(build_layout_type_map_system())
-            .flush()
-            .add_system(measure_fixed_width_constraints_system())
-            .add_system(measure_fixed_height_constraints_system())
-            .flush()
-            .add_system(resize_system());
-    }
-
-    fn setup_rendering_systems(&self, _: &mut Builder) {
-    }
-
-    fn setup_cleanup_systems(&self, builder: &mut Builder) { 
-        builder
-            .add_thread_local(remove_layout_change_system())
-            .add_thread_local(remove_resized_system());
-
-    }
-
-    fn setup_final_functions(&self, _: &mut Builder) {
-    }
-    
-    fn setup_resources(&self, resources: &mut Resources, event_channel: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
-        resources.insert(create_layout_event_reader_registry(event_channel));
-        resources.insert(create_layout_type_map());
-        resources.insert(create_left_offset_map());
-        resources.insert(create_top_offset_map());
-        resources.insert(create_width_map());
-        resources.insert(create_height_map());
-        resources.insert(create_minimum_width_map());
-        resources.insert(create_minimum_height_map());
-        
-        Ok(())
-    }    
-    
-    fn register_components_for_world_serializiation(&self, _: &mut WorldSerializer) {
-    }
-}
-
 pub struct Application<TState: State> {
     resources: Resources,
     schedule_builder: Builder,
@@ -218,7 +156,7 @@ impl<TState: State> Application<TState> {
         Self {
             resources,
             schedule_builder,
-            builders: vec!(Box::new(zodiac_source(state, root_func)), Box::new(standard_layout())),
+            builders: vec!(Box::new(zodiac_source(state, root_func))),
             _marker: PhantomData::<TState>::default()
         }
     }

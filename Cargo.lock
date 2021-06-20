@@ -2966,9 +2966,12 @@ version = "0.1.0"
 dependencies = [
  "illicit",
  "legion",
+ "log",
+ "mox",
  "moxie",
  "paste",
  "serde",
  "shrev",
+ "topo",
  "zodiac",
 ]

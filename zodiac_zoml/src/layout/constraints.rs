@@ -1,6 +1,7 @@
 use std::ops::Add;
 use legion::*;
-use crate::*;
+use zodiac::*;
+use super::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct LayoutConstraints {

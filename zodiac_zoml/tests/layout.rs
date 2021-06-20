@@ -1,6 +1,6 @@
 use legion::*;
 use mox::mox;
-use zodiac::testing::*;
+use zodiac_zoml::testing::*;
 use zodiac::*;
 
 #[topo::nested]

@@ -1,8 +1,8 @@
 
 use legion::*;
 use log::{info};
-use legion::systems::*;
-use crate::*;
+use zodiac::*;
+use crate::layout::*;
 
 #[system(for_each)]
 #[filter(!component::<Mapped>())]
@@ -19,13 +19,6 @@ pub fn remove_from_layout_type_map(#[resource] layout_map: &mut LayoutTypeMap, e
     info!("removing from layout type map {:?}", entity);
     layout_map.remove(entity);
 }
-
-#[system(for_each)]
-#[filter(component::<LayoutChange>())]
-pub fn remove_layout_change(command_buffer: &mut CommandBuffer, entity: &Entity) {
-    command_buffer.remove_component::<LayoutChange>(*entity);
-}
-
 #[system(for_each)]
 #[filter(!component::<Mapped>())]
 pub fn build_left_offset_map(#[resource] offset_map: &mut LeftOffsetMap, entity: &Entity, offset: &Left) {

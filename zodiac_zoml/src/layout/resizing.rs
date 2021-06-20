@@ -2,7 +2,9 @@ use legion::*;
 use log::info;
 use legion::world::*;
 use legion::systems::*;
-use crate::*;
+use zodiac::*;
+
+use super::*;
 
 pub struct LayoutMaps<'a> {
     pub relationship_map: &'a RelationshipMap,
