@@ -19,12 +19,24 @@ impl Into<Colour> for &BorderLeftColour {
     }
 }
 
+impl zodiac::PropertySet<Colour> for BorderLeftColour {
+    fn set(&mut self, to_set: Colour) {
+        self.0 = to_set;
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BorderLeftStyle(BorderStyles);
 
 impl Default for BorderLeftStyle {
     fn default() -> Self {
         Self(BorderStyles::None)
+    }
+}
+
+impl zodiac::PropertySet<BorderStyles> for BorderLeftStyle {
+    fn set(&mut self, to_set: BorderStyles) {
+        self.0 = to_set;
     }
 }
 
@@ -49,6 +61,12 @@ impl From<Size> for BorderLeftWidth {
     }
 }
 
+impl zodiac::PropertySet<Size> for BorderLeftWidth {
+    fn set(&mut self, to_set: Size) {
+        self.0 = to_set;
+    }
+}
+
 impl Into<Size> for &BorderLeftWidth {
     fn into(self) -> Size {
         self.0
@@ -61,6 +79,13 @@ pub struct BorderLeft(BorderValues, bool);
 impl zodiac::PropertySetCheck for BorderLeft {
     fn is_set(&self) -> bool {
         self.1
+    }
+}
+
+impl zodiac::PropertySet<BorderValues> for BorderLeft {
+    fn set(&mut self, to_set: BorderValues) {
+        self.0 = to_set;
+        self.1 = true;
     }
 }
 

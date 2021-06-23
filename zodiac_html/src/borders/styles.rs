@@ -36,6 +36,13 @@ impl Into<BorderStyles> for &BorderStyle {
     }
 }
 
+impl zodiac::PropertySet<BorderStyles> for BorderStyle {
+    fn set(&mut self, to_set: BorderStyles) {
+        self.0 = to_set;
+        self.1 = true;
+    }
+}
+
 impl zodiac::PropertySetCheck for BorderStyle {
     fn is_set(&self) -> bool {
         self.1

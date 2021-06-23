@@ -16,6 +16,13 @@ impl From<Size> for BorderWidth {
     }
 }
 
+impl zodiac::PropertySet<Size> for BorderWidth {
+    fn set(&mut self, to_set: Size) {
+        self.0 = to_set;
+        self.1 = true;
+    }
+}
+
 impl zodiac::PropertySetCheck for &BorderWidth {
     fn is_set(&self) -> bool {
         self.1

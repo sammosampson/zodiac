@@ -1,9 +1,9 @@
 use zodiac::*;
+use crate::style::*;
 use crate::borders::*;
-use crate::components::*;
+use crate::layout::*;
 use crate::size::*;
 use crate::colour::*;
-
 
 element! {
     <style>
@@ -31,6 +31,9 @@ element! {
         [BorderRightWidth::default()]
         [BorderRadius::default()]
         [BorderStyle::default()]
+        [Margin::default()]
+        [Padding::default()]
+        [FullBorder::default()]
     }
     attributes {
         border(BorderValues)
@@ -55,15 +58,24 @@ element! {
         border_top_width(Size)
         border_width(Size)
         background_colour(Colour)
+        display(DisplayTypes)
+        margin(MarginSizes)
+        padding(PaddingSizes)
     }
 }
 
 element! {
     <span>
     [Span::default()]
+    extra_components {
+        [Display::inline()]
+    }
 }
 
 element! {
     <div>
     [Div::default()]
+    extra_components {
+        [Display::block()]
+    }
 }

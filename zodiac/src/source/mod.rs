@@ -11,3 +11,7 @@ pub use running::*;
 pub trait PropertySetCheck {
     fn is_set(&self) -> bool;
 }
+
+pub trait PropertySet<T> {
+    fn set(&mut self, to_set: T);
+}

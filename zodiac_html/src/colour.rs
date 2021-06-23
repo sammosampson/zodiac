@@ -35,3 +35,9 @@ impl From<Colour> for BackgroundColour {
         Self(colour)
     }
 }
+
+impl Into<Colour> for BackgroundColour {
+    fn into(self) -> Colour {
+        self.0
+    }
+}

@@ -2,7 +2,11 @@ use shrev::*;
 use legion::*;
 use legion::systems::*;
 use zodiac::*;
-use crate::*;
+use crate::borders::*;
+use crate::layout::*;
+use crate::style::*;
+use crate::colour::*;
+use crate::size::*;
 use crate::systems::*;
 
 pub fn html_builder() -> HtmlBuilder {
@@ -35,7 +39,8 @@ impl ApplicationBundleBuilder for HtmlBuilder {
             .add_system(upconstruct_border_right_system())
             .flush()
             .add_system(compose_full_border_system())
-            .flush();
+            .flush()
+            .add_system(resize_system());
     }
 
     fn setup_rendering_systems(&self, _: &mut Builder) {
@@ -77,6 +82,8 @@ impl ApplicationBundleBuilder for HtmlBuilder {
         world_serializer.register_component::<BorderStyle>(stringify!(BorderStyle));
         world_serializer.register_component::<BorderValues>(stringify!(BorderValues));
         world_serializer.register_component::<BackgroundColour>(stringify!(BackgroundColour));
+        world_serializer.register_component::<Display>(stringify!(Display));
+        world_serializer.register_component::<DisplayTypes>(stringify!(DisplayTypes));
         world_serializer.register_component::<Size>(stringify!(Size));
         world_serializer.register_component::<Colour>(stringify!(Colour));
     }

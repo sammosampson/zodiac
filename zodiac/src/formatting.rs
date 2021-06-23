@@ -1,7 +1,11 @@
+#[cfg(not(test))]
+use log::{info};
+#[cfg(test)]
+use std::{println as info};
+
 use legion::*;
 use legion::serialize::*;
 use legion::storage::Component;
-use log::{info};
 use serde::Serialize;
 use serde_json::*;
 

@@ -10,6 +10,13 @@ impl From<Colour> for BorderColour {
     }
 }
 
+impl zodiac::PropertySet<Colour> for BorderColour {
+    fn set(&mut self, to_set: Colour) {
+        self.0 = to_set;
+        self.1 = true;
+    }
+}
+
 impl zodiac::PropertySetCheck for &BorderColour {
     fn is_set(&self) -> bool {
         self.1

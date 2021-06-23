@@ -2912,10 +2912,12 @@ dependencies = [
  "illicit",
  "legion",
  "log",
+ "mox",
  "moxie",
  "paste",
  "serde",
  "shrev",
+ "topo",
  "zodiac",
 ]
 

@@ -73,6 +73,17 @@ impl FullBorder {
     }
 }
 
+
+impl zodiac::PropertySet<(&BorderTop, &BorderLeft, &BorderBottom, &BorderRight, &BorderRadius)> for FullBorder {
+    fn set(&mut self, to_set: (&BorderTop, &BorderLeft, &BorderBottom, &BorderRight, &BorderRadius)) {
+        self.top = *to_set.0;
+        self.left = *to_set.1;
+        self.bottom = *to_set.2;
+        self.right = *to_set.3;
+        self.radius = *to_set.4;
+    }
+}
+
 impl From<(&BorderTop, &BorderLeft, &BorderBottom, &BorderRight, &BorderRadius)> for FullBorder {
     fn from(props: (&BorderTop, &BorderLeft, &BorderBottom, &BorderRight, &BorderRadius)) -> Self {
         Self {

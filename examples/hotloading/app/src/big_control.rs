@@ -13,7 +13,9 @@ pub fn big_control(size: u64) -> Node {
 pub fn big_control_style(size: u64) -> Node {
     mox!(
         <style
-            border=(px(size as u8), BorderStyles::Double, rgb(100, 100, 100)).into()
+            padding=PaddingSize::Inherit.into()
+            margin=px(23).into()
+            border=(px(size as u16), BorderStyles::Double, rgb(100, 100, 100)).into()
             background_colour=rgb(100, 255, 255) />
     )
 }

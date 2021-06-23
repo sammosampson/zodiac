@@ -19,12 +19,24 @@ impl Into<Colour> for &BorderTopColour {
     }
 }
 
+impl zodiac::PropertySet<Colour> for BorderTopColour {
+    fn set(&mut self, to_set: Colour) {
+        self.0 = to_set;
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BorderTopStyle(BorderStyles);
 
 impl Default for BorderTopStyle {
     fn default() -> Self {
         Self(BorderStyles::None)
+    }
+}
+
+impl zodiac::PropertySet<BorderStyles> for BorderTopStyle {
+    fn set(&mut self, to_set: BorderStyles) {
+        self.0 = to_set;
     }
 }
 
@@ -49,6 +61,12 @@ impl From<Size> for BorderTopWidth {
     }
 }
 
+impl zodiac::PropertySet<Size> for BorderTopWidth {
+    fn set(&mut self, to_set: Size) {
+        self.0 = to_set;
+    }
+}
+
 impl Into<Size> for &BorderTopWidth {
     fn into(self) -> Size {
         self.0
@@ -61,6 +79,13 @@ pub struct BorderTop(BorderValues, bool);
 impl zodiac::PropertySetCheck for BorderTop {
     fn is_set(&self) -> bool {
         self.1
+    }
+}
+
+impl zodiac::PropertySet<BorderValues> for BorderTop {
+    fn set(&mut self, to_set: BorderValues) {
+        self.0 = to_set;
+        self.1 = true;
     }
 }
 

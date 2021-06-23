@@ -17,7 +17,9 @@ pub fn small_control() -> Node {
 pub fn small_control_style(size: u64) -> Node {
     mox!(
         <style
-            border_top=(px(size as u8), BorderStyles::Dashed, rgb(200, 200, 200)).into()
+            padding=(px(23).into(), px(23).into(), px(23).into(), px(23).into()).into()
+            margin=(px(23).into(), MarginSize::Auto.into(), MarginSize::Inherit.into()).into()
+            border_top=(px(size as u16), BorderStyles::Dashed, rgb(200, 200, 200)).into()
             border_radius=px(6)
             background_colour=rgb(100, 100, 200)
         />
