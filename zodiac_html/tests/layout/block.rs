@@ -25,13 +25,14 @@ fn block_layout_with_children_with_margin_root() -> RootNode<TestState> {
 #[test]
 fn div_performs_block_layout() {
     let changes = test_app(block_layout_with_children_with_margin_root)
+        .with_screen_dimensions(1024, 768)
         .build()
         .run_once()
         .get_changes();
 
     assert_eq!(changes.len(), 2);
     assert_eq!(changes[0].is_positioned_at(0, 0), true);
-    assert_eq!(changes[0].has_dimensions_of(10, 10), true);
-    assert_eq!(changes[1].is_positioned_at(10, 0), true);
-    assert_eq!(changes[0].has_dimensions_of(10, 10), true);
+    assert_eq!(changes[0].has_dimensions_of(1024, 10), true, "changes: {:?}", changes[0]);
+    assert_eq!(changes[1].is_positioned_at(0, 10), true, "changes: {:?}", changes[1]);
+    assert_eq!(changes[1].has_dimensions_of(1024, 10), true);
 }
