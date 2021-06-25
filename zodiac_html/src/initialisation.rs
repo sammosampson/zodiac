@@ -7,6 +7,7 @@ use crate::layout::*;
 use crate::style::*;
 use crate::colour::*;
 use crate::size::*;
+use crate::events::*;
 use crate::systems::*;
 
 pub fn html_builder() -> HtmlBuilder {
@@ -40,19 +41,27 @@ impl ApplicationBundleBuilder for HtmlBuilder {
             .flush()
             .add_system(compose_full_border_system())
             .flush()
-            .add_system(resize_system());
+            .add_system(root_resize_system())
+            .add_system(layout_display_system())
+            .flush()
+            .add_system(apply_layout_differences_system())
+            .flush()
+            .add_system(layout_system());
     }
 
     fn setup_rendering_systems(&self, _: &mut Builder) {
     }
 
-    fn setup_cleanup_systems(&self, _: &mut Builder) {
+    fn setup_cleanup_systems(&self, builder: &mut Builder) {
+        builder
+            .add_system(remove_layout_system());
     }
 
     fn setup_final_functions(&self, _: &mut Builder) {
     }
 
-    fn setup_resources(&self, _: &mut Resources, _: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
+    fn setup_resources(&self, resources: &mut Resources, event_channel: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
+        resources.insert(create_layout_event_reader_registry(event_channel));
         Ok(())
     }
 
@@ -86,5 +95,13 @@ impl ApplicationBundleBuilder for HtmlBuilder {
         world_serializer.register_component::<DisplayTypes>(stringify!(DisplayTypes));
         world_serializer.register_component::<Size>(stringify!(Size));
         world_serializer.register_component::<Colour>(stringify!(Colour));
+        world_serializer.register_component::<Layout>(stringify!(Layout));
+        world_serializer.register_component::<LayoutRequest>(stringify!(LayoutRequest));
+        world_serializer.register_component::<LayoutBox>(stringify!(LayoutBox));
+        world_serializer.register_component::<IncumbentLayoutBox>(stringify!(IncumbentLayoutBox));
+        world_serializer.register_component::<LayoutDirection>(stringify!(LayoutDirection));
+        world_serializer.register_component::<LayoutOffsetRect>(stringify!(LayoutOffsetRect));
+        world_serializer.register_component::<LayoutDimensions>(stringify!(LayoutDimensions));
+        world_serializer.register_component::<LayoutDistance>(stringify!(LayoutDistance));
     }
 }

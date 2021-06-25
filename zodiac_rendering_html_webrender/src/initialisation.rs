@@ -43,7 +43,10 @@ impl ApplicationBundleBuilder for HtmlWebRenderRendererBuilder {
 
     fn setup_rendering_systems(&self, builder: &mut Builder) {
         builder
-            .add_system(queue_render_primitives_system())
+            .add_system(add_render_primitives_system())
+            .flush()
+            .add_system(layout_render_primitives_system())
+            .add_system(rebuild_render_primitives_system())
             .flush()
             .add_thread_local(render_primitives_system());
     }

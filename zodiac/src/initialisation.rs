@@ -6,7 +6,6 @@ use legion::systems::*;
 use crate::*;
 use crate::formatting::WorldSerializer;
 use crate::source::*;
-use crate::layout::*;
 
 pub trait ApplicationBundleBuilder {
     fn description(&self) -> String;
@@ -86,10 +85,7 @@ impl<TState: State, TRootFunc: FnMut() -> RootNode<TState> + Copy + Clone + 'sta
         builder.add_thread_local(run_moxie_system::<TState>());
     }
 
-    fn setup_layout_systems(&self, builder: &mut Builder) {
-        builder
-            .add_system(resize_screen_system())
-            .add_system(resize_after_rebuild_system());
+    fn setup_layout_systems(&self, _builder: &mut Builder) {
     }
 
     fn setup_rendering_systems(&self, _: &mut Builder) {
@@ -98,15 +94,13 @@ impl<TState: State, TRootFunc: FnMut() -> RootNode<TState> + Copy + Clone + 'sta
     fn setup_cleanup_systems(&self, builder: &mut Builder) {            
         builder
             .add_thread_local(remove_rebuild_system())
-            .add_thread_local(remove_layout_change_system())
             .add_thread_local(remove_resized_system());
     }
 
     fn setup_final_functions(&self, _: &mut Builder) {
     }
 
-    fn setup_resources(&self, resources: &mut Resources, event_channel: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
-        resources.insert(create_layout_event_reader_registry(event_channel));
+    fn setup_resources(&self, resources: &mut Resources, _event_channel: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
         resources.insert(create_relationship_map());
         resources.insert(create_system_event_producer());     
         resources.insert(create_moxie_runner::<TState, TRootFunc>(self.root_func, self.state));
@@ -125,9 +119,6 @@ impl<TState: State, TRootFunc: FnMut() -> RootNode<TState> + Copy + Clone + 'sta
         world_serializer.register_component::<Dimensions>(stringify!(Dimensions));
         world_serializer.register_component::<Resized>(stringify!(Resized));
         world_serializer.register_component::<RootWindowResized>(stringify!(RootWindowResized));
-        world_serializer.register_component::<CurrentLayoutConstraints>(stringify!(CurrentLayoutConstraints));
-        world_serializer.register_component::<LayoutRequest>(stringify!(LayoutRequest));
-        world_serializer.register_component::<LayoutChange>(stringify!(LayoutChange));
         world_serializer.register_component::<Renderable>(stringify!(Renderable));
     }
 }

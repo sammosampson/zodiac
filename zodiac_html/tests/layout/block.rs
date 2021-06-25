@@ -15,8 +15,8 @@ fn block_layout_with_children_with_margin_root() -> RootNode<TestState> {
     mox!(
         <root>
             <div>
-                <span style=block_layout_with_children_with_margin_style()/>
-                <span style=block_layout_with_children_with_margin_style()/>
+                <div style=block_layout_with_children_with_margin_style()/>
+                <div style=block_layout_with_children_with_margin_style()/>
             </div>    
         </root>
     )

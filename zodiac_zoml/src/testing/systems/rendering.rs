@@ -1,6 +1,6 @@
 use legion::*;
 use legion::systems::*;
-use zodiac::*;
+use crate::LayoutChange;
 use crate::testing::*;
 
 #[system(for_each)]

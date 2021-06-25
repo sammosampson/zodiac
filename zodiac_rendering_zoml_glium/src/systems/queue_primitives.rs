@@ -1,6 +1,5 @@
 use legion::*;
 use legion::systems::*;
-use zodiac::*;
 use zodiac_zoml::*;
 
 use crate::RenderPrimitive;

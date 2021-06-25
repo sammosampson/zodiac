@@ -9,26 +9,37 @@ use crate::dimensions::*;
 use crate::render_primitive::*;
 
 #[system(for_each)]
-#[filter(component::<Style>())]
-pub fn queue_render_primitives(
-    entity: &Entity, 
-    layout_change: &LayoutChange, 
+#[filter(component::<Renderable>())] 
+#[filter(!component::<RenderPrimitive>())] 
+pub fn add_render_primitives(
+    entity: &Entity,  
     id: &ComponentId,
+    command_buffer: &mut CommandBuffer
+) {
+    info!("adding primitive for {:?}", entity);
+    command_buffer.add_component(*entity, RenderPrimitive::from(id));
+}
+
+#[system(for_each)]
+#[filter(component::<Renderable>())]
+pub fn layout_render_primitives(
+    entity: &Entity,
+    layout: &Layout,
+    primitive: &mut RenderPrimitive
+) {
+    info!("layout primitive for {:?}", entity);
+    primitive.dimensions = WrappedLayout::from(layout).into();
+}
+
+#[system(for_each)]
+#[filter(component::<Renderable>())]
+#[filter(component::<Rebuild>())]
+pub fn rebuild_render_primitives(
+    entity: &Entity, 
     background_colour: &BackgroundColour,
     border: &FullBorder,
-    command_buffer: &mut CommandBuffer) {
-
-        info!("queuing primitive for {:?}", entity);
-
-        let primitive = RenderPrimitive {
-            id: id.into(),
-            dimensions: WrappedLayoutChange::from(layout_change).into(),
-            border: WrappedBorder::from(border).into(),
-            background_colour: ColourF::from(background_colour).into(),
-            is_interactive: true,
-        };
-
-        info!("queued: {:?}", primitive);
-
-        command_buffer.add_component(*entity, primitive);
+    primitive: &mut RenderPrimitive) {
+        info!("rebuilding primitive for {:?}", entity);
+        primitive.border = WrappedBorder::from(border).into();
+        primitive.background_colour = ColourF::from(background_colour).into();
     }

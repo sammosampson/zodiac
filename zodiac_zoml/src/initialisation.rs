@@ -25,6 +25,8 @@ impl ApplicationBundleBuilder for ZomlBuilder {
 
     fn setup_layout_systems(&self, builder: &mut Builder) {
         builder
+            .add_system(resize_screen_system())
+            .add_system(resize_after_rebuild_system())
             .add_system(build_width_and_height_maps_from_radius_system())
             .add_system(remove_from_left_offset_map_system())
             .add_system(build_left_offset_map_system())
@@ -42,19 +44,21 @@ impl ApplicationBundleBuilder for ZomlBuilder {
             .add_system(measure_fixed_width_constraints_system())
             .add_system(measure_fixed_height_constraints_system())
             .flush()
-            .add_system(resize_system());
+            .add_system(resize_system());        
     }
 
     fn setup_rendering_systems(&self, _builder: &mut Builder) {
     }
 
-    fn setup_cleanup_systems(&self, _builder: &mut Builder) {
+    fn setup_cleanup_systems(&self, builder: &mut Builder) {
+        builder.add_thread_local(remove_layout_change_system());
     }
 
     fn setup_final_functions(&self, _: &mut Builder) {
     }
 
-    fn setup_resources(&self, resources: &mut Resources, _event_channel: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
+    fn setup_resources(&self, resources: &mut Resources, event_channel: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
+        resources.insert(create_layout_event_reader_registry(event_channel));
         resources.insert(create_layout_type_map());
         resources.insert(create_left_offset_map());
         resources.insert(create_top_offset_map());
@@ -67,12 +71,15 @@ impl ApplicationBundleBuilder for ZomlBuilder {
     }
 
     fn register_components_for_world_serializiation(&self, world_serializer: &mut WorldSerializer) {
+        world_serializer.register_component::<CurrentLayoutConstraints>(stringify!(CurrentLayoutConstraints));
+        world_serializer.register_component::<LayoutRequest>(stringify!(LayoutRequest));
         world_serializer.register_component::<Left>(stringify!(Left));
         world_serializer.register_component::<Top>(stringify!(Top));
         world_serializer.register_component::<Width>(stringify!(Width));
         world_serializer.register_component::<MinimumWidth>(stringify!(MinimumWidth));
         world_serializer.register_component::<Height>(stringify!(Height));
         world_serializer.register_component::<MinimumHeight>(stringify!(MinimumHeight));
+        world_serializer.register_component::<LayoutChange>(stringify!(LayoutChange));
         world_serializer.register_component::<LayoutType>(stringify!(LayoutType));
         world_serializer.register_component::<LayoutContent>(stringify!(LayoutContent));
         world_serializer.register_component::<Content>(stringify!(Content));

@@ -2,6 +2,7 @@ use legion::*;
 use log::{debug};
 use legion::world::*;
 use zodiac::*;
+use zodiac_zoml::LayoutChange;
 
 use crate::GliumRenderer;
 use crate::RenderPrimitive;

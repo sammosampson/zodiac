@@ -1,5 +1,6 @@
 use glium::glutin::dpi::PhysicalSize;
 use zodiac::*;
+use zodiac_html::*;
 
 pub struct WrappedDimensions(Dimensions);
 impl From<PhysicalSize<u32>> for WrappedDimensions {
@@ -38,15 +39,15 @@ impl Into<Dimensions> for WrappedDimensions {
     }
 }
 
-pub struct WrappedLayoutChange(LayoutChange);
+pub struct WrappedLayout(Layout);
 
-impl From<&LayoutChange> for WrappedLayoutChange  {
-    fn from(layout: &LayoutChange) -> Self {
+impl From<&Layout> for WrappedLayout  {
+    fn from(layout: &Layout) -> Self {
         Self(*layout)
     }
 }
 
-impl Into<webrender::euclid::Rect<f32, webrender::api::units::LayoutPixel>> for WrappedLayoutChange {
+impl Into<webrender::euclid::Rect<f32, webrender::api::units::LayoutPixel>> for WrappedLayout {
     fn into(self) -> webrender::euclid::Rect<f32, webrender::api::units::LayoutPixel> {
         webrender::euclid::Rect::new(
             webrender::euclid::point2(self.0.left as f32, self.0.top as f32),

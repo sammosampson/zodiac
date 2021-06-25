@@ -1,6 +1,177 @@
+use std::collections::HashMap;
 use serde::*;
-use zodiac::Dimensions;
-use crate::{dimensions::WrappedDimensions, size::*};
+use legion::*;
+use legion::world::*;
+use zodiac::*;
+use crate::{dimensions::*, size::*};
+
+pub fn layout_box_tree<'a>(world: &mut SubWorld, relationship_map: &'a RelationshipMap) -> LayoutBoxTree<'a> {
+    LayoutBoxTree::<'a>::new(world, relationship_map)
+}
+
+pub struct LayoutBoxTree<'a>(&'a RelationshipMap, HashMap::<Entity, LayoutBox>);
+
+impl<'a> LayoutBoxTree<'a> {
+    fn new(world: &mut SubWorld, relationship_map: &'a RelationshipMap) -> Self {
+        let layout_boxes: HashMap::<Entity, LayoutBox> = <(Entity, &LayoutBox)>::query()
+            .iter(world)
+            .map(|(entity, layout_box)| (*entity, *layout_box))
+            .collect();
+
+        Self(relationship_map, layout_boxes)
+    }
+
+    pub fn get_children(&'a self, entity: Entity) -> LayoutBoxTreeChildrenIterator<'a> {
+        LayoutBoxTreeChildrenIterator::<'a>::new( &self, entity)
+    }
+
+    fn relationship_map(&self) -> &'a RelationshipMap {
+        self.0
+    }
+
+    fn get_layout_box(&self, entity: &Entity) -> Option<&LayoutBox> {
+        self.1.get(entity)
+    } 
+}
+
+pub struct LayoutBoxTreeChildrenIterator<'a> {
+    children: ChildrenRelationshipIterator<'a>,
+    tree: &'a LayoutBoxTree<'a>
+}
+
+impl<'a> LayoutBoxTreeChildrenIterator<'a> {
+    fn new(tree: &'a LayoutBoxTree, parent: Entity) -> Self {
+        Self {
+            children: tree.relationship_map().get_children(&parent), 
+            tree
+        }
+    }
+}
+
+impl <'a> Iterator for LayoutBoxTreeChildrenIterator<'a> {
+    type Item = (Entity, LayoutBox);
+    fn next(&mut self) -> Option<(Entity, LayoutBox)> {
+        if let Some(child) = self.children.next() {
+            if let Some(layout_box) = self.tree.get_layout_box(&child) {
+                return Some((child, *layout_box));
+            }
+        }
+        None
+    }
+}
+
+
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
+pub struct Layout {
+    pub left: u16,
+    pub top: u16,
+    pub width: u16,
+    pub height: u16
+}
+
+
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
+pub struct LayoutRequest {
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub enum LayoutDirection {
+    None,
+    Horizontal,
+    Vertical
+}
+
+impl Default for LayoutDirection {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub enum LayoutDistance {
+    None,
+    FromParent(f32),
+    FromChildren(f32),
+    Fixed(u16)
+}
+
+impl Default for LayoutDistance {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
+impl From<u16> for LayoutDistance {
+    fn from(distance: u16) -> Self {
+        Self::Fixed(distance)
+    }
+}
+
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct LayoutOffsetRect {
+    top: LayoutDistance,
+    right: LayoutDistance,
+    bottom: LayoutDistance,
+    left: LayoutDistance,
+}
+
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct LayoutDimensions {
+    width: LayoutDistance,
+    height: LayoutDistance
+}
+
+impl From<&Dimensions> for LayoutDimensions {
+    fn from(dimensions: &Dimensions) -> Self {
+        Self {
+            width: LayoutDistance::from(dimensions.width),
+            height: LayoutDistance::from(dimensions.height),        }
+    }
+}
+
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct IncumbentLayoutBox {
+    direction: LayoutDirection,
+    offset: LayoutOffsetRect,
+    dimensions: LayoutDimensions
+}
+
+impl From<&Dimensions> for IncumbentLayoutBox {
+    fn from(dimensions: &Dimensions) -> Self {
+        Self {
+            direction: LayoutDirection::Vertical,
+            offset: LayoutOffsetRect::default(),
+            dimensions: LayoutDimensions::from(dimensions)
+        }
+    }
+}
+
+impl zodiac::PropertySet<(LayoutDirection, LayoutOffsetRect, LayoutDimensions)> for IncumbentLayoutBox {
+    fn set(&mut self, to_set: (LayoutDirection, LayoutOffsetRect, LayoutDimensions)) {
+        self.direction = to_set.0;
+        self.offset = to_set.1;
+        self.dimensions = to_set.2;
+    }
+}
+
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct LayoutBox {
+    direction: LayoutDirection,
+    offset: LayoutOffsetRect,
+    dimensions: LayoutDimensions
+}
+
+impl LayoutBox {
+    pub fn layout(&self, _parent: &LayoutBox) {
+        todo!()
+        // remove this and add LayoutNode instead
+    }
+
+    pub fn apply(&self, _incumbent: &IncumbentLayoutBox) -> bool {
+        todo!()
+        // this will merrge in the changes from the incumbent and return true if anything differed
+    }
+}
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Span {

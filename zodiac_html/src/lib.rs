@@ -8,6 +8,7 @@ mod systems;
 mod style;
 pub mod testing;
 mod dimensions;
+mod events;
 
 pub use colour::*;
 pub use borders::*;

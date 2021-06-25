@@ -11,14 +11,14 @@ use crate::testing::*;
 pub fn queue_render_primitives(
     entity: &Entity, 
     id: &ComponentId,
-    layout_change: &LayoutChange, 
+    layout: &Layout, 
     border: &FullBorder,
     background_colour: &BackgroundColour,
     command_buffer: &mut CommandBuffer) {
 
         info!("queuing primitive for {:?}", entity);
 
-        let primitive = RenderPrimitive::from((id, layout_change, border, background_colour));
+        let primitive = RenderPrimitive::from((id, layout, border, background_colour));
 
         info!("queued: {:?}", primitive);
 

@@ -4,27 +4,27 @@ use serde::*;
 use legion::systems::*;
 use shrev::EventChannel;
 use zodiac::*;
+use crate::layout::*;
 use crate::size::*;
 use crate::borders::*;
 use crate::colour::*;
-
 use super::systems::*;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct RenderPrimitive {
     id: ComponentId,
-    layout_change: LayoutChange, 
+    layout: Layout, 
     border: FullBorder,
     background_colour: BackgroundColour,
 }  
 
 impl RenderPrimitive {
     pub fn is_positioned_at(&self, left: u16, top: u16) -> bool {
-        self.layout_change.left == left && self.layout_change.top == top 
+        self.layout.left == left && self.layout.top == top 
     }
     
     pub fn has_dimensions_of(&self, width: u16, height: u16) -> bool {
-        self.layout_change.width == width && self.layout_change.height == height    
+        self.layout.width == width && self.layout.height == height    
     }
     
     pub fn has_border_top_of(&self, border_values: BorderValues) -> bool {
@@ -57,11 +57,11 @@ impl RenderPrimitive {
     }
 }
 
-impl From<(&ComponentId, &LayoutChange, &FullBorder, &BackgroundColour)> for RenderPrimitive {
-    fn from(props: (&ComponentId, &LayoutChange, &FullBorder, &BackgroundColour)) -> Self {
+impl From<(&ComponentId, &Layout, &FullBorder, &BackgroundColour)> for RenderPrimitive {
+    fn from(props: (&ComponentId, &Layout, &FullBorder, &BackgroundColour)) -> Self {
         Self {
             id: *props.0,
-            layout_change: *props.1, 
+            layout: *props.1, 
             border: *props.2,
             background_colour: *props.3 
         }
