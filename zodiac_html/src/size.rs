@@ -2,16 +2,16 @@ use std::ops::Add;
 
 use serde::*;
 
-pub fn px(points: u16) -> Size {
-    Size::points(points)
+pub fn px(pixels: u16) -> Size {
+    Size::pixels(pixels)
 }
 
 #[derive(Default, Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Ord, PartialOrd)]
 pub struct Size(u16);
 
 impl Size {
-    fn points(points:u16) -> Self {
-        Self(points)
+    fn pixels(pixels:u16) -> Self {
+        Self(pixels)
     }
 
     pub fn is_zero(&self) -> bool {

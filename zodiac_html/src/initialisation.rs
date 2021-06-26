@@ -54,7 +54,8 @@ impl ApplicationBundleBuilder for HtmlBuilder {
 
     fn setup_cleanup_systems(&self, builder: &mut Builder) {
         builder
-            .add_system(remove_layout_system());
+            .add_system(remove_layouts_system())
+            .add_system(remove_layout_requests_system());
     }
 
     fn setup_final_functions(&self, _: &mut Builder) {

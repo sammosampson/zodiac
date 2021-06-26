@@ -115,10 +115,27 @@ pub struct LayoutOffsetRect {
     left: LayoutDistance,
 }
 
+impl From<(LayoutDistance, LayoutDistance, LayoutDistance, LayoutDistance)> for LayoutOffsetRect {
+    fn from(dimensions: (LayoutDistance, LayoutDistance, LayoutDistance, LayoutDistance)) -> Self {
+        Self {
+            top: dimensions.0,
+            right: dimensions.1,        
+            bottom: dimensions.2,
+            left: dimensions.3,
+        }
+    }
+}
+
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct LayoutDimensions {
     width: LayoutDistance,
     height: LayoutDistance
+}
+
+impl LayoutDimensions {
+    pub fn new(width: LayoutDistance, height: LayoutDistance) -> Self  {
+        Self { width, height }
+    }
 }
 
 impl From<&Dimensions> for LayoutDimensions {
@@ -162,14 +179,36 @@ pub struct LayoutBox {
 }
 
 impl LayoutBox {
-    pub fn layout(&self, _parent: &LayoutBox) {
-        todo!()
-        // remove this and add LayoutNode instead
-    }
-
     pub fn apply(&self, _incumbent: &IncumbentLayoutBox) -> bool {
         todo!()
         // this will merrge in the changes from the incumbent and return true if anything differed
+    }
+}
+
+pub struct LayoutNode {
+}
+
+impl From<&LayoutBox> for LayoutNode {
+    fn from(_layout_box: &LayoutBox) -> Self {
+        todo!()
+        //suck in box constraints to use in layout impl
+    }
+}
+
+impl LayoutNode {
+    pub fn apply_parent_layout(self, _parent: &LayoutNode) -> Self {        
+        todo!()
+        // this should push constraints down
+    }
+
+    pub fn apply_child_layout(&self, _child: &LayoutNode) {
+        todo!()
+        // this should allow resizing based on child sizes
+    }
+
+    pub fn layout(&self) -> Layout {
+        todo!()
+        // this should deduce the layout given full parent and children layouts applied
     }
 }
 
@@ -242,6 +281,16 @@ impl Into<Size> for MarginSize {
     }
 }
 
+
+impl Into<LayoutDistance> for MarginSize {
+    fn into(self) -> LayoutDistance {
+        match self {
+            MarginSize::Specific(size) => LayoutDistance::Fixed(size.into()),
+            _ => LayoutDistance::default()
+        }
+    }
+}
+
 impl Into<MarginSize> for Size {
     fn into(self) -> MarginSize {
         MarginSize::Specific(self)
@@ -254,6 +303,12 @@ pub struct MarginSizes(MarginSize, MarginSize, MarginSize, MarginSize);
 impl Into<Dimensions> for MarginSizes {
     fn into(self) -> Dimensions {
         WrappedDimensions::from((self.0.into(), self.1.into(), self.2.into(), self.3.into())).into()
+    }
+}
+
+impl Into<LayoutOffsetRect> for MarginSizes {
+    fn into(self) -> LayoutOffsetRect {
+        LayoutOffsetRect::from((self.0.into(), self.1.into(), self.2.into(), self.3.into()))
     }
 }
 
@@ -304,6 +359,12 @@ impl From<MarginSizes> for Margin {
 
 impl Into<Dimensions> for &Margin {
     fn into(self) -> Dimensions {
+        self.0.into()
+    }
+}
+
+impl Into<LayoutOffsetRect> for &Margin {
+    fn into(self) -> LayoutOffsetRect {
         self.0.into()
     }
 }
