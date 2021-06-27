@@ -39,19 +39,21 @@ impl Into<Dimensions> for WrappedDimensions {
     }
 }
 
-pub struct WrappedLayout(Layout);
+pub struct WrappedLayout(ResolvedLayoutBox);
 
-impl From<&Layout> for WrappedLayout  {
-    fn from(layout: &Layout) -> Self {
+impl From<&ResolvedLayoutBox> for WrappedLayout  {
+    fn from(layout: &ResolvedLayoutBox) -> Self {
         Self(*layout)
     }
 }
 
 impl Into<webrender::euclid::Rect<f32, webrender::api::units::LayoutPixel>> for WrappedLayout {
     fn into(self) -> webrender::euclid::Rect<f32, webrender::api::units::LayoutPixel> {
+        let position: (u16, u16) = self.0.content_position().into();
+        let dimensions: (u16, u16) = self.0.content_dimensions().into();
         webrender::euclid::Rect::new(
-            webrender::euclid::point2(self.0.left as f32, self.0.top as f32),
-            webrender::euclid::size2(self.0.width as f32, self.0.height as f32))
+            webrender::euclid::point2(position.0 as f32, position.1 as f32),
+            webrender::euclid::size2(dimensions.0 as f32, dimensions.1 as f32))
     }
 }
 

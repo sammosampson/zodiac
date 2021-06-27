@@ -30,6 +30,13 @@ impl RelationshipMap {
         None
     }
 
+    pub fn get_previous_sibling(&self, entity: &Entity) -> Option<Entity> {
+        if let Some(relationship) = self.get(entity) {
+            return relationship.previous_sibling;
+        }
+        None
+    }
+
     pub fn get_children(&self, parent: &Entity) -> ChildrenRelationshipIterator {
         ChildrenRelationshipIterator::new(self, *parent)
     }

@@ -5,6 +5,14 @@ use zodiac::*;
 use crate::layout::*;
 
 #[system(for_each)]
+#[filter(!component::<LayoutBox>())]
+pub fn initialise_layout(command_buffer: &mut CommandBuffer, entity: &Entity) {
+    command_buffer.add_component(*entity, LayoutBox::default());    
+    command_buffer.add_component(*entity, IncumbentLayoutBox::default());    
+    command_buffer.add_component(*entity, ResolvedLayoutBox::default());    
+}
+
+#[system(for_each)]
 pub fn apply_layout_differences(
     command_buffer: &mut CommandBuffer,
     entity: &Entity,
@@ -16,37 +24,22 @@ pub fn apply_layout_differences(
     }    
 }
 
-#[system(simple)]
-#[read_component(LayoutRequest)]
-#[read_component(LayoutBox)]
-pub fn layout(#[resource] relationship_map: &RelationshipMap, world: &mut SubWorld, command_buffer: &mut CommandBuffer) {
-    let layout_box_tree = layout_box_tree(world, relationship_map);
-
-    for (entity, layout_box) in <(Entity, &LayoutBox)>::query().filter(component::<LayoutRequest>()).iter(world) {
-        let node = LayoutNode::from(layout_box);
-        perform_layout(&layout_box_tree, command_buffer, entity, &node);
-    }
-
-    todo!()
-    // for all LayoutRequest's order by hierarchy depth and do lowest first
-    // when iterating layout through tree add entities to a done hash map, use this to exclude from running through again for other LayoutRequest iterations    
-        
+#[system(for_each)]
+#[filter(component::<Root>())]
+pub fn layout(
+    #[resource] relationship_map: &RelationshipMap, 
+    world: &mut SubWorld, 
+    root: &Entity) {
+    let layout_tree = layout_tree(world, relationship_map);
+    layout_tree.layout(root);        
+    layout_tree.position(root);        
 }
 
-fn perform_layout(layout_box_tree: &LayoutBoxTree, command_buffer: &mut CommandBuffer, entity: &Entity, parent_node: &LayoutNode) {
-    for (child, layout_box) in layout_box_tree.get_children(*entity) {  
-        let node = LayoutNode::from(&layout_box).apply_parent_layout(parent_node);
-        perform_layout(layout_box_tree, command_buffer,&child,&node);
-        
-        parent_node.apply_child_layout(&node);
-        command_buffer.add_component(*entity, node.layout());
-    }    
-}
 
 #[system(for_each)]
-#[filter(component::<Layout>())]
-pub fn remove_layouts(command_buffer: &mut CommandBuffer, entity: &Entity) {
-    command_buffer.remove_component::<Layout>(*entity);
+#[filter(component::<LayoutChange>())]
+pub fn remove_layout_changes(command_buffer: &mut CommandBuffer, entity: &Entity) {
+    command_buffer.remove_component::<LayoutChange>(*entity);
 }
 
 #[system(for_each)]

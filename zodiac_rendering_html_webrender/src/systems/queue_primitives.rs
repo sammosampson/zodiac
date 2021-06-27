@@ -22,9 +22,10 @@ pub fn add_render_primitives(
 
 #[system(for_each)]
 #[filter(component::<Renderable>())]
+#[filter(component::<LayoutChange>())]
 pub fn layout_render_primitives(
     entity: &Entity,
-    layout: &Layout,
+    layout: &ResolvedLayoutBox,
     primitive: &mut RenderPrimitive
 ) {
     info!("layout primitive for {:?}", entity);

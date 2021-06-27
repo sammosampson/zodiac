@@ -34,8 +34,6 @@ element! {
         [Margin::default()]
         [Padding::default()]
         [FullBorder::default()]
-        [IncumbentLayoutBox::default()]
-        [LayoutBox::default()]
     }
     attributes {
         border(BorderValues)
@@ -71,8 +69,6 @@ element! {
     [Span::default()]
     extra_components {
         [Display::inline()]
-        [IncumbentLayoutBox::default()]
-        [LayoutBox::default()]
     }
 }
 
@@ -81,7 +77,5 @@ element! {
     [Div::default()]
     extra_components {
         [Display::block()]
-        [IncumbentLayoutBox::default()]
-        [LayoutBox::default()]
     }
 }

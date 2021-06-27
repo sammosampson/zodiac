@@ -41,6 +41,8 @@ impl ApplicationBundleBuilder for HtmlBuilder {
             .flush()
             .add_system(compose_full_border_system())
             .flush()
+            .add_system(initialise_layout_system())
+            .flush()
             .add_system(root_resize_system())
             .add_system(layout_display_system())
             .flush()
@@ -54,7 +56,7 @@ impl ApplicationBundleBuilder for HtmlBuilder {
 
     fn setup_cleanup_systems(&self, builder: &mut Builder) {
         builder
-            .add_system(remove_layouts_system())
+            .add_system(remove_layout_changes_system())
             .add_system(remove_layout_requests_system());
     }
 
@@ -96,13 +98,17 @@ impl ApplicationBundleBuilder for HtmlBuilder {
         world_serializer.register_component::<DisplayTypes>(stringify!(DisplayTypes));
         world_serializer.register_component::<Size>(stringify!(Size));
         world_serializer.register_component::<Colour>(stringify!(Colour));
-        world_serializer.register_component::<Layout>(stringify!(Layout));
         world_serializer.register_component::<LayoutRequest>(stringify!(LayoutRequest));
         world_serializer.register_component::<LayoutBox>(stringify!(LayoutBox));
         world_serializer.register_component::<IncumbentLayoutBox>(stringify!(IncumbentLayoutBox));
+        world_serializer.register_component::<ResolvedLayoutBox>(stringify!(ResolvedLayoutBox));
+        world_serializer.register_component::<LayoutStatus>(stringify!(LayoutStatus));
         world_serializer.register_component::<LayoutDirection>(stringify!(LayoutDirection));
         world_serializer.register_component::<LayoutOffsetRect>(stringify!(LayoutOffsetRect));
+        world_serializer.register_component::<ResolvedLayoutOffsetRect>(stringify!(ResolvedLayoutOffsetRect));
         world_serializer.register_component::<LayoutDimensions>(stringify!(LayoutDimensions));
+        world_serializer.register_component::<ResolvedLayoutDimensions>(stringify!(ResolvedLayoutDimensions));
         world_serializer.register_component::<LayoutDistance>(stringify!(LayoutDistance));
+        world_serializer.register_component::<ResolvedLayoutDistance>(stringify!(ResolvedLayoutDistance));
     }
 }

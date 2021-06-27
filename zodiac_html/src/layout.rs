@@ -1,46 +1,73 @@
+use std::cell::RefCell;
 use std::collections::HashMap;
+use std::ops::{Add, Sub};
 use serde::*;
 use legion::*;
 use legion::world::*;
 use zodiac::*;
 use crate::{dimensions::*, size::*};
 
-pub fn layout_box_tree<'a>(world: &mut SubWorld, relationship_map: &'a RelationshipMap) -> LayoutBoxTree<'a> {
-    LayoutBoxTree::<'a>::new(world, relationship_map)
+pub fn layout_tree<'a>(world: &mut SubWorld, relationship_map: &'a RelationshipMap) -> LayoutTree<'a> {
+    LayoutTree::<'a>::new(world, relationship_map)
 }
 
-pub struct LayoutBoxTree<'a>(&'a RelationshipMap, HashMap::<Entity, LayoutBox>);
+pub struct LayoutTree<'a>(&'a RelationshipMap, HashMap::<Entity, RefCell<LayoutNode>>);
 
-impl<'a> LayoutBoxTree<'a> {
+impl<'a> LayoutTree<'a> {
     fn new(world: &mut SubWorld, relationship_map: &'a RelationshipMap) -> Self {
-        let layout_boxes: HashMap::<Entity, LayoutBox> = <(Entity, &LayoutBox)>::query()
+        let layout_nodes: HashMap::<Entity, RefCell<LayoutNode>> = <(Entity, &LayoutBox, &ResolvedLayoutBox, Option<&LayoutRequest>)>::query()
             .iter(world)
-            .map(|(entity, layout_box)| (*entity, *layout_box))
+            .map(|(entity, layout_box, resolved_layout_box, request)| 
+                (*entity, RefCell::new(LayoutNode::new(*entity, *layout_box, *resolved_layout_box, request.into()))))
             .collect();
 
-        Self(relationship_map, layout_boxes)
+        Self(relationship_map, layout_nodes)
     }
 
-    pub fn get_children(&'a self, entity: Entity) -> LayoutBoxTreeChildrenIterator<'a> {
-        LayoutBoxTreeChildrenIterator::<'a>::new( &self, entity)
+    pub fn layout(&self, root: &Entity) {
+        let mut root_node = self.1.get(root).unwrap().borrow_mut();
+        root_node.layout(self);
+    }  
+
+    pub fn position(&self, root: &Entity) {
+        let mut root_node = self.1.get(root).unwrap().borrow_mut();
+        root_node.position(self);
+    }
+
+    fn get(&self, entity: &Entity) -> Option<&RefCell<LayoutNode>> {
+        self.1.get(entity)
+    }
+
+    fn get_parent(&self, entity: &Entity) -> Option<&RefCell<LayoutNode>> {
+        if let Some(parent)= self.relationship_map().get_parent(&entity) {
+            return self.1.get(&parent)
+        }
+        None
+    }
+    
+    fn get_previous_sibling(&self, entity: &Entity) -> Option<&RefCell<LayoutNode>> {
+        if let Some(parent)= self.relationship_map().get_previous_sibling(&entity) {
+            return self.1.get(&parent)
+        }
+        None
+    }
+
+    fn get_children(&'a self, entity: Entity) -> LayoutTreeChildrenIterator<'a> {
+        LayoutTreeChildrenIterator::<'a>::new( &self, entity)
     }
 
     fn relationship_map(&self) -> &'a RelationshipMap {
         self.0
     }
-
-    fn get_layout_box(&self, entity: &Entity) -> Option<&LayoutBox> {
-        self.1.get(entity)
-    } 
 }
 
-pub struct LayoutBoxTreeChildrenIterator<'a> {
+pub struct LayoutTreeChildrenIterator<'a> {
     children: ChildrenRelationshipIterator<'a>,
-    tree: &'a LayoutBoxTree<'a>
+    tree: &'a LayoutTree<'a>
 }
 
-impl<'a> LayoutBoxTreeChildrenIterator<'a> {
-    fn new(tree: &'a LayoutBoxTree, parent: Entity) -> Self {
+impl<'a> LayoutTreeChildrenIterator<'a> {
+    fn new(tree: &'a LayoutTree, parent: Entity) -> Self {
         Self {
             children: tree.relationship_map().get_children(&parent), 
             tree
@@ -48,12 +75,12 @@ impl<'a> LayoutBoxTreeChildrenIterator<'a> {
     }
 }
 
-impl <'a> Iterator for LayoutBoxTreeChildrenIterator<'a> {
-    type Item = (Entity, LayoutBox);
-    fn next(&mut self) -> Option<(Entity, LayoutBox)> {
+impl <'a> Iterator for LayoutTreeChildrenIterator<'a> {
+    type Item = (Entity, &'a RefCell<LayoutNode>);
+    fn next(&mut self) -> Option<(Entity, &'a RefCell<LayoutNode>)> {
         if let Some(child) = self.children.next() {
-            if let Some(layout_box) = self.tree.get_layout_box(&child) {
-                return Some((child, *layout_box));
+            if let Some(layout_node) = self.tree.get(&child) {
+                return Some((child, layout_node));
             }
         }
         None
@@ -61,17 +88,108 @@ impl <'a> Iterator for LayoutBoxTreeChildrenIterator<'a> {
 }
 
 
-#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct Layout {
-    pub left: u16,
-    pub top: u16,
-    pub width: u16,
-    pub height: u16
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub enum LayoutStatus {
+    Requested,
+    Resolved,
+    Resolving,
+    Positioning,
+    Positioned
 }
 
+impl Into<LayoutStatus> for Option<&LayoutRequest> {
+    fn into(self) -> LayoutStatus {
+        match self {
+            None => LayoutStatus::Resolved,
+            _ => LayoutStatus::Requested
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct LayoutNode {
+    entity: Entity,
+    layout_box: LayoutBox,
+    resolved_layout_box: ResolvedLayoutBox, 
+    status: LayoutStatus
+}
+
+impl LayoutNode {
+    fn new(
+        entity: Entity, 
+        layout_box: LayoutBox, 
+        resolved_layout_box: ResolvedLayoutBox, 
+        status: LayoutStatus) -> Self {
+        Self {
+            entity,
+            layout_box,
+            resolved_layout_box,
+            status
+        }
+    }
+
+    fn layout<'a>(&mut self, tree: &LayoutTree<'a>) {
+        if self.status == LayoutStatus::Requested {
+            self.resolve_layout(tree);
+            return;
+        }
+
+        for (_child, child_layout) in tree.get_children(self.entity) {
+            child_layout.borrow_mut().layout(tree);
+        }
+    }
+
+    fn resolve_layout<'a>(&mut self, tree: &LayoutTree<'a>) {
+        self.status = LayoutStatus::Resolving;   
+        self.resolved_layout_box = ResolvedLayoutBox::from(self.layout_box);
+
+        if let Some(parent_layout) = tree.get_parent(&self.entity) {
+            self.resolved_layout_box.resolve_from_parent(&self.layout_box, &parent_layout.borrow().resolved_layout_box);
+        }
+                
+        for (_child, child_layout) in tree.get_children(self.entity) {
+            child_layout.borrow_mut().resolve_layout(tree);
+            self.resolved_layout_box.resolve_from_child(&self.layout_box, &child_layout.borrow().resolved_layout_box);
+        }
+
+        self.status = LayoutStatus::Resolved;   
+    }
+
+    fn position<'a>(&mut self, tree: &LayoutTree<'a>) {
+        if self.status == LayoutStatus::Resolved {
+            self.resolve_position(tree);
+            return;
+        }
+
+        for (_child, child_layout) in tree.get_children(self.entity) {
+            child_layout.borrow_mut().position(tree);
+        }
+    }
+
+    fn resolve_position<'a>(&mut self, tree: &LayoutTree<'a>) {
+        self.status = LayoutStatus::Positioning;   
+
+        if let Some(previous_sibling_layout) = tree.get_previous_sibling(&self.entity) {
+            self.resolved_layout_box.position_from_sibling(&previous_sibling_layout.borrow().resolved_layout_box);
+        } else if let Some(parent_layout) = tree.get_parent(&self.entity) {
+            self.resolved_layout_box.position_from_parent(&parent_layout.borrow().resolved_layout_box);
+        } 
+
+        for (_child, child_layout) in tree.get_children(self.entity) {
+            child_layout.borrow_mut().resolve_position(tree);
+        }
+        
+        self.status = LayoutStatus::Positioned;   
+        
+    }
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct LayoutRequest {
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
+pub struct LayoutChange {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
@@ -104,6 +222,30 @@ impl Default for LayoutDistance {
 impl From<u16> for LayoutDistance {
     fn from(distance: u16) -> Self {
         Self::Fixed(distance)
+    }
+}
+
+impl LayoutDistance {
+    fn resolve_from_parent(&self, current: &ResolvedLayoutDistance, parent: &ResolvedLayoutDistance) -> ResolvedLayoutDistance {
+        if current == &ResolvedLayoutDistance::Unresolved {
+            if let Self::FromParent(multiplier) = self {
+                if let ResolvedLayoutDistance::Resolved(parent_fixed_distance) = parent {
+                    return ResolvedLayoutDistance::Resolved((*parent_fixed_distance as f32 * multiplier) as u16);
+                }
+            }
+        }
+
+        *current
+    }
+
+    fn resolve_from_child(&self, current: &ResolvedLayoutDistance, _child: &ResolvedLayoutDistance) -> ResolvedLayoutDistance {
+        if current == &ResolvedLayoutDistance::Unresolved {
+            if let Self::FromChildren(_multiplier) = self {
+                return ResolvedLayoutDistance::Resolved(0);
+            }
+        }
+
+        *current
     }
 }
 
@@ -142,7 +284,8 @@ impl From<&Dimensions> for LayoutDimensions {
     fn from(dimensions: &Dimensions) -> Self {
         Self {
             width: LayoutDistance::from(dimensions.width),
-            height: LayoutDistance::from(dimensions.height),        }
+            height: LayoutDistance::from(dimensions.height)
+        }
     }
 }
 
@@ -179,36 +322,249 @@ pub struct LayoutBox {
 }
 
 impl LayoutBox {
-    pub fn apply(&self, _incumbent: &IncumbentLayoutBox) -> bool {
-        todo!()
-        // this will merrge in the changes from the incumbent and return true if anything differed
+    pub fn apply(&mut self, incumbent: &IncumbentLayoutBox) -> bool {
+        let has_changed = false;
+
+        if self.direction != incumbent.direction {
+            self.direction = incumbent.direction;
+        }
+
+        if self.offset != incumbent.offset {
+            self.offset = incumbent.offset;
+        }
+
+        if self.dimensions != incumbent.dimensions {
+            self.dimensions = incumbent.dimensions;
+        }
+
+        has_changed
     }
 }
 
-pub struct LayoutNode {
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub enum ResolvedLayoutDistance {
+    Unresolved,
+    Resolved(u16)
 }
 
-impl From<&LayoutBox> for LayoutNode {
-    fn from(_layout_box: &LayoutBox) -> Self {
-        todo!()
-        //suck in box constraints to use in layout impl
+impl Default for ResolvedLayoutDistance {
+    fn default() -> Self {
+        Self::Unresolved
     }
 }
 
-impl LayoutNode {
-    pub fn apply_parent_layout(self, _parent: &LayoutNode) -> Self {        
-        todo!()
-        // this should push constraints down
+impl Add for ResolvedLayoutDistance {
+    type Output = ResolvedLayoutDistance;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        if let ResolvedLayoutDistance::Resolved(distance) = self {
+            if let ResolvedLayoutDistance::Resolved(rhs_distance) = rhs {
+                return ResolvedLayoutDistance::Resolved(distance + rhs_distance);
+            }   
+        } 
+        ResolvedLayoutDistance::Unresolved
+    }
+}
+
+impl Add<u16> for ResolvedLayoutDistance {
+    type Output = u16;
+
+    fn add(self, rhs: u16) -> Self::Output {
+        if let ResolvedLayoutDistance::Resolved(distance) = self {
+            return distance + rhs;
+        } 
+        0
+    }
+}
+
+impl Sub for ResolvedLayoutDistance {
+    type Output = ResolvedLayoutDistance;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        if let ResolvedLayoutDistance::Resolved(distance) = self {
+            if let ResolvedLayoutDistance::Resolved(rhs_distance) = rhs {
+                return ResolvedLayoutDistance::Resolved(distance - rhs_distance);
+            }   
+        } 
+        ResolvedLayoutDistance::Unresolved
+    }
+}
+
+impl From<LayoutDistance> for ResolvedLayoutDistance {
+    fn from(distance: LayoutDistance) -> Self {
+        match distance {
+            LayoutDistance::Fixed(distance) => Self::Resolved(distance),
+            _ => Self::Unresolved
+        }
+    }
+}
+
+impl Into<u16> for ResolvedLayoutDistance {
+    fn into(self) -> u16 {
+        match self {
+            ResolvedLayoutDistance::Resolved(distance) => distance,
+            _ => 0
+        }
+    }
+}
+
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct ResolvedLayoutOffsetRect {
+    top: ResolvedLayoutDistance,
+    right: ResolvedLayoutDistance,
+    bottom: ResolvedLayoutDistance,
+    left: ResolvedLayoutDistance,
+}
+
+impl From<LayoutOffsetRect> for ResolvedLayoutOffsetRect {
+    fn from(rect: LayoutOffsetRect) -> Self {
+        Self {
+            top: ResolvedLayoutDistance::from(rect.top),
+            right: ResolvedLayoutDistance::from(rect.right),
+            bottom: ResolvedLayoutDistance::from(rect.bottom),
+            left: ResolvedLayoutDistance::from(rect.left),
+        }
+    }
+}
+
+impl ResolvedLayoutOffsetRect {
+    fn resolve_from_parent(&mut self, current: &LayoutOffsetRect, parent: &ResolvedLayoutOffsetRect) {
+        self.top = current.top.resolve_from_parent(&self.top, &parent.top);
+        self.right = current.right.resolve_from_parent(&self.right, &parent.right);
+        self.bottom = current.bottom.resolve_from_parent(&self.bottom, &parent.bottom);
+        self.left = current.left.resolve_from_parent(&self.left, &parent.left);
     }
 
-    pub fn apply_child_layout(&self, _child: &LayoutNode) {
-        todo!()
-        // this should allow resizing based on child sizes
+    fn resolve_from_child(&mut self, current: &LayoutOffsetRect, child: &ResolvedLayoutOffsetRect) {
+        self.top = current.top.resolve_from_child(&self.top, &child.top);
+        self.right = current.right.resolve_from_child(&self.right, &child.right);
+        self.bottom = current.bottom.resolve_from_child(&self.bottom, &child.bottom);
+        self.left = current.left.resolve_from_child(&self.left, &child.left);
+    }
+}
+
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct ResolvedLayoutDimensions {
+    width: ResolvedLayoutDistance,
+    height: ResolvedLayoutDistance
+}
+
+impl Sub<ResolvedLayoutOffsetRect> for ResolvedLayoutDimensions {
+    type Output = ResolvedLayoutDimensions;
+
+    fn sub(self, rhs: ResolvedLayoutOffsetRect) -> Self::Output {
+        Self {
+            width: self.width - (rhs.left + rhs.right),
+            height: self.width - (rhs.top + rhs.bottom),
+        }
+    }
+}
+
+impl Into<(u16, u16)> for ResolvedLayoutDimensions {
+    fn into(self) -> (u16, u16) {
+        (self.width.into(), self.height.into())
+    }
+}
+
+impl ResolvedLayoutDimensions {
+    fn resolve_from_parent(&mut self, current: &LayoutDimensions, parent: &ResolvedLayoutDimensions) {
+        self.width = current.width.resolve_from_parent(&self.width, &parent.width);
+        self.height = current.height.resolve_from_parent(&self.height, &parent.height);
     }
 
-    pub fn layout(&self) -> Layout {
-        todo!()
-        // this should deduce the layout given full parent and children layouts applied
+    fn resolve_from_child(&mut self, current: &LayoutDimensions, child: &ResolvedLayoutDimensions) {
+        self.width = current.width.resolve_from_child(&self.width, &child.width);
+        self.height = current.height.resolve_from_child(&self.height, &child.height);
+    }
+
+}
+
+impl From<LayoutDimensions> for ResolvedLayoutDimensions {
+    fn from(dimensions: LayoutDimensions) -> Self {
+        Self {
+            width: ResolvedLayoutDistance::from(dimensions.width),
+            height: ResolvedLayoutDistance::from(dimensions.height)
+        }
+    }
+}
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct ResolvedLayoutPosition {
+    left: u16,
+    top: u16
+}
+
+impl Add<ResolvedLayoutOffsetRect> for ResolvedLayoutPosition {
+    type Output = ResolvedLayoutPosition;
+
+    fn add(self, rhs: ResolvedLayoutOffsetRect) -> Self::Output {
+        Self {
+            left: rhs.left + self.left,
+            top: rhs.top + self.top
+        }
+    }
+}
+
+impl Add<ResolvedLayoutDimensions> for ResolvedLayoutPosition {
+    type Output = ResolvedLayoutPosition;
+
+    fn add(self, rhs: ResolvedLayoutDimensions) -> Self::Output {
+        Self {
+            left: rhs.width + self.left,
+            top: rhs.height + self.top
+        }
+    }
+}
+
+impl Into<(u16, u16)> for ResolvedLayoutPosition {
+    fn into(self) -> (u16, u16) {
+        (self.left, self.top)
+    }
+}
+
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct ResolvedLayoutBox {
+    direction: LayoutDirection,
+    offset: ResolvedLayoutOffsetRect,
+    position: ResolvedLayoutPosition,
+    dimensions: ResolvedLayoutDimensions,
+}
+
+impl ResolvedLayoutBox {
+    fn resolve_from_parent(&mut self, current: &LayoutBox, parent: &ResolvedLayoutBox) {
+        self.offset.resolve_from_parent(&current.offset, &parent.offset);
+        self.dimensions.resolve_from_parent(&current.dimensions, &parent.dimensions);
+    }
+
+    fn resolve_from_child(&mut self, current: &LayoutBox, child: &ResolvedLayoutBox) {
+        self.offset.resolve_from_child(&current.offset, &child.offset);
+        self.dimensions.resolve_from_child(&current.dimensions, &child.dimensions);
+    }
+
+    fn position_from_sibling(&mut self, sibling: &ResolvedLayoutBox) {
+        self.position = sibling.position + sibling.dimensions;
+    }
+
+    fn position_from_parent(&mut self, parent: &ResolvedLayoutBox) {
+        self.position = parent.content_position();
+    }
+
+    pub fn content_position(&self) -> ResolvedLayoutPosition {
+        self.position + self.offset
+    }
+
+    pub fn content_dimensions(&self) -> ResolvedLayoutDimensions {
+        self.dimensions - self.offset
+    }
+}
+
+impl From<LayoutBox> for ResolvedLayoutBox {
+    fn from(layout_box: LayoutBox) -> Self {
+        Self {
+            direction: layout_box.direction,
+            offset: ResolvedLayoutOffsetRect::from(layout_box.offset),
+            dimensions: ResolvedLayoutDimensions::from(layout_box.dimensions),
+            position: ResolvedLayoutPosition::default()
+        }
     }
 }
 

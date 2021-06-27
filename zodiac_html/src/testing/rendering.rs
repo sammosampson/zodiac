@@ -13,18 +13,20 @@ use super::systems::*;
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct RenderPrimitive {
     id: ComponentId,
-    layout: Layout, 
+    layout: ResolvedLayoutBox, 
     border: FullBorder,
     background_colour: BackgroundColour,
 }  
 
 impl RenderPrimitive {
     pub fn is_positioned_at(&self, left: u16, top: u16) -> bool {
-        self.layout.left == left && self.layout.top == top 
+        let (layout_left, layout_top) = self.layout.content_position().into();
+        layout_left == left && layout_top == top 
     }
     
     pub fn has_dimensions_of(&self, width: u16, height: u16) -> bool {
-        self.layout.width == width && self.layout.height == height    
+        let (layout_width, layout_height) = self.layout.content_dimensions().into();
+        layout_width == width && layout_height == height
     }
     
     pub fn has_border_top_of(&self, border_values: BorderValues) -> bool {
@@ -57,8 +59,8 @@ impl RenderPrimitive {
     }
 }
 
-impl From<(&ComponentId, &Layout, &FullBorder, &BackgroundColour)> for RenderPrimitive {
-    fn from(props: (&ComponentId, &Layout, &FullBorder, &BackgroundColour)) -> Self {
+impl From<(&ComponentId, &ResolvedLayoutBox, &FullBorder, &BackgroundColour)> for RenderPrimitive {
+    fn from(props: (&ComponentId, &ResolvedLayoutBox, &FullBorder, &BackgroundColour)) -> Self {
         Self {
             id: *props.0,
             layout: *props.1, 

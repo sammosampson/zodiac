@@ -7,11 +7,12 @@ use crate::borders::*;
 use crate::testing::*;
 
 #[system(for_each)]
-#[filter(component::<Style>())]
+#[filter(component::<LayoutChange>())]
+#[filter(component::<Renderable>())]
 pub fn queue_render_primitives(
     entity: &Entity, 
     id: &ComponentId,
-    layout: &Layout, 
+    layout: &ResolvedLayoutBox, 
     border: &FullBorder,
     background_colour: &BackgroundColour,
     command_buffer: &mut CommandBuffer) {
