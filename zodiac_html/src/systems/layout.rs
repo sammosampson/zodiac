@@ -26,13 +26,17 @@ pub fn apply_layout_differences(
 
 #[system(for_each)]
 #[filter(component::<Root>())]
+#[read_component(LayoutBox)]
+#[read_component(ResolvedLayoutBox)]
+#[read_component(LayoutRequest)]
 pub fn layout(
     #[resource] relationship_map: &RelationshipMap, 
+    command_buffer: &mut CommandBuffer,
     world: &mut SubWorld, 
     root: &Entity) {
     let layout_tree = layout_tree(world, relationship_map);
     layout_tree.layout(root);        
-    layout_tree.position(root);        
+    layout_tree.position(root, command_buffer);        
 }
 
 

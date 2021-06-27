@@ -1,6 +1,7 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::ops::{Add, Sub};
+use legion::systems::CommandBuffer;
 use serde::*;
 use legion::*;
 use legion::world::*;
@@ -11,10 +12,14 @@ pub fn layout_tree<'a>(world: &mut SubWorld, relationship_map: &'a RelationshipM
     LayoutTree::<'a>::new(world, relationship_map)
 }
 
-pub struct LayoutTree<'a>(&'a RelationshipMap, HashMap::<Entity, RefCell<LayoutNode>>);
+pub struct LayoutTree<'a>(
+    &'a RelationshipMap,
+    HashMap::<Entity, RefCell<LayoutNode>>
+);
 
 impl<'a> LayoutTree<'a> {
     fn new(world: &mut SubWorld, relationship_map: &'a RelationshipMap) -> Self {
+
         let layout_nodes: HashMap::<Entity, RefCell<LayoutNode>> = <(Entity, &LayoutBox, &ResolvedLayoutBox, Option<&LayoutRequest>)>::query()
             .iter(world)
             .map(|(entity, layout_box, resolved_layout_box, request)| 
@@ -26,23 +31,16 @@ impl<'a> LayoutTree<'a> {
 
     pub fn layout(&self, root: &Entity) {
         let mut root_node = self.1.get(root).unwrap().borrow_mut();
-        root_node.layout(self);
+        root_node.layout(None, self);
     }  
 
-    pub fn position(&self, root: &Entity) {
+    pub fn position(&self, root: &Entity, command_buffer: &mut CommandBuffer) {
         let mut root_node = self.1.get(root).unwrap().borrow_mut();
-        root_node.position(self);
+        root_node.position(None, self, command_buffer);
     }
 
     fn get(&self, entity: &Entity) -> Option<&RefCell<LayoutNode>> {
         self.1.get(entity)
-    }
-
-    fn get_parent(&self, entity: &Entity) -> Option<&RefCell<LayoutNode>> {
-        if let Some(parent)= self.relationship_map().get_parent(&entity) {
-            return self.1.get(&parent)
-        }
-        None
     }
     
     fn get_previous_sibling(&self, entity: &Entity) -> Option<&RefCell<LayoutNode>> {
@@ -128,57 +126,61 @@ impl LayoutNode {
         }
     }
 
-    fn layout<'a>(&mut self, tree: &LayoutTree<'a>) {
+    fn layout<'a>(&mut self, parent_layout: Option<&LayoutNode>, tree: &LayoutTree<'a>) {
         if self.status == LayoutStatus::Requested {
-            self.resolve_layout(tree);
+            self.resolve_layout(parent_layout, tree);
             return;
         }
 
         for (_child, child_layout) in tree.get_children(self.entity) {
-            child_layout.borrow_mut().layout(tree);
+            child_layout.borrow_mut().layout(Some(self), tree);
         }
     }
 
-    fn resolve_layout<'a>(&mut self, tree: &LayoutTree<'a>) {
+    fn resolve_layout<'a>(&mut self, parent_layout: Option<&LayoutNode>, tree: &LayoutTree<'a>) {
         self.status = LayoutStatus::Resolving;   
         self.resolved_layout_box = ResolvedLayoutBox::from(self.layout_box);
 
-        if let Some(parent_layout) = tree.get_parent(&self.entity) {
-            self.resolved_layout_box.resolve_from_parent(&self.layout_box, &parent_layout.borrow().resolved_layout_box);
+        if let Some(parent_layout) = parent_layout {
+            self.resolved_layout_box.resolve_from_parent(&self.layout_box, &parent_layout.resolved_layout_box);
         }
                 
         for (_child, child_layout) in tree.get_children(self.entity) {
-            child_layout.borrow_mut().resolve_layout(tree);
+            child_layout.borrow_mut().resolve_layout(Some(self), tree);
             self.resolved_layout_box.resolve_from_child(&self.layout_box, &child_layout.borrow().resolved_layout_box);
         }
 
         self.status = LayoutStatus::Resolved;   
     }
 
-    fn position<'a>(&mut self, tree: &LayoutTree<'a>) {
+    fn position<'a>(&mut self, parent_layout: Option<&LayoutNode>, tree: &LayoutTree<'a>, command_buffer: &mut CommandBuffer) {
         if self.status == LayoutStatus::Resolved {
-            self.resolve_position(tree);
+            self.resolve_position(parent_layout, tree, command_buffer);
             return;
         }
 
         for (_child, child_layout) in tree.get_children(self.entity) {
-            child_layout.borrow_mut().position(tree);
+            child_layout.borrow_mut().position(Some(self), tree, command_buffer);
         }
     }
 
-    fn resolve_position<'a>(&mut self, tree: &LayoutTree<'a>) {
+    fn resolve_position<'a>(&mut self, parent_layout: Option<&LayoutNode>, tree: &LayoutTree<'a>, command_buffer: &mut CommandBuffer) {
         self.status = LayoutStatus::Positioning;   
 
         if let Some(previous_sibling_layout) = tree.get_previous_sibling(&self.entity) {
             self.resolved_layout_box.position_from_sibling(&previous_sibling_layout.borrow().resolved_layout_box);
-        } else if let Some(parent_layout) = tree.get_parent(&self.entity) {
-            self.resolved_layout_box.position_from_parent(&parent_layout.borrow().resolved_layout_box);
+        } else if let Some(parent_layout) = parent_layout {
+            self.resolved_layout_box.position_from_parent(&parent_layout.resolved_layout_box);
         } 
 
         for (_child, child_layout) in tree.get_children(self.entity) {
-            child_layout.borrow_mut().resolve_position(tree);
+            child_layout.borrow_mut().resolve_position(Some(self), tree, command_buffer);
         }
         
+        command_buffer.add_component(self.entity, self.resolved_layout_box);
+        command_buffer.add_component(self.entity, LayoutChange::default());
+        
+
         self.status = LayoutStatus::Positioned;   
         
     }
