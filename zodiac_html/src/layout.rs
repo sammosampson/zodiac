@@ -144,11 +144,13 @@ impl LayoutNode {
         if let Some(parent_layout) = parent_layout {
             self.resolved_layout_box.resolve_from_parent(&self.layout_box, &parent_layout.resolved_layout_box);
         }
-                
+
         for (_child, child_layout) in tree.get_children(self.entity) {
             child_layout.borrow_mut().resolve_layout(Some(self), tree);
             self.resolved_layout_box.resolve_from_child(&self.layout_box, &child_layout.borrow().resolved_layout_box);
         }
+
+        self.resolved_layout_box.complete_children_resolution(&self.layout_box);
 
         self.status = LayoutStatus::Resolved;   
     }
@@ -249,6 +251,16 @@ impl LayoutDistance {
 
         *current
     }
+
+    fn complete_children_resolution(&self, current: &ResolvedLayoutDistance) -> ResolvedLayoutDistance {
+        if current == &ResolvedLayoutDistance::Unresolved {
+            if let Self::FromChildren(_multiplier) = self {
+                return ResolvedLayoutDistance::Resolved(0);
+            }
+        }
+
+        *current
+    }
 }
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
@@ -325,18 +337,21 @@ pub struct LayoutBox {
 
 impl LayoutBox {
     pub fn apply(&mut self, incumbent: &IncumbentLayoutBox) -> bool {
-        let has_changed = false;
+        let mut has_changed = false;
 
         if self.direction != incumbent.direction {
             self.direction = incumbent.direction;
+            has_changed = true;
         }
 
         if self.offset != incumbent.offset {
             self.offset = incumbent.offset;
+            has_changed = true;
         }
 
         if self.dimensions != incumbent.dimensions {
             self.dimensions = incumbent.dimensions;
+            has_changed = true;
         }
 
         has_changed
@@ -443,6 +458,13 @@ impl ResolvedLayoutOffsetRect {
         self.bottom = current.bottom.resolve_from_child(&self.bottom, &child.bottom);
         self.left = current.left.resolve_from_child(&self.left, &child.left);
     }
+
+    fn complete_children_resolution(&mut self, current: &LayoutOffsetRect) {
+        self.top = current.top.complete_children_resolution(&self.top);
+        self.right = current.right.complete_children_resolution(&self.right);
+        self.bottom = current.bottom.complete_children_resolution(&self.bottom);
+        self.left = current.left.complete_children_resolution(&self.left);
+    }
 }
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
@@ -457,11 +479,10 @@ impl Sub<ResolvedLayoutOffsetRect> for ResolvedLayoutDimensions {
     fn sub(self, rhs: ResolvedLayoutOffsetRect) -> Self::Output {
         Self {
             width: self.width - (rhs.left + rhs.right),
-            height: self.width - (rhs.top + rhs.bottom),
+            height: self.height - (rhs.top + rhs.bottom),
         }
     }
 }
-
 impl Into<(u16, u16)> for ResolvedLayoutDimensions {
     fn into(self) -> (u16, u16) {
         (self.width.into(), self.height.into())
@@ -477,6 +498,11 @@ impl ResolvedLayoutDimensions {
     fn resolve_from_child(&mut self, current: &LayoutDimensions, child: &ResolvedLayoutDimensions) {
         self.width = current.width.resolve_from_child(&self.width, &child.width);
         self.height = current.height.resolve_from_child(&self.height, &child.height);
+    }
+
+    fn complete_children_resolution(&mut self, current: &LayoutDimensions, resolved_offset: &ResolvedLayoutOffsetRect) {
+        self.width = current.width.complete_children_resolution(&self.width);
+        self.height = current.height.complete_children_resolution(&self.height) + (resolved_offset.top + resolved_offset.bottom);
     }
 
 }
@@ -540,6 +566,11 @@ impl ResolvedLayoutBox {
     fn resolve_from_child(&mut self, current: &LayoutBox, child: &ResolvedLayoutBox) {
         self.offset.resolve_from_child(&current.offset, &child.offset);
         self.dimensions.resolve_from_child(&current.dimensions, &child.dimensions);
+    }
+
+    fn complete_children_resolution(&mut self, current: &LayoutBox) {
+        self.offset.complete_children_resolution(&current.offset);
+        self.dimensions.complete_children_resolution(&current.dimensions, &self.offset);
     }
 
     fn position_from_sibling(&mut self, sibling: &ResolvedLayoutBox) {

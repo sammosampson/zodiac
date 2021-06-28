@@ -6,7 +6,7 @@ use zodiac::*;
 #[topo::nested]
 pub fn block_layout_with_children_with_margin_style() -> Node {
     mox!(
-        <style margin=px(5).into() />
+        <style display=DisplayTypes::Block margin=px(5).into() />
     )
 }
 

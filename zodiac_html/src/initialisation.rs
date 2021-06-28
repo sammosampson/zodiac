@@ -71,6 +71,7 @@ impl ApplicationBundleBuilder for HtmlBuilder {
     fn register_components_for_world_serializiation(&self, world_serializer: &mut WorldSerializer) {
         world_serializer.register_component::<Style>(stringify!(Style));
         world_serializer.register_component::<Span>(stringify!(Span));
+        world_serializer.register_component::<Div>(stringify!(Div));
         world_serializer.register_component::<BorderWidth>(stringify!(BorderWidth));
         world_serializer.register_component::<BorderColour>(stringify!(BorderColour));
         world_serializer.register_component::<BorderTop>(stringify!(BorderTop));

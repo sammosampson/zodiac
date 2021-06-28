@@ -31,6 +31,7 @@ element! {
         [BorderRightWidth::default()]
         [BorderRadius::default()]
         [BorderStyle::default()]
+        [Display::default()]
         [Margin::default()]
         [Padding::default()]
         [FullBorder::default()]
@@ -69,6 +70,7 @@ element! {
     [Span::default()]
     extra_components {
         [Display::inline()]
+        [Margin::default()]
     }
 }
 
@@ -77,5 +79,6 @@ element! {
     [Div::default()]
     extra_components {
         [Display::block()]
+        [Margin::default()]
     }
 }

@@ -1,6 +1,6 @@
-#[cfg(not(test))]
-use log::{info};
-#[cfg(test)]
+//#[cfg(not(test))]
+//use log::{info};
+//#[cfg(test)]
 use std::{println as info};
 
 use legion::*;
