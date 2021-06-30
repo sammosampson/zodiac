@@ -9,7 +9,7 @@ pub fn generate_node_id() -> u64 {
     moxie::once(|| ID_GENERATOR.fetch_add(1, Ordering::Relaxed))
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Node {
     pub id: u64,
     pub group_children: Vec<u64>,

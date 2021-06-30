@@ -304,13 +304,13 @@ impl From<&Dimensions> for LayoutDimensions {
 }
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct IncumbentLayoutBox {
+pub struct StyleLayoutBox {
     direction: LayoutDirection,
     offset: LayoutOffsetRect,
     dimensions: LayoutDimensions
 }
 
-impl From<&Dimensions> for IncumbentLayoutBox {
+impl From<&Dimensions> for StyleLayoutBox {
     fn from(dimensions: &Dimensions) -> Self {
         Self {
             direction: LayoutDirection::Vertical,
@@ -320,7 +320,7 @@ impl From<&Dimensions> for IncumbentLayoutBox {
     }
 }
 
-impl zodiac::PropertySet<(LayoutDirection, LayoutOffsetRect, LayoutDimensions)> for IncumbentLayoutBox {
+impl zodiac::PropertySet<(LayoutDirection, LayoutOffsetRect, LayoutDimensions)> for StyleLayoutBox {
     fn set(&mut self, to_set: (LayoutDirection, LayoutOffsetRect, LayoutDimensions)) {
         self.direction = to_set.0;
         self.offset = to_set.1;
@@ -336,7 +336,7 @@ pub struct LayoutBox {
 }
 
 impl LayoutBox {
-    pub fn apply(&mut self, incumbent: &IncumbentLayoutBox) -> bool {
+    pub fn apply(&mut self, incumbent: &StyleLayoutBox) -> bool {
         let mut has_changed = false;
 
         if self.direction != incumbent.direction {
@@ -473,6 +473,16 @@ pub struct ResolvedLayoutDimensions {
     height: ResolvedLayoutDistance
 }
 
+impl ResolvedLayoutDimensions {
+    fn width(&self) -> ResolvedLayoutDistance {
+        self.width
+    }
+
+    fn height(&self) -> ResolvedLayoutDistance {
+        self.height
+    }
+}
+
 impl Sub<ResolvedLayoutOffsetRect> for ResolvedLayoutDimensions {
     type Output = ResolvedLayoutDimensions;
 
@@ -483,11 +493,12 @@ impl Sub<ResolvedLayoutOffsetRect> for ResolvedLayoutDimensions {
         }
     }
 }
+
 impl Into<(u16, u16)> for ResolvedLayoutDimensions {
     fn into(self) -> (u16, u16) {
         (self.width.into(), self.height.into())
     }
-}
+} 
 
 impl ResolvedLayoutDimensions {
     fn resolve_from_parent(&mut self, current: &LayoutDimensions, parent: &ResolvedLayoutDimensions) {
@@ -521,6 +532,22 @@ pub struct ResolvedLayoutPosition {
     top: u16
 }
 
+impl ResolvedLayoutPosition {
+    fn add_width(self, width: ResolvedLayoutDistance) -> ResolvedLayoutPosition {
+        Self {
+            left: width + self.left,
+            top: self.top
+        }
+    }
+
+    fn add_height(self, height: ResolvedLayoutDistance) -> ResolvedLayoutPosition {
+        Self {
+            left: self.left,
+            top: height + self.top
+        }
+    }
+}
+
 impl Add<ResolvedLayoutOffsetRect> for ResolvedLayoutPosition {
     type Output = ResolvedLayoutPosition;
 
@@ -528,17 +555,6 @@ impl Add<ResolvedLayoutOffsetRect> for ResolvedLayoutPosition {
         Self {
             left: rhs.left + self.left,
             top: rhs.top + self.top
-        }
-    }
-}
-
-impl Add<ResolvedLayoutDimensions> for ResolvedLayoutPosition {
-    type Output = ResolvedLayoutPosition;
-
-    fn add(self, rhs: ResolvedLayoutDimensions) -> Self::Output {
-        Self {
-            left: rhs.width + self.left,
-            top: rhs.height + self.top
         }
     }
 }
@@ -574,15 +590,27 @@ impl ResolvedLayoutBox {
     }
 
     fn position_from_sibling(&mut self, sibling: &ResolvedLayoutBox) {
-        self.position = sibling.position + sibling.dimensions;
+        match self.direction {
+            LayoutDirection::Horizontal => self.position = sibling.position.add_width(sibling.dimensions.width()),
+            LayoutDirection::Vertical => self.position = sibling.position.add_height(sibling.dimensions.height()),
+            LayoutDirection::None => todo!(),
+        }
     }
 
     fn position_from_parent(&mut self, parent: &ResolvedLayoutBox) {
         self.position = parent.content_position();
     }
 
+    pub fn position(&self) -> ResolvedLayoutPosition {
+        self.position
+    }
+
     pub fn content_position(&self) -> ResolvedLayoutPosition {
         self.position + self.offset
+    }
+
+    pub fn dimensions(&self) -> ResolvedLayoutDimensions {
+        self.dimensions
     }
 
     pub fn content_dimensions(&self) -> ResolvedLayoutDimensions {

@@ -2,11 +2,13 @@ mod relationships;
 mod errors;
 mod resizing;
 mod layout;
+mod style;
 
 pub use relationships::*;
 pub use errors::*;
 pub use resizing::*;
 pub use layout::*;
+pub use style::*;
 
 use serde::*;
 

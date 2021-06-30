@@ -44,14 +44,16 @@ macro_rules! element {
             #[derive(Default, PartialEq, Clone)]
             pub struct [<$name:camel Builder>] {
                 children: Vec<u64>,
-                attributes: Vec<[<$name:camel Attribute>]>
+                attributes: Vec<[<$name:camel Attribute>]>,
+                style: Option<u64>
             }
 
             impl [<$name:camel Builder>] {
                 pub fn new() -> Self {
                     Self {
                         children: vec!(),
-                        attributes: vec!()
+                        attributes: vec!(),
+                        style: None
                     }
                 }
 
@@ -83,8 +85,9 @@ macro_rules! element {
                     self
                 }
 
-                pub fn style(self, value: Node) -> Self {
-                    self.child(value)
+                pub fn style(mut self, value: Node) -> Self {
+                    self.style = Some(value.id);
+                    self
                 }
 
                 $($(
@@ -95,9 +98,10 @@ macro_rules! element {
                 )*)?
             }
 
-            #[derive(Default,  Debug, Clone)]
+            #[derive(Default, Debug, Clone)]
             pub struct [<$name:camel Change>] {
                 node_id: u64,
+                style: Option<u64>,
                 child_changes: NodeChanges::<u64>,
                 attribute_changes: NodeChanges::<[<$name:camel Attribute>]>
             }
@@ -106,6 +110,7 @@ macro_rules! element {
                 fn between(node_id: u64, current: &[<$name:camel Builder>], previous: &[<$name:camel Builder>]) -> Self {
                     Self {
                         node_id,
+                        style: current.style,
                         child_changes: NodeChanges::<u64>::between(&current.children, &previous.children),
                         attribute_changes: NodeChanges::<[<$name:camel Attribute>]>::between(
                             &current.attributes, 
@@ -122,6 +127,12 @@ macro_rules! element {
                     )*)?
                     
                     command_buffer.add_component(parent, Rebuild::default());
+
+                    if let Some(style_id) = self.style {
+                        if let Some(style_entity) = maps.entity_map.get(&style_id) {
+                            command_buffer.add_component(*style_entity, StyleRelationship::from(parent));
+                        }
+                    }
                     
                     self.child_changes.process_additions(&mut |child_id| command_buffer.add_child(parent, child_id, maps));    
                     self.child_changes.process_removals(&mut |child_id| command_buffer.remove_child(child_id, maps));

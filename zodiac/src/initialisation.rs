@@ -113,6 +113,7 @@ impl<TState: State, TRootFunc: FnMut() -> RootNode<TState> + Copy + Clone + 'sta
         world_serializer.register_component::<Root>(stringify!(Root));
         world_serializer.register_component::<ComponentId>(stringify!(ComponentId));
         world_serializer.register_component::<Relationship>(stringify!(Relationship));
+        world_serializer.register_component::<StyleRelationship>(stringify!(StyleRelationship));
         world_serializer.register_component::<Mapped>(stringify!(Mapped));
         world_serializer.register_component::<Removed>(stringify!(Removed));
         world_serializer.register_component::<Rebuild>(stringify!(Rebuild));

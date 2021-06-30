@@ -1,12 +1,24 @@
 use log::info;
 use legion::*;
+use legion::systems::*;
 use zodiac::*;
 use crate::Colour;
 use crate::Size;
 use crate::borders::*;
+use crate::style::*;
+use crate::layout::*;
+use crate::colour::*;
+
+#[system(for_each)]
+#[filter(component::<Style>())]
+#[filter(!component::<StyleLayoutBox>())]
+pub fn initialise_style_layout(command_buffer: &mut CommandBuffer, entity: &Entity) {
+    command_buffer.add_component(*entity, StyleLayoutBox::default());
+}
 
 #[system(for_each)]
 #[filter(component::<Rebuild>())]
+#[filter(component::<Style>())]
 pub fn deconstruct_border(
     border: &Border,
     colour: &mut BorderColour,
@@ -24,6 +36,7 @@ pub fn deconstruct_border(
 
 #[system(for_each)]
 #[filter(component::<Rebuild>())]
+#[filter(component::<Style>())]
 pub fn deconstruct_border_colour(
     colour: &BorderColour,
     top: &mut BorderTopColour,
@@ -43,6 +56,7 @@ pub fn deconstruct_border_colour(
 
 #[system(for_each)]
 #[filter(component::<Rebuild>())]
+#[filter(component::<Style>())]
 pub fn deconstruct_border_width(
     width: &BorderWidth,
     top: &mut BorderTopWidth,
@@ -62,6 +76,7 @@ pub fn deconstruct_border_width(
 
 #[system(for_each)]
 #[filter(component::<Rebuild>())]
+#[filter(component::<Style>())]
 pub fn deconstruct_border_style(
     style: &BorderStyle,
     top: &mut BorderTopStyle,
@@ -81,6 +96,7 @@ pub fn deconstruct_border_style(
 
 #[system(for_each)]
 #[filter(component::<Rebuild>())]
+#[filter(component::<Style>())]
 pub fn upconstruct_border_top(
     style: &BorderTopStyle,
     width: &BorderTopWidth,
@@ -95,6 +111,7 @@ pub fn upconstruct_border_top(
 
 #[system(for_each)]
 #[filter(component::<Rebuild>())]
+#[filter(component::<Style>())]
 pub fn upconstruct_border_left(
     style: &BorderLeftStyle,
     width: &BorderLeftWidth,
@@ -109,6 +126,7 @@ pub fn upconstruct_border_left(
 
 #[system(for_each)]
 #[filter(component::<Rebuild>())]
+#[filter(component::<Style>())]
 pub fn upconstruct_border_bottom(
     style: &BorderBottomStyle,
     width: &BorderBottomWidth,
@@ -123,6 +141,7 @@ pub fn upconstruct_border_bottom(
 
 #[system(for_each)]
 #[filter(component::<Rebuild>())]
+#[filter(component::<Style>())]
 pub fn upconstruct_border_right(
     style: &BorderRightStyle,
     width: &BorderRightWidth,
@@ -137,6 +156,7 @@ pub fn upconstruct_border_right(
 
 #[system(for_each)]
 #[filter(component::<Rebuild>())]
+#[filter(component::<Style>())]
 pub fn compose_full_border(
     radius: &BorderRadius,
     top: &BorderTop,
@@ -147,4 +167,34 @@ pub fn compose_full_border(
 ) {
     info!("composing full border {:?}", full_border);
     full_border.set((top, left, bottom, right, radius));
+}
+
+#[system(for_each)]
+#[filter(component::<Rebuild>())]
+#[filter(component::<Style>())]
+pub fn copy_layout_styles_to_elements(
+    command_buffer: &mut CommandBuffer,
+    style_relationship: &StyleRelationship,
+    style_layout_box: &StyleLayoutBox) {
+    command_buffer.add_component(style_relationship.into(), *style_layout_box);    
+}
+
+#[system(for_each)]
+#[filter(component::<Rebuild>())]
+#[filter(component::<Style>())]
+pub fn copy_background_styles_to_elements(
+    command_buffer: &mut CommandBuffer,
+    style_relationship: &StyleRelationship,
+    background_colour: &BackgroundColour) {
+    command_buffer.add_component(style_relationship.into(), *background_colour);    
+}
+
+#[system(for_each)]
+#[filter(component::<Rebuild>())]
+#[filter(component::<Style>())]
+pub fn copy_border_styles_to_elements(
+    command_buffer: &mut CommandBuffer,
+    style_relationship: &StyleRelationship,
+    border: &FullBorder) {
+    command_buffer.add_component(style_relationship.into(), *border);  
 }

@@ -28,6 +28,8 @@ impl ApplicationBundleBuilder for HtmlBuilder {
 
     fn setup_layout_systems(&self, builder: &mut Builder) {
         builder
+            .add_system(initialise_element_layout_system())
+            .add_system(initialise_style_layout_system())
             .add_system(deconstruct_border_system())
             .flush()
             .add_system(deconstruct_border_colour_system())
@@ -41,10 +43,12 @@ impl ApplicationBundleBuilder for HtmlBuilder {
             .flush()
             .add_system(compose_full_border_system())
             .flush()
-            .add_system(initialise_layout_system())
-            .flush()
             .add_system(root_resize_system())
-            .add_system(layout_display_system())
+            .add_system(compose_display_to_layout_box_system())
+            .flush()
+            .add_system(copy_layout_styles_to_elements_system())
+            .add_system(copy_background_styles_to_elements_system())
+            .add_system(copy_border_styles_to_elements_system())
             .flush()
             .add_system(apply_layout_differences_system())
             .flush()
@@ -101,7 +105,7 @@ impl ApplicationBundleBuilder for HtmlBuilder {
         world_serializer.register_component::<Colour>(stringify!(Colour));
         world_serializer.register_component::<LayoutRequest>(stringify!(LayoutRequest));
         world_serializer.register_component::<LayoutBox>(stringify!(LayoutBox));
-        world_serializer.register_component::<IncumbentLayoutBox>(stringify!(IncumbentLayoutBox));
+        world_serializer.register_component::<StyleLayoutBox>(stringify!(StyleLayoutBox));
         world_serializer.register_component::<ResolvedLayoutBox>(stringify!(ResolvedLayoutBox));
         world_serializer.register_component::<LayoutStatus>(stringify!(LayoutStatus));
         world_serializer.register_component::<LayoutDirection>(stringify!(LayoutDirection));

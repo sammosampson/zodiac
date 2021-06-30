@@ -14,10 +14,8 @@ pub fn block_layout_with_children_with_margin_style() -> Node {
 fn block_layout_with_children_with_margin_root() -> RootNode<TestState> {
     mox!(
         <root>
-            <div>
-                <div style=block_layout_with_children_with_margin_style()/>
-                <div style=block_layout_with_children_with_margin_style()/>
-            </div>    
+            <div style=block_layout_with_children_with_margin_style() />
+            <div style=block_layout_with_children_with_margin_style() />
         </root>
     )
 }
@@ -32,8 +30,8 @@ fn div_performs_block_layout() {
         .get_changes();
 
     assert_eq!(changes.len(), 2);
-    assert_eq!(changes[0].is_positioned_at(0, 0), true);
+    assert_eq!(changes[0].is_positioned_at(0, 0), true, "changes: {:?}", changes[0]);
     assert_eq!(changes[0].has_dimensions_of(1024, 10), true, "changes: {:?}", changes[0]);
     assert_eq!(changes[1].is_positioned_at(0, 10), true, "changes: {:?}", changes[1]);
-    assert_eq!(changes[1].has_dimensions_of(1024, 10), true);
+    assert_eq!(changes[1].has_dimensions_of(1024, 10), true, "changes: {:?}", changes[1]);
 }

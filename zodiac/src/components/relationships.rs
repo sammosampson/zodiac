@@ -10,6 +10,7 @@ pub struct Relationship {
     pub last_child: Option<Entity>
 }
 
+
 impl Relationship {
     pub fn for_parent_only(parent: Entity) -> Self {
         Self {

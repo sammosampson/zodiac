@@ -21,7 +21,7 @@ pub fn root_resize(
                 for root in <Entity>::query()
                     .filter(component::<Root>())
                     .iter(world) {
-                        command_buffer.add_component(*root, IncumbentLayoutBox::from(dimensions));
+                        command_buffer.add_component(*root, StyleLayoutBox::from(dimensions));
                         command_buffer.add_component(*root, LayoutBox::default());
                         command_buffer.add_component(*root, LayoutRequest::default());
                 }

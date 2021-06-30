@@ -9,8 +9,6 @@ element! {
     <style>
     [Style::default()]
     extra_components {
-        [Renderable::default()]
-        [BackgroundColour::default()]
         [BorderWidth::default()]
         [BorderColour::default()]
         [BorderTop::default()]
@@ -31,10 +29,10 @@ element! {
         [BorderRightWidth::default()]
         [BorderRadius::default()]
         [BorderStyle::default()]
-        [Display::default()]
+        [FullBorder::default()]
         [Margin::default()]
         [Padding::default()]
-        [FullBorder::default()]
+        [BackgroundColour::default()]
     }
     attributes {
         border(BorderValues)
@@ -69,8 +67,8 @@ element! {
     <span>
     [Span::default()]
     extra_components {
+        [Renderable::default()]
         [Display::inline()]
-        [Margin::default()]
     }
 }
 
@@ -78,7 +76,7 @@ element! {
     <div>
     [Div::default()]
     extra_components {
+        [Renderable::default()]
         [Display::block()]
-        [Margin::default()]
     }
 }

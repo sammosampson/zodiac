@@ -1,14 +1,16 @@
 use legion::*;
 use zodiac::*;
+use crate::style::*;
 
 use crate::layout::*;
 
 #[system(for_each)]
 #[filter(component::<Rebuild>())]
-pub fn layout_display(
+#[filter(component::<Style>())]
+pub fn compose_display_to_layout_box(
     display: &Display,
     margin: &Margin,
-    layout_box: &mut IncumbentLayoutBox) {
+    layout_box: &mut StyleLayoutBox) {
         match display.into() {
             DisplayTypes::Block => { 
                 layout_box.set((

@@ -1,21 +1,55 @@
+fn root_style() {
+<style
+      text_size=px(25)
+      background_color=rgb(0, 0, 0),
+      text_color=rgb(255, 255, 255)
+   >
+      <style
+         element_selector=ElementType::Div
+         display=DisplayTypes::Block
+      />
+      <style
+         element_selector=ElementType::Span
+         display=DisplayTypes::Inline
+      />
+   </style>
+}
+
 fn text_medium() {
-   ..
    <style
       text_size=px(25)
       padding=px(10)
       direction=TextDirection::Horizontal
-      background_color=rgb(66, 135, 245),
-      text_color=rgb(255, 255, 255),
+      background_color=rgb(66, 135, 245)
    >
-      <state type=StateType::Hover>
-         <style
-            text_color=rgb(112, 167, 255)
-         />
-      </state>
+      <style
+         state_selector=StateType::Hover
+         text_color=rgb(112, 167, 255) 
+      />
    </style>
-   ...
 }
+<root>
+   <span style=text_medium()>Some text here</span> 
+<root/>
 
-<span style=text_medium()>Some text here</span> 
+... this will create an element tree:
+Root 
+   --> Span
+      --> Text("Some text here")
 
-
+... and create a style tree:
+Element(Root)
+TextSize(25)
+BackgroundColour(0, 0, 0)
+TextColor(255, 255, 255)
+   --> ElementType(Div)
+       Display(Block)
+   --> ElementType(Span)
+       Display(Inline)
+         --> Element(Root/Span)
+             TextSize(25)
+             padding(10)
+             Direction(Horizontal)
+             BackgroundColour(66, 135, 245)
+               --> State(Hover)
+                   TextColor(112, 167, 255)

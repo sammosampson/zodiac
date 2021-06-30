@@ -3,12 +3,14 @@ use legion::systems::*;
 use legion::world::*;
 use zodiac::*;
 use crate::layout::*;
+use crate::style::*;
 
 #[system(for_each)]
+#[filter(!component::<Style>())]
 #[filter(!component::<LayoutBox>())]
-pub fn initialise_layout(command_buffer: &mut CommandBuffer, entity: &Entity) {
+pub fn initialise_element_layout(command_buffer: &mut CommandBuffer, entity: &Entity) {
+    command_buffer.add_component(*entity, StyleLayoutBox::default());    
     command_buffer.add_component(*entity, LayoutBox::default());    
-    command_buffer.add_component(*entity, IncumbentLayoutBox::default());    
     command_buffer.add_component(*entity, ResolvedLayoutBox::default());    
 }
 
@@ -16,10 +18,10 @@ pub fn initialise_layout(command_buffer: &mut CommandBuffer, entity: &Entity) {
 pub fn apply_layout_differences(
     command_buffer: &mut CommandBuffer,
     entity: &Entity,
-    incumbent_layout_box: &IncumbentLayoutBox,
+    style_layout_box: &StyleLayoutBox,
     layout_box: &mut LayoutBox) {
     
-    if layout_box.apply(incumbent_layout_box) {
+    if layout_box.apply(style_layout_box) {
         command_buffer.add_component(*entity, LayoutRequest::default());
     }    
 }
