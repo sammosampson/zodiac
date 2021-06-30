@@ -4,34 +4,42 @@ use zodiac_html::testing::*;
 use zodiac::*;
 
 #[topo::nested]
-pub fn block_layout_with_children_with_margin_style() -> Node {
+pub fn block_layout_with_margin_and_padding_style() -> Node {
     mox!(
-        <style display=DisplayTypes::Block margin=px(5).into() />
+        <style
+            display=DisplayTypes::Block
+            margin=px(5).into()
+            padding=px(10).into()
+        />
     )
 }
 
 #[topo::nested]
-fn block_layout_with_children_with_margin_root() -> RootNode<TestState> {
+fn block_layout_with_margin_and_padding_root() -> RootNode<TestState> {
     mox!(
         <root>
-            <div style=block_layout_with_children_with_margin_style() />
-            <div style=block_layout_with_children_with_margin_style() />
+            <div style=block_layout_with_margin_and_padding_style() />
+            <div style=block_layout_with_margin_and_padding_style() />
         </root>
     )
 }
 
 #[test]
-fn div_performs_block_layout() {
+fn block_layout_with_margin_and_padding() {
 
-    let changes = test_app(block_layout_with_children_with_margin_root)
+    let changes = test_app(block_layout_with_margin_and_padding_root)
         .with_screen_dimensions(1024, 768)
         .build()
         .run_once()
         .get_changes();
 
     assert_eq!(changes.len(), 2);
-    assert_eq!(changes[0].is_positioned_at(0, 0), true, "changes: {:?}", changes[0]);
-    assert_eq!(changes[0].has_dimensions_of(1024, 10), true, "changes: {:?}", changes[0]);
-    assert_eq!(changes[1].is_positioned_at(0, 10), true, "changes: {:?}", changes[1]);
-    assert_eq!(changes[1].has_dimensions_of(1024, 10), true, "changes: {:?}", changes[1]);
+    assert_eq!(changes[0].is_positioned_at(0, 0), true);
+    assert_eq!(changes[0].content_is_positioned_at(10, 10), true, "changes: {:?}", changes[0]);
+    assert_eq!(changes[0].has_dimensions_of(1024, 10), true);
+    assert_eq!(changes[0].content_has_dimensions_of(1014, 0), true, "changes: {:?}", changes[0]);
+    assert_eq!(changes[1].is_positioned_at(0, 10), true);
+    assert_eq!(changes[1].content_is_positioned_at(10, 10), true, "changes: {:?}", changes[1]);
+    assert_eq!(changes[1].has_dimensions_of(1024, 10), true);
+    assert_eq!(changes[1].content_has_dimensions_of(1024, 0), true, "changes: {:?}", changes[1]);
 }

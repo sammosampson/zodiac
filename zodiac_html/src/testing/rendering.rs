@@ -20,12 +20,22 @@ pub struct RenderPrimitive {
 
 impl RenderPrimitive {
     pub fn is_positioned_at(&self, left: u16, top: u16) -> bool {
-        let (layout_left, layout_top) = self.layout.position().into();
+        let (layout_left, layout_top) = self.layout.position(BoxArea::Margin).into();
+        layout_left == left && layout_top == top 
+    }
+
+    pub fn content_is_positioned_at(&self, left: u16, top: u16) -> bool {
+        let (layout_left, layout_top) = self.layout.position(BoxArea::Content).into();
         layout_left == left && layout_top == top 
     }
     
     pub fn has_dimensions_of(&self, width: u16, height: u16) -> bool {
-        let (layout_width, layout_height) = self.layout.dimensions().into();
+        let (layout_width, layout_height) = self.layout.dimensions(BoxArea::Margin).into();
+        layout_width == width && layout_height == height
+    }
+
+    pub fn content_has_dimensions_of(&self, width: u16, height: u16) -> bool {
+        let (layout_width, layout_height) = self.layout.dimensions(BoxArea::Content).into();
         layout_width == width && layout_height == height
     }
     

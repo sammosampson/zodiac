@@ -14,7 +14,6 @@ pub enum BorderStyles {
     Hidden
 }
 
-
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BorderStyle(BorderStyles, bool);
 

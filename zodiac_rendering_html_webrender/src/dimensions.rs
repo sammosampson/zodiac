@@ -49,8 +49,8 @@ impl From<&ResolvedLayoutBox> for WrappedLayout  {
 
 impl Into<webrender::euclid::Rect<f32, webrender::api::units::LayoutPixel>> for WrappedLayout {
     fn into(self) -> webrender::euclid::Rect<f32, webrender::api::units::LayoutPixel> {
-        let position: (u16, u16) = self.0.content_position().into();
-        let dimensions: (u16, u16) = self.0.content_dimensions().into();
+        let position: (u16, u16) = self.0.position(BoxArea::Border).into();
+        let dimensions: (u16, u16) = self.0.dimensions(BoxArea::Border).into();
         webrender::euclid::Rect::new(
             webrender::euclid::point2(position.0 as f32, position.1 as f32),
             webrender::euclid::size2(dimensions.0 as f32, dimensions.1 as f32))

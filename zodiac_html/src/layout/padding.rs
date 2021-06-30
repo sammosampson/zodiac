@@ -1,5 +1,6 @@
 use serde::*;
 use crate::size::*;
+use super::spatial::*;
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Ord, PartialOrd)]
 pub enum PaddingSize {
@@ -14,6 +15,24 @@ impl Default for PaddingSize {
     }
 }
 
+impl Into<LayoutDistance> for PaddingSize {
+    fn into(self) -> LayoutDistance {
+        match self {
+            PaddingSize::Specific(size) => LayoutDistance::Fixed(size.into()),
+            _ => LayoutDistance::default()
+        }
+    }
+}
+
+impl Into<Size> for PaddingSize {
+    fn into(self) -> Size {
+        match self {
+            PaddingSize::Specific(size) => size,
+            _ => Size::default()
+        }
+    }
+}
+
 impl Into<PaddingSize> for Size {
     fn into(self) -> PaddingSize {
         PaddingSize::Specific(self)
@@ -22,6 +41,12 @@ impl Into<PaddingSize> for Size {
 
 #[derive(Default, Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Ord, PartialOrd)]
 pub struct PaddingSizes(PaddingSize, PaddingSize, PaddingSize, PaddingSize);
+
+impl Into<LayoutOffsetRect> for PaddingSizes {
+    fn into(self) -> LayoutOffsetRect {
+        LayoutOffsetRect::from((self.0.into(), self.1.into(), self.2.into(), self.3.into()))
+    }
+}
 
 impl Into<PaddingSizes> for (PaddingSize, PaddingSize, PaddingSize, PaddingSize) {
     fn into(self) -> PaddingSizes {
@@ -65,5 +90,11 @@ impl zodiac::PropertySetCheck for Padding {
 impl From<PaddingSizes> for Padding {
     fn from(values: PaddingSizes) -> Self {
         Self(values, true)
+    }
+}
+
+impl Into<LayoutOffsetRect> for &Padding {
+    fn into(self) -> LayoutOffsetRect {
+        self.0.into()
     }
 }
