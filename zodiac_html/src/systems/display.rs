@@ -1,7 +1,6 @@
 use legion::*;
 use zodiac::*;
 use crate::style::*;
-
 use crate::layout::*;
 
 #[system(for_each)]
