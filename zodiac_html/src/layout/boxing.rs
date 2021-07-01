@@ -105,7 +105,7 @@ impl ResolvedLayoutBox {
         match self.direction {
             LayoutDirection::Horizontal => self.position = sibling.position(BoxArea::Margin).add_width(sibling.dimensions(BoxArea::Margin).width()),
             LayoutDirection::Vertical => self.position = sibling.position(BoxArea::Margin).add_height(sibling.dimensions(BoxArea::Margin).height()),
-            LayoutDirection::None => todo!(),
+            LayoutDirection::None => self.position = ResolvedLayoutPosition::default(),
         }
     }
 

@@ -26,7 +26,6 @@ fn block_layout_with_margin_and_padding_root() -> RootNode<TestState> {
 
 #[test]
 fn block_layout_with_margin_and_padding() {
-
     let changes = test_app(block_layout_with_margin_and_padding_root)
         .with_screen_dimensions(1024, 768)
         .build()
