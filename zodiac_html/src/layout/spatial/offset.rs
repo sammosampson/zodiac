@@ -1,3 +1,5 @@
+use std::ops::Add;
+
 use serde::*;
 use super::distance::*;
 
@@ -39,6 +41,19 @@ impl From<LayoutOffsetRect> for ResolvedLayoutOffsetRect {
     }
 }
 
+impl Add for ResolvedLayoutOffsetRect {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Self {
+            top: self.top + rhs.top,
+            right: self.right + rhs.right,
+            bottom: self.bottom + rhs.bottom,
+            left: self.left + rhs.left,
+        }
+    }
+}
+
 impl ResolvedLayoutOffsetRect {
     pub fn top(&self) -> ResolvedLayoutDistance {
         self.top
@@ -71,9 +86,9 @@ impl ResolvedLayoutOffsetRect {
     }
 
     pub fn complete_children_resolution(&mut self, current: &LayoutOffsetRect) {
-        self.top = current.top.complete_children_resolution(&self.top);
-        self.right = current.right.complete_children_resolution(&self.right);
-        self.bottom = current.bottom.complete_children_resolution(&self.bottom);
-        self.left = current.left.complete_children_resolution(&self.left);
+        self.top = current.top.complete_children_resolution(&self.top , ResolvedLayoutDistance::default());
+        self.right = current.right.complete_children_resolution(&self.right, ResolvedLayoutDistance::default());
+        self.bottom = current.bottom.complete_children_resolution(&self.bottom, ResolvedLayoutDistance::default());
+        self.left = current.left.complete_children_resolution(&self.left, ResolvedLayoutDistance::default());
     }
 }

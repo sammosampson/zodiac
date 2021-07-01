@@ -98,7 +98,7 @@ impl ResolvedLayoutBox {
     pub fn complete_children_resolution(&mut self, current: &LayoutBox) {
         self.offset.complete_children_resolution(&current.offset);
         self.content_offset.complete_children_resolution(&current.content_offset);
-        self.dimensions.complete_children_resolution(&current.dimensions, &self.offset);
+        self.dimensions.complete_children_resolution(&current.dimensions, self.offset + self.content_offset);
     }
 
     pub fn position_from_sibling(&mut self, sibling: &ResolvedLayoutBox) {

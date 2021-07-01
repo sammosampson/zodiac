@@ -69,9 +69,9 @@ impl ResolvedLayoutDimensions {
         self.height = current.height.resolve_from_child(&self.height, &child.height);
     }
 
-    pub fn complete_children_resolution(&mut self, current: &LayoutDimensions, resolved_offset: &ResolvedLayoutOffsetRect) {
-        self.width = current.width.complete_children_resolution(&self.width);
-        self.height = current.height.complete_children_resolution(&self.height) + (resolved_offset.top() + resolved_offset.bottom());
+    pub fn complete_children_resolution(&mut self, current: &LayoutDimensions, resolved_offset: ResolvedLayoutOffsetRect) {
+        self.width = current.width.complete_children_resolution(&self.width, resolved_offset.left() + resolved_offset.right());
+        self.height = current.height.complete_children_resolution(&self.height, resolved_offset.top() + resolved_offset.bottom());
     }
 
 }

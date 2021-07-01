@@ -36,10 +36,10 @@ fn block_layout_with_margin_and_padding() {
     assert_eq!(changes.len(), 2);
     assert_eq!(changes[0].is_positioned_at(0, 0), true);
     assert_eq!(changes[0].content_is_positioned_at(15, 15), true);
-    assert_eq!(changes[0].has_dimensions_of(1024, 10), true);
+    assert_eq!(changes[0].has_dimensions_of(1024, 30), true);
     assert_eq!(changes[0].content_has_dimensions_of(994, 0), true);
-    assert_eq!(changes[1].is_positioned_at(0, 10), true);
-    assert_eq!(changes[1].content_is_positioned_at(15, 25), true);
-    assert_eq!(changes[1].has_dimensions_of(1024, 10), true);
+    assert_eq!(changes[1].is_positioned_at(0, 30), true);
+    assert_eq!(changes[1].content_is_positioned_at(15, 45), true);
+    assert_eq!(changes[1].has_dimensions_of(1024, 30), true);
     assert_eq!(changes[1].content_has_dimensions_of(994, 0), true);
 }

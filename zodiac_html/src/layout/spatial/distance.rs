@@ -44,10 +44,10 @@ impl LayoutDistance {
         *current
     }
 
-    pub fn complete_children_resolution(&self, current: &ResolvedLayoutDistance) -> ResolvedLayoutDistance {
+    pub fn complete_children_resolution(&self, current: &ResolvedLayoutDistance, offset: ResolvedLayoutDistance) -> ResolvedLayoutDistance {
         if current == &ResolvedLayoutDistance::Unresolved {
             if let Self::FromChildren(_multiplier) = self {
-                return ResolvedLayoutDistance::Resolved(0);
+                return ResolvedLayoutDistance::Resolved(0) + offset;
             }
         }
 
