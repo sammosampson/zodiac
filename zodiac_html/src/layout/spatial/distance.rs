@@ -97,6 +97,9 @@ impl Sub for ResolvedLayoutDistance {
     fn sub(self, rhs: Self) -> Self::Output {
         if let ResolvedLayoutDistance::Resolved(distance) = self {
             if let ResolvedLayoutDistance::Resolved(rhs_distance) = rhs {
+                if rhs_distance > distance {
+                    return ResolvedLayoutDistance::Resolved(0);
+                }
                 return ResolvedLayoutDistance::Resolved(distance - rhs_distance);
             }   
         } 
@@ -108,6 +111,7 @@ impl From<LayoutDistance> for ResolvedLayoutDistance {
     fn from(distance: LayoutDistance) -> Self {
         match distance {
             LayoutDistance::Fixed(distance) => Self::Resolved(distance),
+            LayoutDistance::None => Self::Resolved(0),
             _ => Self::Unresolved
         }
     }

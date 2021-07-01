@@ -21,51 +21,91 @@ pub struct RenderPrimitive {
 impl RenderPrimitive {
     pub fn is_positioned_at(&self, left: u16, top: u16) -> bool {
         let (layout_left, layout_top) = self.layout.position(BoxArea::Margin).into();
-        layout_left == left && layout_top == top 
+        let result = layout_left == left && layout_top == top;
+        if !result {
+            println!("Actual: ({:?}, {:?})", layout_left, layout_top);
+        }
+        result
     }
 
     pub fn content_is_positioned_at(&self, left: u16, top: u16) -> bool {
         let (layout_left, layout_top) = self.layout.position(BoxArea::Content).into();
-        layout_left == left && layout_top == top 
+        let result = layout_left == left && layout_top == top;
+        if !result {
+            println!("Actual: ({:?}, {:?})", layout_left, layout_top);
+        }
+        result
     }
     
     pub fn has_dimensions_of(&self, width: u16, height: u16) -> bool {
         let (layout_width, layout_height) = self.layout.dimensions(BoxArea::Margin).into();
-        layout_width == width && layout_height == height
+        let result = layout_width == width && layout_height == height;
+        if !result {
+            println!("Actual: ({:?}, {:?})", layout_width, layout_height);
+        }
+        result
     }
 
     pub fn content_has_dimensions_of(&self, width: u16, height: u16) -> bool {
         let (layout_width, layout_height) = self.layout.dimensions(BoxArea::Content).into();
-        layout_width == width && layout_height == height
+        let result = layout_width == width && layout_height == height;
+        if !result {
+            println!("Actual: ({:?}, {:?})", layout_width, layout_height);
+        }
+        result
     }
     
     pub fn has_border_top_of(&self, border_values: BorderValues) -> bool {
         let (top, _left, _bottom, _right, _radius) = self.border.into();
-        top == BorderTop::from(border_values)
+        let result = top == BorderTop::from(border_values);
+        if !result {
+            println!("Actual: ({:?})", top);
+        }
+        result
     }
     
     pub fn has_border_bottom_of(&self, border_values: BorderValues) -> bool {
         let (_top, _left, bottom, _right, _radius) = self.border.into();
-        bottom == BorderBottom::from(border_values)
+        let result = bottom == BorderBottom::from(border_values);
+        if !result {
+            println!("Actual: ({:?})", bottom);
+        }
+        result
     }
     
     pub fn has_border_left_of(&self, border_values: BorderValues) -> bool {
         let (_top, left, _bottom, _right, _radius) = self.border.into();
-        left == BorderLeft::from(border_values)
+        let result = left == BorderLeft::from(border_values);
+        if !result {
+            println!("Actual: ({:?})", left);
+        }
+        result
     }
 
     pub fn has_border_right_of(&self, border_values: BorderValues) -> bool {
         let (_top, _left, _bottom, right, _radius) = self.border.into();
-        right == BorderRight::from(border_values)
+        let result = right == BorderRight::from(border_values);
+        if !result {
+            println!("Actual: ({:?})", right);
+        }
+        result
     }
 
     pub fn has_border_radius_of(&self, border_radius: Size) -> bool {
         let (_top, _left, _bottom, _right, radius) = self.border.into();
-        radius == BorderRadius::from(border_radius)
+        let result = radius == BorderRadius::from(border_radius);
+        if !result {
+            println!("Actual: ({:?})", radius);
+        }
+        result
     }
 
     pub fn has_background_colour_of(&self, colour: Colour) -> bool {
-        colour == self.background_colour.into()
+        let result = colour == self.background_colour.into();
+        if !result {
+            println!("Actual: ({:?})", colour);
+        }
+        result
     }
 }
 
