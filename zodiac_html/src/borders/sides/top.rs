@@ -1,8 +1,9 @@
 use serde::*;
-use crate::BorderValues;
+use crate::layout::*;
 use crate::borders::styles::*;
 use crate::colour::*;
 use crate::size::*;
+use crate::BorderValues;
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BorderTopColour(pub Colour);
@@ -97,6 +98,12 @@ impl From<BorderValues> for BorderTop {
 
 impl Into<(Size, BorderStyles, Colour)> for BorderTop {
     fn into(self) -> (Size, BorderStyles, Colour) {
+        self.0.into()
+    }
+}
+
+impl Into<LayoutDistance> for BorderTop {
+    fn into(self) -> LayoutDistance {
         self.0.into()
     }
 }

@@ -1,5 +1,6 @@
 use serde::*;
 use crate::BorderValues;
+use crate::layout::*;
 use crate::borders::styles::*;
 use crate::colour::*;
 use crate::size::*;
@@ -97,6 +98,12 @@ impl From<BorderValues> for BorderLeft {
 
 impl Into<(Size, BorderStyles, Colour)> for BorderLeft {
     fn into(self) -> (Size, BorderStyles, Colour) {
+        self.0.into()
+    }
+}
+
+impl Into<LayoutDistance> for BorderLeft {
+    fn into(self) -> LayoutDistance {
         self.0.into()
     }
 }

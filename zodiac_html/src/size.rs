@@ -25,6 +25,12 @@ impl Into<f32> for Size {
     }
 }
 
+impl Into<i16> for Size {
+    fn into(self) -> i16 {
+        self.0 as i16
+    }
+}
+
 impl Into<u16> for Size {
     fn into(self) -> u16 {
         self.0

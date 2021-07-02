@@ -11,7 +11,9 @@ pub use width::*;
 
 use serde::*;
 use zodiac::PropertySetCheck;
-use crate::{Colour, Size};
+use crate::colour::*;
+use crate::layout::*;
+use crate::size::*;
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Ord, PartialOrd)]
 pub struct BorderValues(Size, BorderStyles, Colour);
@@ -31,6 +33,12 @@ impl From<(Size, BorderStyles, Colour)> for BorderValues {
 impl Into<(Size, BorderStyles, Colour)> for BorderValues {
     fn into(self) -> (Size, BorderStyles, Colour) {
         (self.0, self.1, self.2)
+    }
+}
+
+impl Into<LayoutDistance> for BorderValues {
+    fn into(self) -> LayoutDistance {
+        LayoutDistance::Fixed(self.0.into())
     }
 }
 
@@ -73,7 +81,6 @@ impl FullBorder {
     }
 }
 
-
 impl zodiac::PropertySet<(&BorderTop, &BorderLeft, &BorderBottom, &BorderRight, &BorderRadius)> for FullBorder {
     fn set(&mut self, to_set: (&BorderTop, &BorderLeft, &BorderBottom, &BorderRight, &BorderRadius)) {
         self.top = *to_set.0;
@@ -99,5 +106,11 @@ impl From<(&BorderTop, &BorderLeft, &BorderBottom, &BorderRight, &BorderRadius)>
 impl Into<(BorderTop, BorderLeft, BorderBottom, BorderRight, BorderRadius)> for FullBorder {
     fn into(self) -> (BorderTop, BorderLeft, BorderBottom, BorderRight, BorderRadius) {
         (self.top, self.left, self.bottom, self.right, self.radius)
+    }
+}
+
+impl Into<LayoutOffsetRect> for &FullBorder {
+    fn into(self) -> LayoutOffsetRect {
+        LayoutOffsetRect::from((self.top.into(), self.right.into(), self.bottom.into(), self.left.into()))
     }
 }

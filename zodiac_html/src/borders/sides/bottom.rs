@@ -3,6 +3,7 @@ use crate::BorderValues;
 use crate::borders::styles::*;
 use crate::colour::*;
 use crate::size::*;
+use crate::layout::*;
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BorderBottomColour(Colour);
@@ -97,6 +98,12 @@ impl From<BorderValues> for BorderBottom {
 
 impl Into<(Size, BorderStyles, Colour)> for BorderBottom {
     fn into(self) -> (Size, BorderStyles, Colour) {
+        self.0.into()
+    }
+}
+
+impl Into<LayoutDistance> for BorderBottom {
+    fn into(self) -> LayoutDistance {
         self.0.into()
     }
 }

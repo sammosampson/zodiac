@@ -4,30 +4,31 @@ use zodiac_html::testing::*;
 use zodiac::*;
 
 #[topo::nested]
-pub fn none_layout_with_margin_and_padding_style() -> Node {
+pub fn none_layout_with_margin_border_and_padding_style() -> Node {
     mox!(
         <style
             display=DisplayTypes::None
             margin=px(5).into()
+            border_width=px(7).into()
             padding=px(10).into()
         />
     )
 }
 
 #[topo::nested]
-fn none_layout_with_margin_and_padding_root() -> RootNode<TestState> {
+fn none_layout_with_margin_border_and_padding_root() -> RootNode<TestState> {
     mox!(
         <root>
-            <div style=none_layout_with_margin_and_padding_style() />
-            <div style=none_layout_with_margin_and_padding_style() />
+            <div style=none_layout_with_margin_border_and_padding_style() />
+            <div style=none_layout_with_margin_border_and_padding_style() />
         </root>
     )
 }
 
 #[test]
-fn none_layout_with_margin_and_padding() {
+fn none_layout_with_margin_border_and_padding() {
 
-    let changes = test_app(none_layout_with_margin_and_padding_root)
+    let changes = test_app(none_layout_with_margin_border_and_padding_root)
         .with_screen_dimensions(1024, 768)
         .build()
         .run_once()
