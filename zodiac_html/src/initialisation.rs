@@ -2,6 +2,7 @@ use shrev::*;
 use legion::*;
 use legion::systems::*;
 use zodiac::*;
+use crate::window::*;
 use crate::borders::*;
 use crate::layout::*;
 use crate::style::*;
@@ -73,6 +74,10 @@ impl ApplicationBundleBuilder for HtmlBuilder {
     }
 
     fn register_components_for_world_serializiation(&self, world_serializer: &mut WorldSerializer) {
+        world_serializer.register_component::<Window>(stringify!(Window));
+        world_serializer.register_component::<Height>(stringify!(Height));
+        world_serializer.register_component::<Width>(stringify!(Width));
+        world_serializer.register_component::<Title>(stringify!(Title));
         world_serializer.register_component::<Style>(stringify!(Style));
         world_serializer.register_component::<Span>(stringify!(Span));
         world_serializer.register_component::<Div>(stringify!(Div));

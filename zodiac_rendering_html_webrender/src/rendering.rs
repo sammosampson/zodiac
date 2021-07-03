@@ -7,22 +7,52 @@ use zodiac::*;
 use crate::notification::*;
 use crate::render_primitive::*;
 
-pub fn create_webrender_renderer(event_loop: &event_loop::EventLoop<()>) -> Result<HtmlWebRenderRenderer, RendererError> {
-    HtmlWebRenderRenderer::new(event_loop)
+pub fn create_webrender_renderer() -> HtmlWebRenderRenderer {
+    HtmlWebRenderRenderer::default()
 }
 
+#[derive(Default)]
 pub struct HtmlWebRenderRenderer {
-    window: Window,
+    window_renderers: Vec<HtmlWebRenderWindowRenderer>
+}
+
+impl HtmlWebRenderRenderer {
+    pub fn add_window(
+        &mut self,
+        event_loop: &event_loop::EventLoop<()>,
+        window: RenderableGliumWindow) -> Result<(), RendererError> {
+        let renderer = HtmlWebRenderWindowRenderer::new(window, event_loop)?;
+        self.window_renderers.push(renderer);
+        Ok(())
+    }
+
+    pub fn render(&mut self, primitives: Vec::<RenderPrimitive>) {
+        if let Some(window_renderer) = self.window_renderers.last_mut() {
+            window_renderer.render(primitives);
+        }
+    }
+}
+
+impl zodiac::Renderer for HtmlWebRenderRenderer {
+    fn get_window_dimensions(&self) -> Dimensions {
+        if let Some(window_renderer) = self.window_renderers.last() {
+            let size = window_renderer.window.inner_size();
+            return Dimensions::new(size.width as u16, size.height as u16);
+        }
+        Dimensions::default()
+    }
+}
+
+pub struct HtmlWebRenderWindowRenderer {
+    window: RenderableGliumWindow,
     renderer: Option<webrender::Renderer>,
     render_api: webrender::api::RenderApi,
     notifier_receiver: mpsc::Receiver<()>,
     document_id: webrender::api::DocumentId
 }
 
-impl HtmlWebRenderRenderer {
-    pub fn new(event_loop: &event_loop::EventLoop<()>) -> Result<Self, RendererError> {        
-        let window = Window::new(event_loop);
-         
+impl HtmlWebRenderWindowRenderer {
+    pub fn new(window: RenderableGliumWindow, event_loop: &event_loop::EventLoop<()>) -> Result<Self, RendererError> {        
         info!("Device pixel ratio: {}", window.device_pixel_ratio());
 
         let size = window.inner_size();
@@ -171,31 +201,41 @@ impl HtmlWebRenderRenderer {
     }
 }
 
-impl zodiac::Renderer for HtmlWebRenderRenderer {
-    fn get_window_dimensions(&self) -> Dimensions {
-        let size = self.window.inner_size();
-        Dimensions::new(size.width as u16, size.height as u16)
-    }
-}
-
-impl Drop for HtmlWebRenderRenderer {
+impl Drop for HtmlWebRenderWindowRenderer {
     fn drop(&mut self) {
         info!("Deinit renderer");
         self.renderer.take().unwrap().deinit();
     }
 }
 
-pub struct Window {
+pub struct RenderableGliumWindow {
     gl_context: ContextWrapper<PossiblyCurrent, window::Window>
 }
 
-impl Window {
-    pub fn new(event_loop: &event_loop::EventLoop<()>) -> Self {
-        let window_builder = window::WindowBuilder::new()
-            .with_title("TODO")
-            .with_decorations(true)
-            .with_transparent(true);
+impl RenderableGliumWindow {
+    pub fn new(
+        event_loop: &event_loop::EventLoop<()>,
+        title: Option<String>,
+        dimensions: Option<glium::glutin::dpi::LogicalSize<u32>>,
+        is_maximised: bool,
+        has_decorations: bool) -> Self {
 
+        let mut window_builder = window::WindowBuilder::new()
+            .with_transparent(true)
+            .with_decorations(has_decorations)
+            .with_maximized(is_maximised);
+
+        if let Some(title) = title {
+            window_builder = window_builder.with_title(title);
+        }
+
+        if let Some(dimensions) = dimensions {
+            window_builder = window_builder.with_inner_size(dimensions);
+        }
+
+        if is_maximised {
+            window_builder = window_builder;
+        }
         
         let gl_context = ContextBuilder::new()
             .with_gl(GlRequest::GlThenGles {

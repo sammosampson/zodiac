@@ -3,33 +3,6 @@ pass constraints down, sizes back up
 deal with non flexible children first
 *watch fluter rendering pipeline google io
 
-Investigate Nuklear library
-
-Systems
-LayoutSystem,
-RenderSystem
-
-Components:
-Low level:
-Position,
-Size,
-Colour
-
-Medium Level:
-Highlighted
-
-Higher Level:
-Pressed,
-Focussed,
-Disabled ...
-
-Listener -> event_type
-
-
-
-
-Drawing text in vulkan:
-
 There are basically 2 ways. The first is to create a texture atlas containing glyph images and render textured boxes for each character. 
 The drawback is that you have to recreate the atlas when you want larger text otherwise it looks awful. 
 You might have noticed that in some web browsers when you zoom in the text looks like crap for a short time. 
@@ -48,5 +21,11 @@ https://www.w3schools.com/css/
 Next goal is to achieve:
 https://www.w3schools.com/css/tryit.asp?filename=trycss_inline-block_span1
 
+to acheive the above:
+window
+default style/cascading for elements on window
+text
+inline block css
+width/height css
 
 

@@ -1,8 +1,51 @@
 use std::ops::Sub;
 use serde::*;
 use zodiac::Dimensions;
+use crate::size::*;
 use super::distance::*;
 use super::offset::*;
+
+#[derive(Default, Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Width(Size);
+
+impl From<Size> for Width {
+    fn from(size: Size) -> Self {
+        Self(size)
+    }
+}
+
+impl Into<Size> for Width {
+    fn into(self) -> Size {
+        self.0
+    }
+}
+
+impl Into<Size> for &Width {
+    fn into(self) -> Size {
+        self.0
+    }
+}
+
+#[derive(Default, Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Height(Size);
+
+impl From<Size> for Height {
+    fn from(size: Size) -> Self {
+        Self(size)
+    }
+}
+
+impl Into<Size> for Height {
+    fn into(self) -> Size {
+        self.0
+    }
+}
+
+impl Into<Size> for &Height {
+    fn into(self) -> Size {
+        self.0
+    }
+}
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct LayoutDimensions {

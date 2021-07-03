@@ -35,7 +35,8 @@ impl ApplicationBundleBuilder for HtmlWebRenderRendererBuilder {
         builder
             .add_thread_local(initial_window_size_notification_system::<HtmlWebRenderRenderer>())
             .flush()
-            .add_thread_local(event_loop_system());
+            .add_thread_local(event_loop_system())
+            .add_thread_local(open_window_system());
     }
 
     fn setup_layout_systems(&self, _: &mut Builder) {
@@ -59,7 +60,7 @@ impl ApplicationBundleBuilder for HtmlWebRenderRendererBuilder {
 
     fn setup_resources(&self, resources: &mut Resources, _: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
         let event_loop = create_system_event_loop();
-        resources.insert(create_webrender_renderer(&event_loop)?);
+        resources.insert(create_webrender_renderer());
         resources.insert(event_loop);
         
         Ok(())

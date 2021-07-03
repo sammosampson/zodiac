@@ -37,6 +37,12 @@ impl Into<u16> for Size {
     }
 }
 
+impl Into<u32> for Size {
+    fn into(self) -> u32 {
+        self.0 as u32
+    }
+}
+
 impl Add<Size> for Size {
     type Output = Self;
 

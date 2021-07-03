@@ -4,6 +4,7 @@ use crate::borders::*;
 use crate::layout::*;
 use crate::size::*;
 use crate::colour::*;
+use crate::window::*;
 
 element! {
     <style>
@@ -60,6 +61,16 @@ element! {
         display(DisplayTypes)
         margin(MarginSizes)
         padding(PaddingSizes)
+    }
+}
+
+element! {
+    <window>
+    [Window::default()]
+    attributes {
+        width(Size)
+        height(Size)
+        title(String)
     }
 }
 

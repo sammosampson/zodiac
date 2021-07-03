@@ -11,10 +11,10 @@ use crate::other_control::*;
 pub fn app_root() -> RootNode<TestState> {
     mox!(
         <root>
-            <div>
+            <window width=px(1600) height=px(1600) title="Demo".into()>
                 <small_control />
                 <other_control />
-            </div>
+            </window>
         </root>
     )
 }

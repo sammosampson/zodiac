@@ -9,7 +9,9 @@ mod style;
 pub mod testing;
 mod dimensions;
 mod events;
+mod window;
 
+pub use window::*;
 pub use colour::*;
 pub use borders::*;
 pub use size::*;
