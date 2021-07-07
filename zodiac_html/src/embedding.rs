@@ -1,4 +1,5 @@
 use zodiac::*;
+use mox::*;
 use crate::style::*;
 use crate::borders::*;
 use crate::layout::*;
@@ -8,8 +9,9 @@ use crate::window::*;
 
 element! {
     <style>
-    [Style::default()]
+    Style::default(),
     extra_components {
+        [ElementSelector::default()]
         [BorderWidth::default()]
         [BorderColour::default()]
         [BorderTop::default()]
@@ -36,6 +38,7 @@ element! {
         [BackgroundColour::default()]
     }
     attributes {
+        element_selector(ElementType)
         border(BorderValues)
         border_bottom(BorderValues)
         border_bottom_colour(Colour)
@@ -66,28 +69,44 @@ element! {
 
 element! {
     <window>
-    [Window::default()]
+    Window::default(),
     attributes {
         width(Size)
         height(Size)
         title(String)
     }
+    default_children {
+        [default_style()]
+    }
 }
 
 element! {
     <span>
-    [Span::default()]
+    Element::from(ElementType::Span),
     extra_components {
         [Renderable::default()]
-        [Display::inline()]
     }
 }
 
 element! {
     <div>
-    [Div::default()]
+    Element::from(ElementType::Div),
     extra_components {
         [Renderable::default()]
-        [Display::block()]
     }
+}
+
+pub fn default_style() -> Node {
+    mox!(
+        <style>
+            <style
+                element_selector=ElementType::Div
+                display=DisplayTypes::Block
+            />
+            <style
+                element_selector=ElementType::Span
+                display=DisplayTypes::Inline
+            />
+        </style>
+    )
 }

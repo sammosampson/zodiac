@@ -3,7 +3,7 @@ use crate::components::*;
 
 element! {
     <canvas>
-    [LayoutContent::canvas()]
+    LayoutContent::canvas(),
     attributes {
         left(u16)
         top(u16)
@@ -14,7 +14,7 @@ element! {
 
 element! {
     <vertical_stack>
-    [LayoutContent::vertical()]
+    LayoutContent::vertical(),
     attributes {
         left(u16)
         top(u16)
@@ -25,7 +25,7 @@ element! {
 
 element! {
     <horizontal_stack>
-    [LayoutContent::horizontal()]
+    LayoutContent::horizontal(),
     attributes {
         left(u16)
         top(u16)
@@ -36,7 +36,7 @@ element! {
 
 element! {
     <circle>
-    [Circle::default()]
+    Circle::default(),
     extra_components {
         [Renderable::default()]
     }
@@ -52,7 +52,7 @@ element! {
 
 element! {
     <rect>    
-    [Rectangle::default()]
+    Rectangle::default(),
     extra_components {
         [Renderable::default()]
     }

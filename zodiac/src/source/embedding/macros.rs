@@ -16,12 +16,15 @@ macro_rules! element_creator_func {
 macro_rules! element {
     (
         <$name:ident>
-        [$component:expr]
+        $component:expr,
         $(extra_components {$(
             [$extra_component:expr]
         )*})?
         $(attributes {$(
             $attr:ident $(($attr_ty:ty))?
+        )*})?
+        $(default_children {$(
+            [$default_child:expr]
         )*})?
     ) => {
         paste::item! {
@@ -50,11 +53,17 @@ macro_rules! element {
 
             impl [<$name:camel Builder>] {
                 pub fn new() -> Self {
-                    Self {
+                    let mut element = Self {
                         children: vec!(),
                         attributes: vec!(),
                         style: None
-                    }
+                    };
+
+                    $($(
+                        let element = element.child($default_child);
+                    )*)?
+                    
+                    element
                 }
 
                 #[illicit::from_env(state: &moxie::Key<SourceBuildChangeState>)]

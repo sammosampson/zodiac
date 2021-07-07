@@ -1,11 +1,13 @@
 use serde::*;
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Window;
+pub struct Window {
+}
 
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct WindowOpen;
+pub struct WindowOpen {
+}
 
 #[derive(Default, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Title(String);

@@ -30,7 +30,6 @@ impl ApplicationBundleBuilder for HtmlBuilder {
     fn setup_layout_systems(&self, builder: &mut Builder) {
         builder
             .add_system(initialise_element_layout_system())
-            .add_system(initialise_style_layout_system())
             .add_system(deconstruct_border_system())
             .flush()
             .add_system(deconstruct_border_colour_system())
@@ -46,10 +45,6 @@ impl ApplicationBundleBuilder for HtmlBuilder {
             .flush()
             .add_system(root_resize_system())
             .add_system(compose_display_to_layout_box_system())
-            .flush()
-            .add_system(copy_layout_styles_to_elements_system())
-            .add_system(copy_background_styles_to_elements_system())
-            .add_system(copy_border_styles_to_elements_system())
             .flush()
             .add_system(apply_layout_differences_system())
             .flush()
@@ -75,12 +70,11 @@ impl ApplicationBundleBuilder for HtmlBuilder {
 
     fn register_components_for_world_serializiation(&self, world_serializer: &mut WorldSerializer) {
         world_serializer.register_component::<Window>(stringify!(Window));
+        world_serializer.register_component::<WindowOpen>(stringify!(WindowOpen));
         world_serializer.register_component::<Height>(stringify!(Height));
         world_serializer.register_component::<Width>(stringify!(Width));
         world_serializer.register_component::<Title>(stringify!(Title));
         world_serializer.register_component::<Style>(stringify!(Style));
-        world_serializer.register_component::<Span>(stringify!(Span));
-        world_serializer.register_component::<Div>(stringify!(Div));
         world_serializer.register_component::<BorderWidth>(stringify!(BorderWidth));
         world_serializer.register_component::<BorderColour>(stringify!(BorderColour));
         world_serializer.register_component::<BorderTop>(stringify!(BorderTop));

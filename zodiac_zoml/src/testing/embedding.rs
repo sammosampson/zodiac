@@ -4,7 +4,7 @@ use crate::components::*;
 
 element! {
     <test_renderable>    
-    [TestRenderable::default()]
+    TestRenderable::default(),
     extra_components {
         [Renderable::default()]
     }

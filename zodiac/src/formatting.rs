@@ -38,9 +38,9 @@ impl WorldSerializer {
         let result = self.serialize_world(world).unwrap();
         
         if self.last_result == None {
-            info!("{:#}", result);
+            println!("{:#}", result);
         } else if result != self.last_result.take().unwrap() {
-            info!("{:#}", result);
+            println!("{:#}", result);
         }
 
         self.last_result = Some(result);

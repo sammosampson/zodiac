@@ -15,12 +15,49 @@ pub use spatial::*;
 
 use serde::*;
 
-#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Span {
+
+
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Ord, PartialOrd)]
+pub enum ElementType {
+    None,
+    Div,
+    Span
 }
 
-#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Div {
+impl Default for ElementType {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
+pub struct Element(ElementType);
+
+impl Element {
+    pub fn matches_selector(&self, selector: Option<ElementType>) -> bool {
+        if let Some(selector) = selector {
+            return selector == self.0;
+        }
+        selector == None
+    }
+}
+
+impl From<ElementType> for Element {
+    fn from(element_type: ElementType) -> Self {
+        Self(element_type)
+    }
+}
+
+impl Into<ElementType> for Element {
+    fn into(self) -> ElementType {
+        self.0
+    }
+}
+
+impl Into<ElementType> for &Element {
+    fn into(self) -> ElementType {
+        self.0
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Default, Serialize, Deserialize)]
