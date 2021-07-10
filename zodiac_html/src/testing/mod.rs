@@ -1,6 +1,9 @@
 mod rendering;
 mod systems;
+mod logging;
+
 pub use rendering::*;
+pub use logging::*;
 
 use legion::*;
 

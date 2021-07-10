@@ -6,11 +6,11 @@ use crate::size::*;
 use crate::BorderValues;
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BorderTopColour(pub Colour);
+pub struct BorderTopColour(Colour, bool);
 
 impl From<Colour> for BorderTopColour {
     fn from(colour: Colour) -> Self {
-        Self(colour)
+        Self(colour, true)
     }
 }
 
@@ -23,27 +23,35 @@ impl Into<Colour> for &BorderTopColour {
 impl zodiac::PropertySet<Colour> for BorderTopColour {
     fn set(&mut self, to_set: Colour) {
         self.0 = to_set;
+        self.1 = true;
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BorderTopStyle(BorderStyles);
-
-impl Default for BorderTopStyle {
-    fn default() -> Self {
-        Self(BorderStyles::None)
+impl zodiac::PropertySetCheck for BorderTopColour {
+    fn is_set(&self) -> bool {
+        self.1
     }
 }
+
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct BorderTopStyle(BorderStyles, bool);
 
 impl zodiac::PropertySet<BorderStyles> for BorderTopStyle {
     fn set(&mut self, to_set: BorderStyles) {
         self.0 = to_set;
+        self.1 = true;
+    }
+}
+
+impl zodiac::PropertySetCheck for BorderTopStyle {
+    fn is_set(&self) -> bool {
+        self.1
     }
 }
 
 impl From<BorderStyles> for BorderTopStyle {
     fn from(styles: BorderStyles) -> Self {
-        Self(styles)
+        Self(styles, true)
     }
 }
 
@@ -54,17 +62,24 @@ impl Into<BorderStyles> for &BorderTopStyle {
 }
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BorderTopWidth(Size);
+pub struct BorderTopWidth(Size, bool);
 
 impl From<Size> for BorderTopWidth {
     fn from(size: Size) -> Self {
-        Self(size)
+        Self(size, true)
     }
 }
 
 impl zodiac::PropertySet<Size> for BorderTopWidth {
     fn set(&mut self, to_set: Size) {
         self.0 = to_set;
+        self.1 = true;
+    }
+}
+
+impl zodiac::PropertySetCheck for BorderTopWidth {
+    fn is_set(&self) -> bool {
+        self.1
     }
 }
 

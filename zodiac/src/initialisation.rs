@@ -144,11 +144,6 @@ impl<TState: State> Application<TState> {
         }
     }
 
-    pub fn use_logging(self) -> Self {
-        pretty_env_logger::init();
-        self
-    }
-
     pub fn with_builder<T>(mut self, builder: T) -> Self
         where T: ApplicationBundleBuilder + 'static {
         self.builders.push(Box::new(builder));

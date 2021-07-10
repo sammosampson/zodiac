@@ -29,7 +29,13 @@ impl ApplicationBundleBuilder for HtmlBuilder {
 
     fn setup_layout_systems(&self, builder: &mut Builder) {
         builder
+            .add_system(tag_default_style_system())
             .add_system(initialise_element_layout_system())
+            .flush()
+            .add_system(build_default_style_tree_system())
+            .flush()
+            .add_system(apply_default_style_to_elements_system())
+            .flush()
             .add_system(deconstruct_border_system())
             .flush()
             .add_system(deconstruct_border_colour_system())
@@ -65,6 +71,7 @@ impl ApplicationBundleBuilder for HtmlBuilder {
 
     fn setup_resources(&self, resources: &mut Resources, event_channel: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
         resources.insert(create_layout_event_reader_registry(event_channel));
+        resources.insert(create_syle_tree());
         Ok(())
     }
 
@@ -75,6 +82,9 @@ impl ApplicationBundleBuilder for HtmlBuilder {
         world_serializer.register_component::<Width>(stringify!(Width));
         world_serializer.register_component::<Title>(stringify!(Title));
         world_serializer.register_component::<Style>(stringify!(Style));
+        world_serializer.register_component::<DefaultStyle>(stringify!(DefaultStyle));
+        world_serializer.register_component::<ElementType>(stringify!(ElementType));
+        world_serializer.register_component::<ElementSelector>(stringify!(ElementSelector));
         world_serializer.register_component::<BorderWidth>(stringify!(BorderWidth));
         world_serializer.register_component::<BorderColour>(stringify!(BorderColour));
         world_serializer.register_component::<BorderTop>(stringify!(BorderTop));

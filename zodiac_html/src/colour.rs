@@ -28,15 +28,27 @@ impl From<(u8, u8, u8, u8)> for Colour {
 }
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BackgroundColour(pub Colour);
+pub struct BackgroundColour(Colour, bool);
 
 impl From<Colour> for BackgroundColour {
     fn from(colour: Colour) -> Self {
-        Self(colour)
+        Self(colour, true)
+    }
+}
+
+impl zodiac::PropertySetCheck for BackgroundColour {
+    fn is_set(&self) -> bool {
+        self.1
     }
 }
 
 impl Into<Colour> for BackgroundColour {
+    fn into(self) -> Colour {
+        self.0
+    }
+}
+
+impl Into<Colour> for &BackgroundColour {
     fn into(self) -> Colour {
         self.0
     }

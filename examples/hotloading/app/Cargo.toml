@@ -15,6 +15,7 @@ moxie = "*"
 mox = "*"
 topo = "*"
 illicit = "*"
+pretty_env_logger = "*"
 app_state = {path = "../app_state", version = "0.1.0"}
 zodiac = {path = "../../../zodiac", version = "0.1.0"}
 zodiac_hotloading = {path = "../../../zodiac_hotloading", version = "0.1.0"}

@@ -29,6 +29,12 @@ impl zodiac::PropertySetCheck for &BorderWidth {
     }
 }
 
+impl zodiac::PropertySetCheck for BorderWidth {
+    fn is_set(&self) -> bool {
+        self.1
+    }
+}
+
 impl Into<f32> for BorderWidth {
     fn into(self) -> f32 {
         self.0.into()

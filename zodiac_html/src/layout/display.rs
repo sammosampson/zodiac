@@ -14,26 +14,32 @@ impl Default for DisplayTypes {
 }
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Display(DisplayTypes);
+pub struct Display(DisplayTypes, bool);
 
 impl Display {
     pub fn inline() -> Self {
-        Self(DisplayTypes::Inline)
+        Self(DisplayTypes::Inline, true)
     }
 
     pub fn block() -> Self {
-        Self(DisplayTypes::Block)
+        Self(DisplayTypes::Block, true)
     }
 }
 
 impl From<DisplayTypes> for Display {
     fn from(types: DisplayTypes) -> Self {
-        Self(types)
+        Self(types, true)
     }
 }
 
 impl Into<DisplayTypes> for &Display {
     fn into(self) -> DisplayTypes {
         self.0
+    }
+}
+
+impl zodiac::PropertySetCheck for Display {
+    fn is_set(&self) -> bool {
+        self.1
     }
 }

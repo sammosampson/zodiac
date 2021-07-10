@@ -17,6 +17,8 @@ fn default_layout_for_elements_root() -> RootNode<TestState> {
 
 #[test]
 fn default_layout_for_elements() {
+    configure_console_logging();
+
     let changes = test_app(default_layout_for_elements_root)
         .with_screen_dimensions(1024, 768)
         .build()

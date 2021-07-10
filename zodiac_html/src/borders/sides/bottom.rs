@@ -6,11 +6,11 @@ use crate::size::*;
 use crate::layout::*;
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BorderBottomColour(Colour);
+pub struct BorderBottomColour(Colour, bool);
 
 impl From<Colour> for BorderBottomColour {
     fn from(colour: Colour) -> Self {
-        Self(colour)
+        Self(colour, true)
     }
 }
 
@@ -23,27 +23,35 @@ impl Into<Colour> for &BorderBottomColour {
 impl zodiac::PropertySet<Colour> for BorderBottomColour {
     fn set(&mut self, to_set: Colour) {
         self.0 = to_set;
+        self.1 = true;
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BorderBottomStyle(BorderStyles);
-
-impl Default for BorderBottomStyle {
-    fn default() -> Self {
-        Self(BorderStyles::None)
+impl zodiac::PropertySetCheck for BorderBottomColour {
+    fn is_set(&self) -> bool {
+        self.1
     }
 }
+
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct BorderBottomStyle(BorderStyles, bool);
 
 impl zodiac::PropertySet<BorderStyles> for BorderBottomStyle {
     fn set(&mut self, to_set: BorderStyles) {
         self.0 = to_set;
+        self.1 = true;
+    }
+}
+
+impl zodiac::PropertySetCheck for BorderBottomStyle {
+    fn is_set(&self) -> bool {
+        self.1
     }
 }
 
 impl From<BorderStyles> for BorderBottomStyle {
     fn from(styles: BorderStyles) -> Self {
-        Self(styles)
+        Self(styles, true)
     }
 }
 
@@ -54,17 +62,24 @@ impl Into<BorderStyles> for &BorderBottomStyle {
 }
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BorderBottomWidth(Size);
+pub struct BorderBottomWidth(Size, bool);
 
 impl From<Size> for BorderBottomWidth {
     fn from(size: Size) -> Self {
-        Self(size)
+        Self(size, true)
     }
 }
 
 impl zodiac::PropertySet<Size> for BorderBottomWidth {
     fn set(&mut self, to_set: Size) {
         self.0 = to_set;
+        self.1 = true;
+    }
+}
+
+impl zodiac::PropertySetCheck for BorderBottomWidth {
+    fn is_set(&self) -> bool {
+        self.1
     }
 }
 

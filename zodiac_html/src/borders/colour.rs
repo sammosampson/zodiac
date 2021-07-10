@@ -23,6 +23,12 @@ impl zodiac::PropertySetCheck for &BorderColour {
     }
 }
 
+impl zodiac::PropertySetCheck for BorderColour {
+    fn is_set(&self) -> bool {
+        self.1
+    }
+}
+
 impl Into<Colour> for &BorderColour {
     fn into(self) -> Colour {
         self.0

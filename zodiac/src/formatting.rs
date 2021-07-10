@@ -1,4 +1,4 @@
-use log::{info};
+use log::trace;
 use legion::*;
 use legion::serialize::*;
 use legion::storage::Component;
@@ -25,7 +25,8 @@ impl WorldSerializer {
             last_result: None
         }
     }
-    
+
+   
     pub fn register_component<C: Component + Serialize + for<'de> serde::Deserialize<'de>>(&mut self, mapped_type_id: &'static str) {
         self.registry.register::<C>(mapped_type_id.to_string());
     }
@@ -36,13 +37,21 @@ impl WorldSerializer {
 
     pub fn log_world(&mut self, world: &World) {
         let result = self.serialize_world(world).unwrap();
-        
+
         if self.last_result == None {
-            println!("{:#}", result);
+            WorldSerializer::perform_logging(&result);
         } else if result != self.last_result.take().unwrap() {
-            println!("{:#}", result);
+            WorldSerializer::perform_logging(&result);
         }
 
         self.last_result = Some(result);
+    }
+
+    fn perform_logging(to_log: &Value){
+        trace!(target: WorldSerializer::logging_target(), "{:#}", to_log);
+    }
+
+    pub fn logging_target() -> &'static str {
+        "world_vision"
     }
 }

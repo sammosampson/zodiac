@@ -6,11 +6,11 @@ use crate::colour::*;
 use crate::size::*;
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BorderRightColour(Colour);
+pub struct BorderRightColour(Colour, bool);
 
 impl From<Colour> for BorderRightColour {
     fn from(colour: Colour) -> Self {
-        Self(colour)
+        Self(colour, true)
     }
 }
 
@@ -23,27 +23,35 @@ impl Into<Colour> for &BorderRightColour {
 impl zodiac::PropertySet<Colour> for BorderRightColour {
     fn set(&mut self, to_set: Colour) {
         self.0 = to_set;
+        self.1 = true;
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BorderRightStyle(BorderStyles);
-
-impl Default for BorderRightStyle {
-    fn default() -> Self {
-        Self(BorderStyles::None)
+impl zodiac::PropertySetCheck for BorderRightColour {
+    fn is_set(&self) -> bool {
+        self.1
     }
 }
+
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct BorderRightStyle(BorderStyles, bool);
 
 impl zodiac::PropertySet<BorderStyles> for BorderRightStyle {
     fn set(&mut self, to_set: BorderStyles) {
         self.0 = to_set;
+        self.1 = true;
+    }
+}
+
+impl zodiac::PropertySetCheck for BorderRightStyle {
+    fn is_set(&self) -> bool {
+        self.1
     }
 }
 
 impl From<BorderStyles> for BorderRightStyle {
     fn from(styles: BorderStyles) -> Self {
-        Self(styles)
+        Self(styles, true)
     }
 }
 
@@ -54,17 +62,24 @@ impl Into<BorderStyles> for &BorderRightStyle {
 }
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BorderRightWidth(pub Size);
+pub struct BorderRightWidth(Size, bool);
 
 impl From<Size> for BorderRightWidth {
     fn from(size: Size) -> Self {
-        Self(size)
+        Self(size, true)
     }
 }
 
 impl zodiac::PropertySet<Size> for BorderRightWidth {
     fn set(&mut self, to_set: Size) {
         self.0 = to_set;
+        self.1 = true;
+    }
+}
+
+impl zodiac::PropertySetCheck for BorderRightWidth {
+    fn is_set(&self) -> bool {
+        self.1
     }
 }
 

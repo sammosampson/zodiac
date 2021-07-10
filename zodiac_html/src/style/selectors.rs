@@ -1,13 +1,5 @@
 use serde::*;
-use crate::ElementType;
-
-#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Style {
-}
-
-#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct DefaultStyle {
-}
+use crate::layout::*;
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ElementSelector(ElementType);

@@ -6,11 +6,11 @@ use crate::colour::*;
 use crate::size::*;
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BorderLeftColour(Colour);
+pub struct BorderLeftColour(Colour, bool);
 
 impl From<Colour> for BorderLeftColour {
     fn from(colour: Colour) -> Self {
-        Self(colour)
+        Self(colour, true)
     }
 }
 
@@ -23,27 +23,35 @@ impl Into<Colour> for &BorderLeftColour {
 impl zodiac::PropertySet<Colour> for BorderLeftColour {
     fn set(&mut self, to_set: Colour) {
         self.0 = to_set;
+        self.1 = true;
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BorderLeftStyle(BorderStyles);
-
-impl Default for BorderLeftStyle {
-    fn default() -> Self {
-        Self(BorderStyles::None)
+impl zodiac::PropertySetCheck for BorderLeftColour {
+    fn is_set(&self) -> bool {
+        self.1
     }
 }
+
+#[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct BorderLeftStyle(BorderStyles, bool);
 
 impl zodiac::PropertySet<BorderStyles> for BorderLeftStyle {
     fn set(&mut self, to_set: BorderStyles) {
         self.0 = to_set;
+        self.1 = true;
+    }
+}
+
+impl zodiac::PropertySetCheck for BorderLeftStyle {
+    fn is_set(&self) -> bool {
+        self.1
     }
 }
 
 impl From<BorderStyles> for BorderLeftStyle {
     fn from(styles: BorderStyles) -> Self {
-        Self(styles)
+        Self(styles, true)
     }
 }
 
@@ -54,17 +62,24 @@ impl Into<BorderStyles> for &BorderLeftStyle {
 }
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BorderLeftWidth(pub Size);
+pub struct BorderLeftWidth(Size, bool);
 
 impl From<Size> for BorderLeftWidth {
     fn from(size: Size) -> Self {
-        Self(size)
+        Self(size, true)
     }
 }
 
 impl zodiac::PropertySet<Size> for BorderLeftWidth {
     fn set(&mut self, to_set: Size) {
         self.0 = to_set;
+        self.1 = true;
+    }
+}
+
+impl zodiac::PropertySetCheck for BorderLeftWidth {
+    fn is_set(&self) -> bool {
+        self.1
     }
 }
 

@@ -14,6 +14,12 @@ pub enum BorderStyles {
     Hidden
 }
 
+impl Default for BorderStyles {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BorderStyle(BorderStyles, bool);
 

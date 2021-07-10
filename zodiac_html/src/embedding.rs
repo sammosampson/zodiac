@@ -12,6 +12,7 @@ element! {
     Style::default(),
     extra_components {
         [ElementSelector::default()]
+        [Border::default()]
         [BorderWidth::default()]
         [BorderColour::default()]
         [BorderTop::default()]
@@ -33,6 +34,7 @@ element! {
         [BorderRadius::default()]
         [BorderStyle::default()]
         [FullBorder::default()]
+        [Display::default()]
         [Margin::default()]
         [Padding::default()]
         [BackgroundColour::default()]
