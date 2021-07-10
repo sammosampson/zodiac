@@ -6,7 +6,8 @@ use log4rs::{Config, Handle};
 use zodiac::WorldSerializer;
 
 pub fn configure_console_logging() -> Handle {
-    let standard_logging_target = "standard";
+    let standard = "standard";
+    let world = "world";
 
     let standard_appender = FileAppender::builder()
         .encoder(Box::new(PatternEncoder::new("{d} {l} {t} - {m}{n}")))
@@ -21,10 +22,13 @@ pub fn configure_console_logging() -> Handle {
         .unwrap();
 
     let config = Config::builder()
-        .appender(Appender::builder().build(WorldSerializer::logging_target(), Box::new(world_appender)))
-        .appender(Appender::builder().build(standard_logging_target, Box::new(standard_appender)))
-        .logger(Logger::builder().appender(WorldSerializer::logging_target()).additive(false).build(WorldSerializer::logging_target(), LevelFilter::Trace))
-        .build(Root::builder().appender(standard_logging_target).build(LevelFilter::Trace))
+        .appender(Appender::builder().build(world, Box::new(world_appender)))
+        .appender(Appender::builder().build(standard, Box::new(standard_appender)))
+        .logger(Logger::builder()
+            .appender(world)
+            .additive(false)
+            .build(WorldSerializer::logging_target(), LevelFilter::Trace))
+        .build(Root::builder().appender(standard).build(LevelFilter::Trace))
         .unwrap();
 
     log4rs::init_config(config).unwrap()

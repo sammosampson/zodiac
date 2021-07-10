@@ -1,3 +1,4 @@
+use log::trace;
 use legion::*;
 use legion::world::*;
 use legion::systems::*;
@@ -16,7 +17,7 @@ pub fn tag_default_style(
     entity: &Entity) {
 
     for child in relationship_map.get_children(entity) {
-        println!("tagging {:?}", entity);
+        trace!("tagging {:?}", entity);
         let entry = world.entry_ref(child).unwrap();
         if let Ok(_style) = entry.into_component::<Style>() {
             command_buffer.add_component(child, DefaultStyle::default())    
