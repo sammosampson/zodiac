@@ -4,7 +4,7 @@ use zodiac::*;
 use crate::borders::*;
 
 
-#[system(for_each)]
+#[system(par_for_each)]
 #[filter(component::<Rebuild>())]
 pub fn upconstruct_border_top(
     style: &BorderTopStyle,
@@ -18,7 +18,7 @@ pub fn upconstruct_border_top(
     }
 }
 
-#[system(for_each)]
+#[system(par_for_each)]
 #[filter(component::<Rebuild>())]
 pub fn upconstruct_border_left(
     style: &BorderLeftStyle,
@@ -32,7 +32,7 @@ pub fn upconstruct_border_left(
     }
 }
 
-#[system(for_each)]
+#[system(par_for_each)]
 #[filter(component::<Rebuild>())]
 pub fn upconstruct_border_bottom(
     style: &BorderBottomStyle,
@@ -46,7 +46,7 @@ pub fn upconstruct_border_bottom(
     }
 }
 
-#[system(for_each)]
+#[system(par_for_each)]
 #[filter(component::<Rebuild>())]
 pub fn upconstruct_border_right(
     style: &BorderRightStyle,

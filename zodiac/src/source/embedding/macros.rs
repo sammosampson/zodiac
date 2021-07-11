@@ -140,6 +140,7 @@ macro_rules! element {
                     if let Some(style_id) = self.style {
                         if let Some(style_entity) = maps.entity_map.get(&style_id) {
                             command_buffer.add_component(*style_entity, StyleRelationship::from(parent));
+                            command_buffer.add_component(parent, StyleRelationship::from(*style_entity));
                         }
                     }
                     

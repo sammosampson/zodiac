@@ -33,7 +33,6 @@ element! {
         [BorderRightWidth::default()]
         [BorderRadius::default()]
         [BorderStyle::default()]
-        [FullBorder::default()]
         [Display::default()]
         [Margin::default()]
         [Padding::default()]
@@ -86,6 +85,7 @@ element! {
     <span>
     Element::from(ElementType::Span),
     extra_components {
+        [FullBorder::default()]
         [Renderable::default()]
     }
 }
@@ -94,6 +94,7 @@ element! {
     <div>
     Element::from(ElementType::Div),
     extra_components {
+        [FullBorder::default()]
         [Renderable::default()]
     }
 }

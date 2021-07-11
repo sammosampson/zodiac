@@ -5,6 +5,7 @@ use shrev::EventChannel;
 use zodiac::*;
 use crate::events::*;
 use crate::layout::*;
+use crate::window::*;
 
 #[system(simple)]
 #[read_component(Root)]
@@ -19,7 +20,7 @@ pub fn root_resize(
         match event {
             SystemEvent::Window(SystemWindowEventType::RootWindowResize(dimensions)) => {
                 for root in <Entity>::query()
-                    .filter(component::<Root>())
+                    .filter(component::<Window>())
                     .iter(world) {
                         command_buffer.add_component(*root, StyleLayoutBox::from(dimensions));
                         command_buffer.add_component(*root, LayoutBox::default());

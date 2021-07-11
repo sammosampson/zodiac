@@ -5,7 +5,7 @@ use crate::Size;
 use crate::borders::*;
 use crate::colour::*;
 
-#[system(for_each)]
+#[system(par_for_each)]
 #[filter(component::<Rebuild>())]
 pub fn deconstruct_border(
     border: &Border,
@@ -22,7 +22,7 @@ pub fn deconstruct_border(
     }
 }
 
-#[system(for_each)]
+#[system(par_for_each)]
 #[filter(component::<Rebuild>())]
 pub fn deconstruct_border_colour(
     colour: &BorderColour,
@@ -41,7 +41,7 @@ pub fn deconstruct_border_colour(
     }
 }
 
-#[system(for_each)]
+#[system(par_for_each)]
 #[filter(component::<Rebuild>())]
 pub fn deconstruct_border_width(
     width: &BorderWidth,
@@ -60,7 +60,7 @@ pub fn deconstruct_border_width(
     }
 }
 
-#[system(for_each)]
+#[system(par_for_each)]
 #[filter(component::<Rebuild>())]
 pub fn deconstruct_border_style(
     style: &BorderStyle,

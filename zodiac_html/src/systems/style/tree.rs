@@ -1,4 +1,3 @@
-use log::trace;
 use legion::*;
 use legion::world::*;
 use legion::systems::*;
@@ -11,13 +10,12 @@ use crate::style::*;
 #[filter(component::<Window>())]
 #[read_component(Style)]
 pub fn tag_default_style(
+    world: &SubWorld,
     command_buffer: &mut CommandBuffer,
     #[resource] relationship_map: &RelationshipMap,
-    world: &mut SubWorld,
     entity: &Entity) {
 
     for child in relationship_map.get_children(entity) {
-        trace!("tagging {:?}", entity);
         let entry = world.entry_ref(child).unwrap();
         if let Ok(_style) = entry.into_component::<Style>() {
             command_buffer.add_component(child, DefaultStyle::default())    

@@ -19,8 +19,10 @@ pub fn inline_layout_with_margin_border_and_padding_style() -> Node {
 fn inline_layout_with_margin_and_padding_root() -> RootNode<TestState> {
     mox!(
         <root>
-            <div style=inline_layout_with_margin_border_and_padding_style() />
-            <div style=inline_layout_with_margin_border_and_padding_style() />
+            <window>
+                <div style=inline_layout_with_margin_border_and_padding_style() />
+                <div style=inline_layout_with_margin_border_and_padding_style() />
+            </window>
         </root>
     )
 }

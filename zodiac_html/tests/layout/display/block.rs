@@ -19,8 +19,10 @@ pub fn block_layout_with_margin_border_border_and_padding_style() -> Node {
 fn block_layout_with_margin_border_border_and_padding_root() -> RootNode<TestState> {
     mox!(
         <root>
-            <div style=block_layout_with_margin_border_border_and_padding_style() />
-            <div style=block_layout_with_margin_border_border_and_padding_style() />
+            <window>
+                <div style=block_layout_with_margin_border_border_and_padding_style() />
+                <div style=block_layout_with_margin_border_border_and_padding_style() />
+            </window>
         </root>
     )
 }

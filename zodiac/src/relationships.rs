@@ -3,7 +3,7 @@ use legion::*;
 use legion::systems::*;
 use crate::*;
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct RelationshipMap(HashMap<Entity, Relationship>);
 
 pub fn create_relationship_map() -> RelationshipMap {

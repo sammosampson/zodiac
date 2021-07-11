@@ -16,7 +16,9 @@ pub fn element_background_colour_style() -> Node {
 fn element_background_colour_root() -> RootNode<TestState> {
     mox!(
         <root>
-            <div style=element_background_colour_style() />
+            <window>    
+                <div style=element_background_colour_style() />
+            </window>
         </root>
     )
 }

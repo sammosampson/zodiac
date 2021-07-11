@@ -16,7 +16,9 @@ pub fn element_border_style() -> Node {
 fn element_border_root() -> RootNode<TestState> {
     mox!(
         <root>
-            <div style=element_border_style() />
+            <window>    
+                <div style=element_border_style() />
+            </window>
         </root>
     )
 }
@@ -51,7 +53,9 @@ pub fn element_border_props_style() -> Node {
 fn element_border_props_root() -> RootNode<TestState> {
     mox!(
         <root>
-            <div style=element_border_props_style() />
+            <window>    
+                <div style=element_border_props_style() />
+            </window>
         </root>
     )
 }
@@ -87,7 +91,9 @@ pub fn element_border_sides_style() -> Node {
 fn element_border_sides_root() -> RootNode<TestState> {
     mox!(
         <root>
-            <div style=element_border_sides_style() />
+            <window>        
+                <div style=element_border_sides_style() />
+            </window>
         </root>
     )
 }
@@ -130,7 +136,9 @@ pub fn element_border_sides_props_style() -> Node {
 fn element_border_sides_props_root() -> RootNode<TestState> {
     mox!(
         <root>
-            <div style=element_border_sides_props_style() />
+            <window>
+                <div style=element_border_sides_props_style() />
+            </window>
         </root>
     )
 }

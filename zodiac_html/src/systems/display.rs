@@ -1,12 +1,13 @@
+use log::info;
 use legion::*;
 use zodiac::*;
 use crate::style::*;
 use crate::layout::*;
 use crate::borders::*;
 
-#[system(for_each)]
+#[system(par_for_each)]
 #[filter(component::<Rebuild>())]
-#[filter(component::<Style>())]
+#[filter(!component::<Style>())]
 pub fn compose_display_to_layout_box(
     display: &Display,
     margin: &Margin,
@@ -15,6 +16,7 @@ pub fn compose_display_to_layout_box(
     layout_box: &mut StyleLayoutBox) {
         match display.into() {
             DisplayTypes::Block => { 
+                info!("applying block layout display");
                 layout_box.set((
                     LayoutDirection::Vertical,
                     margin.into(), 
@@ -23,6 +25,7 @@ pub fn compose_display_to_layout_box(
                     LayoutDimensions::new(LayoutDistance::FromParent(1.0), LayoutDistance::FromChildren(1.0))));
             },
             DisplayTypes::Inline => { 
+                info!("applying inline layout display");
                 layout_box.set((
                     LayoutDirection::Horizontal,
                     margin.into(), 
@@ -31,6 +34,7 @@ pub fn compose_display_to_layout_box(
                     LayoutDimensions::new(LayoutDistance::FromChildren(1.0), LayoutDistance::FromChildren(1.0))));
             },
             DisplayTypes::None => { 
+                info!("applying no layout display");
                 layout_box.set((
                     LayoutDirection::None,
                     LayoutOffsetRect::default(),

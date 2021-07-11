@@ -19,8 +19,10 @@ pub fn none_layout_with_margin_border_and_padding_style() -> Node {
 fn none_layout_with_margin_border_and_padding_root() -> RootNode<TestState> {
     mox!(
         <root>
-            <div style=none_layout_with_margin_border_and_padding_style() />
-            <div style=none_layout_with_margin_border_and_padding_style() />
+            <window>
+                <div style=none_layout_with_margin_border_and_padding_style() />
+                <div style=none_layout_with_margin_border_and_padding_style() />
+            </window>      
         </root>
     )
 }

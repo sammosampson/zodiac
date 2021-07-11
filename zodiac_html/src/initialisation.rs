@@ -34,7 +34,7 @@ impl ApplicationBundleBuilder for HtmlBuilder {
             .flush()
             .add_system(build_default_style_tree_system())
             .flush()
-            .add_system(apply_default_style_to_elements_system())
+            .add_system(apply_styles_to_elements_system())
             .flush()
             .add_system(deconstruct_border_system())
             .flush()
@@ -71,7 +71,7 @@ impl ApplicationBundleBuilder for HtmlBuilder {
 
     fn setup_resources(&self, resources: &mut Resources, event_channel: &mut EventChannel<SystemEvent>) -> Result<(), ZodiacError>  {
         resources.insert(create_layout_event_reader_registry(event_channel));
-        resources.insert(create_syle_tree());
+        resources.insert(create_style_trees());
         Ok(())
     }
 
@@ -83,6 +83,7 @@ impl ApplicationBundleBuilder for HtmlBuilder {
         world_serializer.register_component::<Title>(stringify!(Title));
         world_serializer.register_component::<Style>(stringify!(Style));
         world_serializer.register_component::<DefaultStyle>(stringify!(DefaultStyle));
+        world_serializer.register_component::<Element>(stringify!(Element));
         world_serializer.register_component::<ElementType>(stringify!(ElementType));
         world_serializer.register_component::<ElementSelector>(stringify!(ElementSelector));
         world_serializer.register_component::<BorderWidth>(stringify!(BorderWidth));
@@ -107,6 +108,9 @@ impl ApplicationBundleBuilder for HtmlBuilder {
         world_serializer.register_component::<BorderStyles>(stringify!(BorderStyles));
         world_serializer.register_component::<BorderStyle>(stringify!(BorderStyle));
         world_serializer.register_component::<BorderValues>(stringify!(BorderValues));
+        world_serializer.register_component::<Margin>(stringify!(Margin));
+        world_serializer.register_component::<Padding>(stringify!(Padding));
+        world_serializer.register_component::<FullBorder>(stringify!(FullBorder));
         world_serializer.register_component::<BackgroundColour>(stringify!(BackgroundColour));
         world_serializer.register_component::<Display>(stringify!(Display));
         world_serializer.register_component::<DisplayTypes>(stringify!(DisplayTypes));

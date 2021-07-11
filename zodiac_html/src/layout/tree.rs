@@ -11,6 +11,7 @@ pub fn layout_tree<'a>(world: &mut SubWorld, relationship_map: &'a RelationshipM
     LayoutTree::<'a>::new(world, relationship_map)
 }
 
+#[derive(Debug)]
 pub struct LayoutTree<'a>(
     &'a RelationshipMap,
     HashMap::<Entity, RefCell<LayoutNode>>
@@ -75,12 +76,15 @@ impl<'a> LayoutTreeChildrenIterator<'a> {
 impl <'a> Iterator for LayoutTreeChildrenIterator<'a> {
     type Item = (Entity, &'a RefCell<LayoutNode>);
     fn next(&mut self) -> Option<(Entity, &'a RefCell<LayoutNode>)> {
-        if let Some(child) = self.children.next() {
-            if let Some(layout_node) = self.tree.get(&child) {
-                return Some((child, layout_node));
+        loop {
+            if let Some(child) = self.children.next() {
+                if let Some(layout_node) = self.tree.get(&child) {
+                    return Some((child, layout_node));
+                }
+            } else {
+                return None;
             }
         }
-        None
     }
 }
 

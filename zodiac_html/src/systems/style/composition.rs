@@ -3,7 +3,7 @@ use legion::*;
 use zodiac::*;
 use crate::borders::*;
 
-#[system(for_each)]
+#[system(par_for_each)]
 #[filter(component::<Rebuild>())]
 pub fn compose_full_border(
     radius: &BorderRadius,

@@ -20,7 +20,7 @@ pub fn add_render_primitives(
     command_buffer.add_component(*entity, RenderPrimitive::from(id));
 }
 
-#[system(for_each)]
+#[system(par_for_each)]
 #[filter(component::<Renderable>())]
 #[filter(component::<LayoutChange>())]
 pub fn layout_render_primitives(
@@ -32,7 +32,7 @@ pub fn layout_render_primitives(
     primitive.dimensions = WrappedLayout::from(layout).into();
 }
 
-#[system(for_each)]
+#[system(par_for_each)]
 #[filter(component::<Renderable>())]
 #[filter(component::<Rebuild>())]
 pub fn rebuild_render_primitives(
