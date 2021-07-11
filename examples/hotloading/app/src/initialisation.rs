@@ -10,7 +10,7 @@ zod_hotload_client!(
 );
 
 fn initialise_application(state: TestState) -> ApplicationRunner<TestState> {
-    std::env::set_var("RUST_LOG", "info");
+    std::env::set_var("RUST_LOG", "warn");
     pretty_env_logger::init();
     
     Application::new(state, app_root)

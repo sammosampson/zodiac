@@ -28,7 +28,7 @@ pub fn layout_render_primitives(
     layout: &ResolvedLayoutBox,
     primitive: &mut RenderPrimitive
 ) {
-    info!("layout primitive for {:?}", entity);
+    info!("layout primitive for {:?} {:?}", entity, primitive);
     primitive.dimensions = WrappedLayout::from(layout).into();
 }
 
@@ -39,8 +39,9 @@ pub fn rebuild_render_primitives(
     entity: &Entity, 
     background_colour: &BackgroundColour,
     border: &FullBorder,
-    primitive: &mut RenderPrimitive) {
-        info!("rebuilding primitive for {:?}", entity);
-        primitive.border = WrappedBorder::from(border).into();
-        primitive.background_colour = ColourF::from(background_colour).into();
-    }
+    primitive: &mut RenderPrimitive
+) {
+    info!("rebuilding primitive for {:?} {:?}", entity, primitive);
+    primitive.border = WrappedBorder::from(border).into();
+    primitive.background_colour = ColourF::from(background_colour).into();
+}

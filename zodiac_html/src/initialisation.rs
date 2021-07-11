@@ -31,6 +31,7 @@ impl ApplicationBundleBuilder for HtmlBuilder {
         builder
             .add_system(tag_default_style_system())
             .add_system(initialise_element_layout_system())
+            .add_system(rebuild_related_element_on_style_change_system())
             .flush()
             .add_system(build_default_style_tree_system())
             .flush()
