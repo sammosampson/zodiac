@@ -42,6 +42,5 @@ pub fn rebuild_render_primitives(
     primitive: &mut RenderPrimitive
 ) {
     info!("rebuilding primitive for {:?} {:?}", entity, primitive);
-    primitive.border = WrappedBorder::from(border).into();
-    primitive.background_colour = ColourF::from(background_colour).into();
+    primitive.set_element(ElementRenderPrimitive::new(WrappedBorder::from(border).into(), ColourF::from(background_colour).into()))
 }

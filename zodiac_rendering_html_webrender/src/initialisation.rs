@@ -69,6 +69,8 @@ impl ApplicationBundleBuilder for HtmlWebRenderRendererBuilder {
     fn register_components_for_world_serializiation(&self, world_serializer: &mut WorldSerializer) {
         world_serializer.register_component::<RenderPrimitiveBorder>(stringify!(RenderPrimitiveBorder));
         world_serializer.register_component::<RenderPrimitive>(stringify!(RenderPrimitive));
+        world_serializer.register_component::<ElementRenderPrimitive>(stringify!(ElementRenderPrimitive));
+        world_serializer.register_component::<TextRenderPrimitive>(stringify!(TextRenderPrimitive));
         
     }
 }

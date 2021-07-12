@@ -25,7 +25,7 @@ pub fn render_primitives(
 
     let primitives: Vec::<RenderPrimitive> = <&RenderPrimitive>::query()
         .iter(world)
-        .map(|primitive| *primitive)
+        .map(|primitive| primitive.clone())
         .collect();
      
     info!("rendering primitives: {:?}", primitives.len());
