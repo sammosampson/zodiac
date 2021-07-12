@@ -10,6 +10,12 @@ pub struct RenderPrimitive {
     pub is_interactive: bool
 }
 
+impl RenderPrimitive {
+    pub fn can_render(&self) -> bool {
+        self.is_interactive || self.background_colour.a > 0.0
+    }
+}
+
 impl From<&ComponentId> for RenderPrimitive {
     fn from(id: &ComponentId) -> Self {
         Self {

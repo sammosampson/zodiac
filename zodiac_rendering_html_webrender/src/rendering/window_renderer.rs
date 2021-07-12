@@ -117,48 +117,92 @@ impl HtmlWebRenderWindowRenderer {
         pipeline_id: webrender::api::PipelineId,
         builder: &mut webrender::api::DisplayListBuilder,
     ) {
-        let space_and_clip = webrender::api::SpaceAndClipInfo::root_scroll(pipeline_id);
+        let space_and_clip = Self::define_space_and_clip(pipeline_id);
 
-        if primitive.is_interactive || primitive.background_colour.a > 0.0 {
-            let clip_id = 
-                if let Some(border) = &primitive.border {
-                    builder.define_clip(
-                        &space_and_clip,
-                        primitive.dimensions,
-                        vec![webrender::api::ComplexClipRegion::new(
-                            primitive.dimensions,
-                            border.radius,
-                            webrender::api::ClipMode::Clip
-                        )],
-                    )
-                } else {
-                    webrender::api::ClipId::root(pipeline_id)
-                };
+        if primitive.can_render() {
+            let clip_id = Self::define_clip(primitive, pipeline_id, space_and_clip, builder);
+            let item_props = Self::define_common_properties(primitive, pipeline_id, clip_id);
             
-            let item_props = webrender::api::CommonItemProperties {
-                clip_id,
-                clip_rect: primitive.dimensions,
-                spatial_id: webrender::api::SpatialId::root_scroll_node(pipeline_id),
-                flags: webrender::api::PrimitiveFlags::empty(),
-            };
+            Self::push_bounds_rect(primitive, &item_props, builder);
+            Self::push_hit_test(primitive, &item_props, builder);
+            Self::push_border(primitive, space_and_clip, builder);
+        }
+    }
 
-            builder.push_rect(
-                &item_props, 
-                primitive.dimensions, 
-                primitive.background_colour
-            );
+    fn define_space_and_clip(pipeline_id: webrender::api::PipelineId) -> webrender::api::SpaceAndClipInfo {
+        webrender::api::SpaceAndClipInfo::root_scroll(pipeline_id)
+    }
 
-            builder.push_hit_test(&item_props, (primitive.id, 0));
-
-            if let Some(border) = &primitive.border {
-                let common = webrender::api::CommonItemProperties::new(primitive.dimensions, space_and_clip);
-                builder.push_border(
-                    &common,
+    fn define_clip(
+        primitive: RenderPrimitive,
+        pipeline_id: webrender::api::PipelineId,
+        space_and_clip: webrender::api::SpaceAndClipInfo,
+        builder: &mut webrender::api::DisplayListBuilder,
+    ) -> webrender::api::ClipId 
+    {
+        if let Some(border) = &primitive.border {
+            builder.define_clip(
+                &space_and_clip,
+                primitive.dimensions,
+                vec![webrender::api::ComplexClipRegion::new(
                     primitive.dimensions,
-                    border.widths,
-                    border.details
-                );
-            }
+                    border.radius,
+                    webrender::api::ClipMode::Clip
+                )],
+            )
+        } else {
+            webrender::api::ClipId::root(pipeline_id)
+        }
+    }
+
+    fn define_common_properties(
+        primitive: RenderPrimitive,
+        pipeline_id: webrender::api::PipelineId,
+        clip_id: webrender::api::ClipId
+    ) -> webrender::api::CommonItemProperties
+    {
+        webrender::api::CommonItemProperties {
+            clip_id,
+            clip_rect: primitive.dimensions,
+            spatial_id: webrender::api::SpatialId::root_scroll_node(pipeline_id),
+            flags: webrender::api::PrimitiveFlags::empty()
+        }
+    }
+
+    fn push_bounds_rect(
+        primitive: RenderPrimitive,
+        item_props: &webrender::api::CommonItemProperties,
+        builder: &mut webrender::api::DisplayListBuilder,
+    ) {
+        builder.push_rect(
+            item_props, 
+            primitive.dimensions, 
+            primitive.background_colour
+        );
+    }
+
+    fn push_hit_test(
+        primitive: RenderPrimitive,
+        item_props: &webrender::api::CommonItemProperties,
+        builder: &mut webrender::api::DisplayListBuilder,
+    ) {
+        builder.push_hit_test(item_props, (primitive.id, 0));
+
+    }
+
+    fn push_border(
+        primitive: RenderPrimitive,
+        space_and_clip: webrender::api::SpaceAndClipInfo,
+        builder: &mut webrender::api::DisplayListBuilder
+    ) {
+        if let Some(border) = &primitive.border {
+            let common = webrender::api::CommonItemProperties::new(primitive.dimensions, space_and_clip);
+            builder.push_border(
+                &common,
+                primitive.dimensions,
+                border.widths,
+                border.details
+            );
         }
     }
 
