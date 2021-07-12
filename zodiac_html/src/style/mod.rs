@@ -1,8 +1,10 @@
 mod tree;
 mod selectors;
+mod embedding;
 
 pub use tree::*;
 pub use selectors::*;
+pub use embedding::*;
 
 use serde::*;
 
